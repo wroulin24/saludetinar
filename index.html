@@ -338,6 +338,15 @@ window.WORKERS_SEED = [{"cedula":"0926211590","nombre":"ABAD GUTIERREZ PAULINA",
     [data-noprint]{display:none !important}
     body{background:#fff}
     #appmain{overflow:visible !important;height:auto !important;padding:0 !important}
+    body.print-informe #approot{height:auto !important;overflow:visible !important}
+    body.print-informe #appmain{display:none !important}
+    body.print-informe aside{display:none !important}
+    body.print-informe #informe-overlay{position:static !important;background:#fff !important;overflow:visible !important;height:auto !important}
+    body.print-informe #informe-overlay [data-noprint]{display:none !important}
+    body.print-informe #informe-doc{margin:0 !important;max-width:none !important;width:100% !important;box-shadow:none !important;border-radius:0 !important}
+    body.print-informe #informe-doc *{-webkit-print-color-adjust:exact !important;print-color-adjust:exact !important}
+    body.print-informe .inf-pb{page-break-after:always}
+    @page{margin:12mm}
   }
 </style>
 </helmet>
@@ -349,7 +358,7 @@ window.WORKERS_SEED = [{"cedula":"0926211590","nombre":"ABAD GUTIERREZ PAULINA",
     <path d="M55 38 h8 v8 h8 v8 h-8 v8 h-8 v-8 h-8 v-8 h8 z" fill="#ffffff"></path>
   </svg>
 </template>
-<div style="height:100vh;overflow:hidden;background:#F4F2EE">
+<div id="approot" style="height:100vh;overflow:hidden;background:#F4F2EE">
 
   <sc-if value="{{ showLogin }}" hint-placeholder-val="{{ true }}">
     <div style="height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#423D3B,#2C2A28);padding:24px">
@@ -1174,6 +1183,7 @@ window.WORKERS_SEED = [{"cedula":"0926211590","nombre":"ABAD GUTIERREZ PAULINA",
               <sc-if value="{{ showObras }}"><label style="font-size:12px;font-weight:600;color:#6b655f">Obra<select value="{{ indObra }}" onChange="{{ setIndObra }}" style="display:block;margin-top:5px;padding:10px 12px;border:1px solid #E0DBD4;border-radius:9px;font-size:14px;background:#fff;min-width:180px"><option value="TODAS">Todas las obras</option><sc-for list="{{ obras }}" as="o" hint-placeholder-count="6"><option value="{{ o }}">{{ o }}</option></sc-for></select></label></sc-if>
               <button onClick="{{ exportIndicadoresCSV }}" style="display:inline-flex;align-items:center;gap:6px;background:#fff;border:1px solid #E0DBD4;border-radius:9px;padding:11px 15px;font-weight:700;font-size:13.5px;cursor:pointer;color:#423D3B"><span class="ms" style="font-size:18px">table_view</span> CSV</button>
               <button onClick="{{ printIndicadores }}" style="display:inline-flex;align-items:center;gap:6px;background:#423D3B;color:#fff;border:none;border-radius:9px;padding:11px 15px;font-weight:700;font-size:13.5px;cursor:pointer"><span class="ms" style="font-size:18px">picture_as_pdf</span> Imprimir / PDF</button>
+              <button onClick="{{ abrirInforme }}" style="display:inline-flex;align-items:center;gap:6px;background:#F2B200;color:#2C2A28;border:none;border-radius:9px;padding:11px 15px;font-weight:800;font-size:13.5px;cursor:pointer"><span class="ms" style="font-size:18px">description</span> Informe completo</button>
             </div>
           </div>
 
@@ -1239,6 +1249,92 @@ window.WORKERS_SEED = [{"cedula":"0926211590","nombre":"ABAD GUTIERREZ PAULINA",
 
     </main>
   </div>
+  </sc-if>
+
+  <sc-if value="{{ showInforme }}" hint-placeholder-val="">
+    <div id="informe-overlay" style="position:fixed;inset:0;background:#6b655f;z-index:90;overflow-y:auto;animation:fadeIn .15s ease">
+      <div data-noprint style="position:sticky;top:0;background:#2C2A28;color:#fff;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 18px;z-index:2;flex-wrap:wrap">
+        <div style="font-weight:700;font-size:13.5px;display:flex;align-items:center;gap:8px"><span class="ms" style="font-size:19px;color:#F2B200">description</span> Informe de salud ocupacional — {{ informe.obra }} · {{ informe.year }}</div>
+        <div style="display:flex;gap:9px">
+          <button onClick="{{ imprimirInforme }}" style="display:inline-flex;align-items:center;gap:6px;background:#F2B200;color:#2C2A28;border:none;border-radius:9px;padding:10px 16px;font-weight:800;font-size:13.5px;cursor:pointer"><span class="ms" style="font-size:18px">picture_as_pdf</span> Imprimir / Guardar PDF</button>
+          <button onClick="{{ cerrarInforme }}" style="display:inline-flex;align-items:center;gap:6px;background:#55504c;color:#fff;border:none;border-radius:9px;padding:10px 16px;font-weight:700;font-size:13.5px;cursor:pointer"><span class="ms" style="font-size:18px">close</span> Cerrar</button>
+        </div>
+      </div>
+      <div id="informe-doc" style="max-width:800px;margin:22px auto 60px;background:#fff;box-shadow:0 14px 50px rgba(0,0,0,.3);border-radius:6px;overflow:hidden;color:#2C2A28;font-family:'Hanken Grotesk',system-ui,sans-serif">
+
+        <div class="inf-pb" style="padding:70px 56px;min-height:920px;display:flex;flex-direction:column;background:linear-gradient(160deg,#423D3B,#2C2A28);color:#fff">
+          <div style="display:flex;align-items:center;gap:12px">
+            <span style="width:42px;height:42px;background:#F2B200;border-radius:8px;display:inline-block"></span>
+            <span style="font-family:Archivo;font-weight:800;font-size:30px;letter-spacing:.08em">ETINAR</span>
+          </div>
+          <div style="margin-top:90px">
+            <div style="font-size:13px;letter-spacing:.28em;color:#F2B200;font-weight:700">INFORME DE</div>
+            <div style="font-family:Archivo;font-weight:800;font-size:44px;line-height:1.08;margin-top:8px">Salud Ocupacional</div>
+            <div style="width:76px;height:5px;background:#F2B200;margin:24px 0"></div>
+            <div style="font-size:23px;font-weight:700">{{ informe.obra }}</div>
+            <div style="font-size:16px;color:#cfc9c2;margin-top:5px">Período {{ informe.year }}</div>
+          </div>
+          <div style="margin-top:auto;font-size:13px;color:#cfc9c2;line-height:1.9">
+            <div><b style="color:#fff">Profesional responsable:</b> {{ informe.medico }}</div>
+            <div><b style="color:#fff">Registro / cargo:</b> {{ informe.registro }}</div>
+            <div><b style="color:#fff">Empresa:</b> {{ informe.empresa }}</div>
+            <div><b style="color:#fff">Fecha de emisión:</b> {{ informe.hoy }}</div>
+          </div>
+        </div>
+
+        <div style="padding:46px 56px">
+          <div style="font-family:Archivo;font-weight:800;font-size:18px;color:#423D3B;border-bottom:2px solid #F2B200;padding-bottom:7px;margin-bottom:12px">1. Objetivo general</div>
+          <p style="font-size:13.5px;line-height:1.75;color:#444;margin:0 0 26px;text-align:justify">{{ informe.objetivoGeneral }}</p>
+
+          <div style="font-family:Archivo;font-weight:800;font-size:18px;color:#423D3B;border-bottom:2px solid #F2B200;padding-bottom:7px;margin-bottom:12px">2. Objetivos específicos</div>
+          <ul style="font-size:13.5px;line-height:1.7;color:#444;margin:0 0 26px;padding-left:20px">
+            <sc-for list="{{ informe.objetivosEspecificos }}" as="o" hint-placeholder-count="5"><li style="margin-bottom:6px">{{ o }}</li></sc-for>
+          </ul>
+
+          <div style="font-family:Archivo;font-weight:800;font-size:18px;color:#423D3B;border-bottom:2px solid #F2B200;padding-bottom:7px;margin-bottom:12px">3. Indicadores de gestión</div>
+          <table style="width:100%;border-collapse:collapse;font-size:13px;margin-bottom:14px">
+            <tbody>
+              <tr><td style="padding:9px 12px;border:1px solid #E6E2DD;background:#FAF9F7;font-weight:600">Trabajadores (plantilla activa)</td><td style="padding:9px 12px;border:1px solid #E6E2DD;text-align:right;font-weight:700">{{ informe.kpis.plantilla }}</td></tr>
+              <tr><td style="padding:9px 12px;border:1px solid #E6E2DD">Consultas médicas realizadas</td><td style="padding:9px 12px;border:1px solid #E6E2DD;text-align:right;font-weight:700">{{ informe.kpis.consultas }}</td></tr>
+              <tr><td style="padding:9px 12px;border:1px solid #E6E2DD;background:#FAF9F7">Fichas médicas realizadas</td><td style="padding:9px 12px;border:1px solid #E6E2DD;text-align:right;font-weight:700">{{ informe.kpis.fichas }}</td></tr>
+              <tr><td style="padding:9px 12px;border:1px solid #E6E2DD">Descansos médicos registrados</td><td style="padding:9px 12px;border:1px solid #E6E2DD;text-align:right;font-weight:700">{{ informe.kpis.descansos }}</td></tr>
+              <tr><td style="padding:9px 12px;border:1px solid #E6E2DD;background:#FAF9F7">Accidentes de trabajo</td><td style="padding:9px 12px;border:1px solid #E6E2DD;text-align:right;font-weight:700">{{ informe.kpis.accidentes }}</td></tr>
+              <tr><td style="padding:9px 12px;border:1px solid #E6E2DD">Capacitaciones realizadas</td><td style="padding:9px 12px;border:1px solid #E6E2DD;text-align:right;font-weight:700">{{ informe.kpis.capacitaciones }}</td></tr>
+              <tr><td style="padding:9px 12px;border:1px solid #E6E2DD;background:#FAF9F7">Vacunas aplicadas</td><td style="padding:9px 12px;border:1px solid #E6E2DD;text-align:right;font-weight:700">{{ informe.kpis.vacunas }}</td></tr>
+              <tr><td style="padding:9px 12px;border:1px solid #E6E2DD">Cobertura de fichas vigentes</td><td style="padding:9px 12px;border:1px solid #E6E2DD;text-align:right;font-weight:700">{{ informe.kpis.cobertura }}%</td></tr>
+            </tbody>
+          </table>
+          <p style="font-size:13.5px;line-height:1.75;color:#444;margin:0 0 28px;text-align:justify">{{ informe.analisis }}</p>
+
+          <div style="font-family:Archivo;font-weight:800;font-size:18px;color:#423D3B;border-bottom:2px solid #F2B200;padding-bottom:7px;margin-bottom:12px">4. Morbilidad — diagnósticos más frecuentes</div>
+          <sc-if value="{{ informe.morbEmpty }}" hint-placeholder-val=""><p style="font-size:13px;color:#8C857E;margin:0 0 26px">No se registraron diagnósticos en el período seleccionado.</p></sc-if>
+          <table style="width:100%;border-collapse:collapse;font-size:13px;margin-bottom:28px">
+            <thead><tr style="background:#423D3B;color:#fff"><th style="padding:9px 12px;text-align:left;width:34px">#</th><th style="padding:9px 12px;text-align:left">Diagnóstico</th><th style="padding:9px 12px;text-align:right;width:70px">Casos</th><th style="padding:9px 12px;text-align:right;width:60px">%</th></tr></thead>
+            <tbody>
+              <sc-for list="{{ informe.morb }}" as="m" hint-placeholder-count="0"><tr><td style="padding:9px 12px;border:1px solid #E6E2DD">{{ m.rank }}</td><td style="padding:9px 12px;border:1px solid #E6E2DD">{{ m.dx }}</td><td style="padding:9px 12px;border:1px solid #E6E2DD;text-align:right;font-weight:700">{{ m.n }}</td><td style="padding:9px 12px;border:1px solid #E6E2DD;text-align:right">{{ m.pct }}%</td></tr></sc-for>
+            </tbody>
+          </table>
+
+          <div style="font-family:Archivo;font-weight:800;font-size:18px;color:#423D3B;border-bottom:2px solid #F2B200;padding-bottom:7px;margin-bottom:6px">5. Plan de acción</div>
+          <p style="font-size:12.5px;color:#777;margin:0 0 16px">Acciones recomendadas según la morbilidad y los hallazgos del período:</p>
+          <sc-for list="{{ informe.planAccion }}" as="pa" hint-placeholder-count="0">
+            <div style="margin-bottom:17px;border-left:3px solid #F2B200;padding-left:14px">
+              <div style="font-weight:700;font-size:14px;color:#423D3B;margin-bottom:6px">{{ pa.area }}</div>
+              <ul style="font-size:13px;line-height:1.6;color:#444;margin:0;padding-left:18px">
+                <sc-for list="{{ pa.acciones }}" as="ac" hint-placeholder-count="0"><li style="margin-bottom:4px">{{ ac }}</li></sc-for>
+              </ul>
+            </div>
+          </sc-for>
+
+          <div style="margin-top:54px;display:flex;justify-content:flex-start">
+            <div style="width:280px;border-top:1px solid #999;padding-top:8px;font-size:13px;text-align:center">
+              <div style="font-weight:700">{{ informe.medico }}</div>
+              <div style="color:#666;font-size:12px">{{ informe.registro }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </sc-if>
 
   <sc-if value="{{ modalOpen }}" hint-placeholder-val="">
@@ -1570,7 +1666,7 @@ class Component extends DCLogic {
       consObraFilter:'TODAS', fichaObraFilter:'TODAS', vacObraFilter:'TODAS', vacTipoFilter:'TODAS',
       cie10:[], cieQuery:'', ciePick:null,
       repObra:'TODAS', repMes:new Date().toISOString().slice(0,7), repHHT:'',
-      indYear:String(new Date().getFullYear()), indObra:'TODAS',
+      indYear:String(new Date().getFullYear()), indObra:'TODAS', showInforme:false,
       toast:''
     };
   }
@@ -1968,6 +2064,36 @@ class Component extends DCLogic {
     let conFicha=0; wk.forEach(w=>{ const st=this.fichaStatus(w.cedula); if(st.state==='vig'||st.state==='porvencer') conFicha++; });
     return { year,obra, mc,mfi,md, perObra, morbList, kpis:{consultas:consY.length,fichas:fichY.length,descansos:descY.length,accidentes:accY.length,capacitaciones:capY.length,vacunas:vacY.length,plantilla:wk.length,conFicha,cobertura:wk.length?Math.round((conFicha/wk.length)*100):0} };
   }
+  planAccionDesde(morbList){
+    var txt=(morbList||[]).map(function(m){return String(m.dx||'').toLowerCase();}).join(' | ');
+    var codes=(morbList||[]).map(function(m){var mm=String(m.dx||'').match(/\(([A-Z])/);return mm?mm[1]:'';}).join('');
+    function has(re){return re.test(txt);} function code(ch){return codes.indexOf(ch)>=0;}
+    var plan=[];
+    if(has(/lumb|dorsal|muscul|espalda|articul|cervical|tendin|esguince|dolor de espalda|hombro|rodilla/)||code('M')){ plan.push({area:'Trastornos musculoesquel\u00e9ticos',acciones:['Realizar evaluaci\u00f3n ergon\u00f3mica de los puestos de trabajo y de la manipulaci\u00f3n manual de cargas.','Implementar un programa de pausas activas y escuela de espalda.','Capacitar en higiene postural y levantamiento seguro de cargas.','Dotar y verificar el uso de ayudas mec\u00e1nicas para cargas pesadas.']}); }
+    if(has(/resp|gripe|faring|rinof|bronq|\btos\b|\bira\b|asma|neumon|amigdal|rin\u00edt/)||code('J')){ plan.push({area:'Afecciones respiratorias',acciones:['Reforzar el uso de protecci\u00f3n respiratoria seg\u00fan el riesgo (polvo, humos, s\u00edlice).','Mejorar la ventilaci\u00f3n y el control de material particulado en los frentes de obra.','Promover la vacunaci\u00f3n contra influenza y campa\u00f1as de salud respiratoria.','Educar en etiqueta de tos e higiene de manos.']}); }
+    if(has(/gastr|diarre|est\u00f3mag|estomag|digest|colon|intoxic|aliment|parasit|c\u00f3lico/)||code('K')){ plan.push({area:'Afecciones gastrointestinales',acciones:['Verificar la calidad del agua de consumo y las condiciones de los comedores.','Reforzar la higiene de manos y el manejo seguro de alimentos.','Inspeccionar bater\u00edas sanitarias y la disposici\u00f3n de residuos.']}); }
+    if(has(/piel|dermat|alergi|derma|prurito|urticar/)||code('L')){ plan.push({area:'Afecciones d\u00e9rmicas',acciones:['Evaluar la exposici\u00f3n a qu\u00edmicos e irritantes; reforzar guantes y barreras de protecci\u00f3n.','Disponer de protecci\u00f3n solar para el trabajo a la intemperie.']}); }
+    if(has(/hipertens|presi\u00f3n|presion|diabet|metabol|cardio|colesterol|obesidad/)||code('I')||code('E')){ plan.push({area:'Enfermedades cr\u00f3nicas (cardiometab\u00f3licas)',acciones:['Implementar tamizaje peri\u00f3dico de presi\u00f3n arterial y glucemia.','Desarrollar un programa de estilos de vida saludable (alimentaci\u00f3n y actividad f\u00edsica).','Dar seguimiento a los trabajadores con enfermedad cr\u00f3nica diagnosticada.']}); }
+    if(has(/ansied|estr\u00e9s|estres|depres|salud mental|insomnio|psicol/)||code('F')){ plan.push({area:'Salud mental y riesgo psicosocial',acciones:['Aplicar la evaluaci\u00f3n de riesgo psicosocial.','Ofrecer espacios de apoyo y estrategias de manejo del estr\u00e9s.']}); }
+    if(has(/\bojo|ocul|conjuntiv|visi\u00f3n|vista|agudeza/)||code('H')){ plan.push({area:'Salud visual',acciones:['Reforzar el uso de protecci\u00f3n ocular en tareas de riesgo.','Realizar tamizaje de agudeza visual.']}); }
+    plan.push({area:'Gesti\u00f3n y prevenci\u00f3n general',acciones:['Mantener y actualizar las fichas m\u00e9dicas ocupacionales y la aptitud laboral.','Dar seguimiento a los grupos de atenci\u00f3n prioritaria identificados.','Reforzar la investigaci\u00f3n y prevenci\u00f3n de accidentes de trabajo.','Programar capacitaciones en autocuidado y en los riesgos propios de la obra.','Realizar seguimiento mensual de estos indicadores y ajustar las acciones.']});
+    return plan;
+  }
+  informeData(){
+    var d=this.computeIndicadores(); var db=this.scopedDb();
+    var obra=(d.obra==='TODAS')?'Todas las obras':d.obra;
+    var tot=d.morbList.reduce(function(a,m){return a+m.n;},0);
+    var morb=d.morbList.map(function(m,i){return {rank:i+1,dx:m.dx,n:m.n,pct:tot?Math.round(m.n/tot*100):0};});
+    var og='Evaluar el estado de salud ocupacional de los trabajadores de '+obra+' durante el per\u00edodo '+d.year+', mediante el an\u00e1lisis de la morbilidad, los indicadores de gesti\u00f3n y las condiciones de salud identificadas, con el fin de orientar acciones de prevenci\u00f3n y promoci\u00f3n que contribuyan a reducir el ausentismo y la accidentalidad laboral.';
+    var oe=['Identificar la morbilidad y los diagn\u00f3sticos m\u00e1s frecuentes en los trabajadores de la obra.','Evaluar la cobertura de fichas m\u00e9dicas ocupacionales y el estado de aptitud laboral.','Cuantificar las consultas m\u00e9dicas, los descansos y los accidentes de trabajo del per\u00edodo.','Reconocer los grupos de atenci\u00f3n prioritaria y sus necesidades de seguimiento.','Formular un plan de acci\u00f3n orientado a la prevenci\u00f3n seg\u00fan los hallazgos.'];
+    var an='Durante el per\u00edodo '+d.year+' se registraron '+d.kpis.consultas+' consultas m\u00e9dicas, '+d.kpis.descansos+' descansos m\u00e9dicos y '+d.kpis.accidentes+' accidentes de trabajo en '+obra+', sobre una plantilla activa de '+d.kpis.plantilla+' trabajadores. ';
+    if(d.morbList.length){ an+='El diagn\u00f3stico m\u00e1s frecuente fue '+d.morbList[0].dx+' ('+d.morbList[0].n+' caso(s)). '; }
+    an+='La cobertura de fichas m\u00e9dicas vigentes alcanz\u00f3 el '+d.kpis.cobertura+'%.';
+    return { obra:obra, year:d.year, medico:(db.config.medicoNombre||'M\u00e9dico Ocupacional'), registro:(db.config.medicoRegistro||''), empresa:(db.config.empresa||'ETINAR'), hoy:this.fmt(this.todayISO()), kpis:d.kpis, analisis:an, objetivoGeneral:og, objetivosEspecificos:oe, morb:morb, morbEmpty:(morb.length===0), planAccion:this.planAccionDesde(d.morbList) };
+  }
+  abrirInforme=()=>{ this.setState({showInforme:true}); };
+  cerrarInforme=()=>{ this.setState({showInforme:false}); };
+  imprimirInforme=()=>{ try{document.body.classList.add('print-informe');}catch(e){} window.print(); setTimeout(function(){ try{document.body.classList.remove('print-informe');}catch(e){} },700); };
   exportIndicadoresCSV=()=>{
     const d=this.computeIndicadores(); const M=['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic']; const L=[];
     L.push(['INDICADORES DE GESTIÓN - SALUD OCUPACIONAL ETINAR']);
@@ -2254,12 +2380,14 @@ class Component extends DCLogic {
       const maxMorb=Math.max(1,...d.morbList.map(m=>m.n));
       R.indMorb=d.morbList.map(m=>({...m,pct:Math.round((m.n/maxMorb)*100)+'%'})); R.indMorbEmpty=d.morbList.length===0;
       R.indKpis=d.kpis; R.indYear=d.year; R.indObra=d.obra; R.indObraLabel=d.obra==='TODAS'?'Todas las obras':d.obra;
-      R.indYears=this.availableYears(); R.setIndYear=this.setIndYear; R.setIndObra=this.setIndObra; R.printIndicadores=this.printIndicadores; R.exportIndicadoresCSV=this.exportIndicadoresCSV; R.indHoy=this.fmt(this.todayISO());
+      R.indYears=this.availableYears(); R.setIndYear=this.setIndYear; R.setIndObra=this.setIndObra; R.printIndicadores=this.printIndicadores; R.exportIndicadoresCSV=this.exportIndicadoresCSV; R.indHoy=this.fmt(this.todayISO()); R.abrirInforme=this.abrirInforme;
     }
     if(R.isReportes){ R.repObra=s.repObra; R.repMes=s.repMes; R.repHHT=s.repHHT; R.setRepObra=this.setRepObra; R.setRepMes=this.setRepMes; R.setRepHHT=this.setRepHHT; R.printReporte=this.printReporte; R.exportReporteCSV=this.exportReporteCSV; const r=this.computeReporte(); R.rep=r; R.repObraLabel=r.obra==='TODAS'?'Todas las obras':r.obra; R.repMesLabel=this.mesLabel(r.mes); R.repMorb=r.morbList.map(m=>({...m,pct:Math.round((m.n/r.maxMorb)*100)+'%'})); R.repHasMorb=r.morbList.length>0; R.repHasIndices=r.IF!==null; R.repDescTipos=r.descTipos; R.repHasDesc=r.descTipos.length>0; R.repHoy=this.fmt(this.todayISO()); }
 
     if(R.isConfig){ R.cfgNombre=db.config.medicoNombre; R.cfgRegistro=db.config.medicoRegistro; R.saveConfig=this.saveConfig; R.exportBackup=this.exportBackup; R.importBackup=this.importBackup; R.importWorkersCSV=this.importWorkersCSV; R.addObra=this.addObra; R.obrasConfig=db.config.obras.map(o=>({nombre:o,count:db.workers.filter(w=>w.obra===o).length,del:this.delObra(o)})); R.borrarTodo=this.borrarTodo; R.totalRegistros=db.consultas.length+db.descansos.length+db.fichas.length+db.accidentes.length+db.vacunas.length; R.totalTrab=db.workers.length; R.addAcceso=this.addAcceso; var _accs=(db.config.accesos||[]); R.accesosList=_accs.map(a=>({email:a.email,obra:a.obra,del:this.delAcceso(a.email)})); R.noAccesos=_accs.length===0; }
 
+    R.showInforme=s.showInforme; R.cerrarInforme=this.cerrarInforme; R.imprimirInforme=this.imprimirInforme;
+    if(s.showInforme){ R.informe=this.informeData(); }
     return R;
   }
 }
