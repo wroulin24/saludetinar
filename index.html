@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Sistema de Gestión Ocupacional ETINAR</title>
+<title>Sistema de Gestion Ocupacional ETINAR</title>
 <script>(function(){function works(){try{var t='__t__';localStorage.setItem(t,'1');localStorage.removeItem(t);return true;}catch(e){return false;}}if(works())return;var _m={};var shim={getItem:function(k){return _m.hasOwnProperty(k)?_m[k]:null;},setItem:function(k,v){_m[k]=String(v);},removeItem:function(k){delete _m[k];},clear:function(){_m={};},key:function(i){return Object.keys(_m)[i]||null;}};Object.defineProperty(shim,'length',{get:function(){return Object.keys(_m).length;}});try{Object.defineProperty(window,'localStorage',{value:shim,configurable:true});}catch(e){}})();</script>
 <script>/**
  * @license React
@@ -406,6 +406,7 @@ window.WORKERS_SEED = [{"cedula":"0926211590","nombre":"ABAD GUTIERREZ PAULINA",
       <div style="padding:14px 16px;border-top:1px solid rgba(255,255,255,.08);font-size:12.5px">
         <div style="color:#cfc9c2;font-weight:600">{{ medicoLabel }}</div>
         <div style="color:#8f877f;font-size:11px">{{ userEmail }}</div>
+        <div style="color:#F2B200;font-size:10.5px;font-weight:700;margin-top:3px;letter-spacing:.02em">{{ scopeLabel }}</div>
         <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:#a59e96;margin:7px 0 10px"><span style="width:7px;height:7px;border-radius:50%;background:{{ syncDot }};display:inline-block"></span>{{ syncLabel }}</div>
         <sc-if value="{{ hasCloudError }}" hint-placeholder-val=""><div style="font-size:10.5px;color:#E6A89F;line-height:1.4;margin-bottom:10px">{{ cloudError }}</div></sc-if>
         <button onClick="{{ logout }}" style="width:100%;display:flex;align-items:center;gap:8px;justify-content:center;background:rgba(255,255,255,.06);color:#E9E5E0;border:none;border-radius:8px;padding:9px;font-size:13px;font-weight:600;cursor:pointer">
@@ -513,10 +514,10 @@ window.WORKERS_SEED = [{"cedula":"0926211590","nombre":"ABAD GUTIERREZ PAULINA",
               <span class="ms" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#a59e96;font-size:20px">search</span>
               <input value="{{ search }}" onInput="{{ setSearch }}" placeholder="Buscar por cédula o nombre…" style="width:100%;padding:12px 14px 12px 40px;border:1px solid #E0DBD4;border-radius:10px;font-size:14.5px;background:#fff" />
             </div>
-            <select value="{{ obraFilter }}" onChange="{{ setObraFilter }}" style="padding:12px 14px;border:1px solid #E0DBD4;border-radius:10px;font-size:14px;background:#fff;min-width:200px">
+<sc-if value="{{ showObras }}">            <select value="{{ obraFilter }}" onChange="{{ setObraFilter }}" style="padding:12px 14px;border:1px solid #E0DBD4;border-radius:10px;font-size:14px;background:#fff;min-width:200px">
               <option value="TODAS">Todas las obras</option>
               <sc-for list="{{ obras }}" as="o" hint-placeholder-count="6"><option value="{{ o }}">{{ o }}</option></sc-for>
-            </select>
+            </select></sc-if>
             <select value="{{ estadoFilter }}" onChange="{{ setEstadoFilter }}" style="padding:12px 14px;border:1px solid #E0DBD4;border-radius:10px;font-size:14px;background:#fff;min-width:150px">
               <option value="A">Activos</option>
               <option value="I">Inactivos</option>
@@ -768,7 +769,7 @@ window.WORKERS_SEED = [{"cedula":"0926211590","nombre":"ABAD GUTIERREZ PAULINA",
         <div style="max-width:1180px;margin:0 auto">
           <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:18px;flex-wrap:wrap">
             <div><div style="font-family:Archivo;font-weight:800;font-size:27px">Consultas médicas</div><div style="color:#8C857E;font-size:14px;margin-top:2px">{{ consultasCount }} consultas registradas · {{ consultasMes }} este mes</div></div>
-            <select value="{{ consObraFilter }}" onChange="{{ setConsObraFilter }}" style="padding:11px 14px;border:1px solid #E0DBD4;border-radius:10px;font-size:14px;background:#fff;min-width:200px"><option value="TODAS">Todas las obras</option><sc-for list="{{ obras }}" as="o" hint-placeholder-count="6"><option value="{{ o }}">{{ o }}</option></sc-for></select>
+            <sc-if value="{{ showObras }}"><select value="{{ consObraFilter }}" onChange="{{ setConsObraFilter }}" style="padding:11px 14px;border:1px solid #E0DBD4;border-radius:10px;font-size:14px;background:#fff;min-width:200px"><option value="TODAS">Todas las obras</option><sc-for list="{{ obras }}" as="o" hint-placeholder-count="6"><option value="{{ o }}">{{ o }}</option></sc-for></select></sc-if>
           </div>
           <sc-if value="{{ consultasEmpty }}" hint-placeholder-val=""><div style="background:#fff;border:1px dashed #DAD4CC;border-radius:13px;padding:48px;text-align:center;color:#8C857E;font-size:14px">No hay consultas para el filtro seleccionado.</div></sc-if>
           <div style="display:flex;flex-direction:column;gap:10px">
@@ -809,7 +810,7 @@ window.WORKERS_SEED = [{"cedula":"0926211590","nombre":"ABAD GUTIERREZ PAULINA",
         <div style="max-width:1180px;margin:0 auto">
           <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:18px;flex-wrap:wrap">
             <div><div style="font-family:Archivo;font-weight:800;font-size:27px">Fichas médicas / Aptitud</div><div style="color:#8C857E;font-size:14px;margin-top:2px">{{ fichasCount }} trabajadores · las fichas vencidas y por vencer aparecen primero.</div></div>
-            <select value="{{ fichaObraFilter }}" onChange="{{ setFichaObraFilter }}" style="padding:11px 14px;border:1px solid #E0DBD4;border-radius:10px;font-size:14px;background:#fff;min-width:200px"><option value="TODAS">Todas las obras</option><sc-for list="{{ obras }}" as="o" hint-placeholder-count="6"><option value="{{ o }}">{{ o }}</option></sc-for></select>
+            <sc-if value="{{ showObras }}"><select value="{{ fichaObraFilter }}" onChange="{{ setFichaObraFilter }}" style="padding:11px 14px;border:1px solid #E0DBD4;border-radius:10px;font-size:14px;background:#fff;min-width:200px"><option value="TODAS">Todas las obras</option><sc-for list="{{ obras }}" as="o" hint-placeholder-count="6"><option value="{{ o }}">{{ o }}</option></sc-for></select></sc-if>
           </div>
           <div style="background:#fff;border:1px solid #E6E2DD;border-radius:13px;overflow:hidden">
             <div style="display:grid;grid-template-columns:1.4fr 1fr 1fr 110px 130px;gap:12px;padding:12px 18px;background:#FAF9F7;border-bottom:1px solid #EDE9E4;font-size:11.5px;font-weight:700;color:#8C857E;text-transform:uppercase;letter-spacing:.03em"><div>Trabajador</div><div>Tipo examen</div><div>Aptitud</div><div>Vence</div><div>Estado</div></div>
@@ -981,7 +982,7 @@ window.WORKERS_SEED = [{"cedula":"0926211590","nombre":"ABAD GUTIERREZ PAULINA",
           <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:18px;flex-wrap:wrap">
             <div><div style="font-family:Archivo;font-weight:800;font-size:27px">Vacunación</div><div style="color:#8C857E;font-size:14px;margin-top:2px">{{ vacunasCount }} dosis registradas. Registre vacunas desde el perfil del trabajador.</div></div>
             <div style="display:flex;gap:10px;flex-wrap:wrap">
-              <select value="{{ vacObraFilter }}" onChange="{{ setVacObraFilter }}" style="padding:11px 14px;border:1px solid #E0DBD4;border-radius:10px;font-size:14px;background:#fff;min-width:180px"><option value="TODAS">Todas las obras</option><sc-for list="{{ obras }}" as="o" hint-placeholder-count="6"><option value="{{ o }}">{{ o }}</option></sc-for></select>
+              <sc-if value="{{ showObras }}"><select value="{{ vacObraFilter }}" onChange="{{ setVacObraFilter }}" style="padding:11px 14px;border:1px solid #E0DBD4;border-radius:10px;font-size:14px;background:#fff;min-width:180px"><option value="TODAS">Todas las obras</option><sc-for list="{{ obras }}" as="o" hint-placeholder-count="6"><option value="{{ o }}">{{ o }}</option></sc-for></select></sc-if>
               <select value="{{ vacTipoFilter }}" onChange="{{ setVacTipoFilter }}" style="padding:11px 14px;border:1px solid #E0DBD4;border-radius:10px;font-size:14px;background:#fff;min-width:170px"><option value="TODAS">Todas las vacunas</option><sc-for list="{{ vacTipos }}" as="t" hint-placeholder-count="3"><option value="{{ t }}">{{ t }}</option></sc-for></select>
             </div>
           </div>
@@ -1031,7 +1032,7 @@ window.WORKERS_SEED = [{"cedula":"0926211590","nombre":"ABAD GUTIERREZ PAULINA",
             <div><div style="font-family:Archivo;font-weight:800;font-size:27px">Reportes mensuales</div><div style="color:#8C857E;font-size:14px;margin-top:2px">Resumen de actividad, morbilidad, ausentismo y seguridad por centro de trabajo.</div></div>
           </div>
           <div data-noprint style="background:#fff;border:1px solid #E6E2DD;border-radius:13px;padding:16px 18px;margin-bottom:18px;display:flex;gap:14px;align-items:flex-end;flex-wrap:wrap">
-            <label style="font-size:12px;font-weight:600;color:#6b655f">Centro de trabajo<select value="{{ repObra }}" onChange="{{ setRepObra }}" style="display:block;margin-top:5px;padding:10px 12px;border:1px solid #E0DBD4;border-radius:9px;font-size:14px;background:#fff;min-width:220px"><option value="TODAS">Todas las obras</option><sc-for list="{{ obras }}" as="o" hint-placeholder-count="6"><option value="{{ o }}">{{ o }}</option></sc-for></select></label>
+            <sc-if value="{{ showObras }}"><label style="font-size:12px;font-weight:600;color:#6b655f">Centro de trabajo<select value="{{ repObra }}" onChange="{{ setRepObra }}" style="display:block;margin-top:5px;padding:10px 12px;border:1px solid #E0DBD4;border-radius:9px;font-size:14px;background:#fff;min-width:220px"><option value="TODAS">Todas las obras</option><sc-for list="{{ obras }}" as="o" hint-placeholder-count="6"><option value="{{ o }}">{{ o }}</option></sc-for></select></label></sc-if>
             <label style="font-size:12px;font-weight:600;color:#6b655f">Mes<input type="month" value="{{ repMes }}" onChange="{{ setRepMes }}" style="display:block;margin-top:5px;padding:10px 12px;border:1px solid #E0DBD4;border-radius:9px;font-size:14px" /></label>
             <label style="font-size:12px;font-weight:600;color:#6b655f">Horas-hombre trabajadas<input type="number" value="{{ repHHT }}" onInput="{{ setRepHHT }}" placeholder="opcional, para IF/IG" style="display:block;margin-top:5px;padding:10px 12px;border:1px solid #E0DBD4;border-radius:9px;font-size:14px;width:200px" /></label>
             <div style="flex:1"></div>
@@ -1115,6 +1116,22 @@ window.WORKERS_SEED = [{"cedula":"0926211590","nombre":"ABAD GUTIERREZ PAULINA",
           </div>
 
           <div style="background:#fff;border:1px solid #E6E2DD;border-radius:13px;padding:20px 22px;margin-bottom:14px">
+            <div style="font-family:Archivo;font-weight:700;font-size:15px;margin-bottom:6px;color:#423D3B">Accesos por obra (asistentes)</div>
+            <div style="font-size:13px;color:#8C857E;margin-bottom:14px;line-height:1.5">Asigne a cada asistente una obra: ese usuario solo verá y editará la información de su obra. Primero cree el usuario (correo y contraseña) en Supabase → Authentication → Users; luego agréguelo aquí con el mismo correo. Los correos que <b>no</b> estén en esta lista tienen acceso total (administrador).</div>
+            <form onSubmit="{{ addAcceso }}" style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">
+              <input name="email" type="email" placeholder="correo@etinar.com" style="flex:2;min-width:200px;padding:10px 12px;border:1px solid #E0DBD4;border-radius:8px;font-size:14px" />
+              <select name="obra" style="flex:1;min-width:160px;padding:10px 12px;border:1px solid #E0DBD4;border-radius:8px;font-size:14px;background:#fff"><option value="">Seleccione obra…</option><sc-for list="{{ obras }}" as="o" hint-placeholder-count="6"><option value="{{ o }}">{{ o }}</option></sc-for></select>
+              <button type="submit" style="padding:10px 16px;background:#423D3B;color:#fff;border:none;border-radius:8px;font-weight:700;font-size:13.5px;cursor:pointer">Asignar</button>
+            </form>
+            <sc-if value="{{ noAccesos }}" hint-placeholder-val=""><div style="color:#8C857E;font-size:13px;padding:6px 0">Aún no hay asistentes asignados. Todos los usuarios tienen acceso total.</div></sc-if>
+            <div style="display:flex;flex-direction:column;gap:6px">
+              <sc-for list="{{ accesosList }}" as="a" hint-placeholder-count="0">
+                <div style="display:flex;align-items:center;justify-content:space-between;padding:9px 12px;background:#FAF9F7;border-radius:8px;font-size:13.5px"><div style="min-width:0"><span style="font-weight:600;word-break:break-all">{{ a.email }}</span><span style="color:#8C857E"> → {{ a.obra }}</span></div><button onClick="{{ a.del }}" title="Quitar acceso" style="background:none;border:none;color:#C0392B;cursor:pointer;padding:2px"><span class="ms" style="font-size:17px">delete</span></button></div>
+              </sc-for>
+            </div>
+          </div>
+
+          <div style="background:#fff;border:1px solid #E6E2DD;border-radius:13px;padding:20px 22px;margin-bottom:14px">
             <div style="font-family:Archivo;font-weight:700;font-size:15px;margin-bottom:6px;color:#423D3B">Respaldo de datos</div>
             <div style="font-size:13px;color:#8C857E;margin-bottom:14px;line-height:1.5">La información se guarda en la nube (Supabase) y se sincroniza entre todos los equipos autorizados en tiempo real. Aun así, es recomendable descargar un respaldo periódicamente como copia de seguridad adicional. Actualmente hay <b style="color:#2C2A28">{{ totalTrab }}</b> trabajadores y <b style="color:#2C2A28">{{ totalRegistros }}</b> registros médicos.</div>
             <div style="display:flex;gap:10px;flex-wrap:wrap">
@@ -1154,7 +1171,7 @@ window.WORKERS_SEED = [{"cedula":"0926211590","nombre":"ABAD GUTIERREZ PAULINA",
             <div><div style="font-family:Archivo;font-weight:800;font-size:27px">Indicadores e informes</div><div style="color:#8C857E;font-size:14px;margin-top:2px">Indicadores de gestión sobre la actividad realizada.</div></div>
             <div style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap">
               <label style="font-size:12px;font-weight:600;color:#6b655f">Año<select value="{{ indYear }}" onChange="{{ setIndYear }}" style="display:block;margin-top:5px;padding:10px 12px;border:1px solid #E0DBD4;border-radius:9px;font-size:14px;background:#fff"><sc-for list="{{ indYears }}" as="y" hint-placeholder-count="1"><option value="{{ y }}">{{ y }}</option></sc-for></select></label>
-              <label style="font-size:12px;font-weight:600;color:#6b655f">Obra<select value="{{ indObra }}" onChange="{{ setIndObra }}" style="display:block;margin-top:5px;padding:10px 12px;border:1px solid #E0DBD4;border-radius:9px;font-size:14px;background:#fff;min-width:180px"><option value="TODAS">Todas las obras</option><sc-for list="{{ obras }}" as="o" hint-placeholder-count="6"><option value="{{ o }}">{{ o }}</option></sc-for></select></label>
+              <sc-if value="{{ showObras }}"><label style="font-size:12px;font-weight:600;color:#6b655f">Obra<select value="{{ indObra }}" onChange="{{ setIndObra }}" style="display:block;margin-top:5px;padding:10px 12px;border:1px solid #E0DBD4;border-radius:9px;font-size:14px;background:#fff;min-width:180px"><option value="TODAS">Todas las obras</option><sc-for list="{{ obras }}" as="o" hint-placeholder-count="6"><option value="{{ o }}">{{ o }}</option></sc-for></select></label></sc-if>
               <button onClick="{{ exportIndicadoresCSV }}" style="display:inline-flex;align-items:center;gap:6px;background:#fff;border:1px solid #E0DBD4;border-radius:9px;padding:11px 15px;font-weight:700;font-size:13.5px;cursor:pointer;color:#423D3B"><span class="ms" style="font-size:18px">table_view</span> CSV</button>
               <button onClick="{{ printIndicadores }}" style="display:inline-flex;align-items:center;gap:6px;background:#423D3B;color:#fff;border:none;border-radius:9px;padding:11px 15px;font-weight:700;font-size:13.5px;cursor:pointer"><span class="ms" style="font-size:18px">picture_as_pdf</span> Imprimir / PDF</button>
             </div>
@@ -1626,7 +1643,7 @@ class Component extends DCLogic {
   }
   obrasFromWorkers(workers){ const o=[...new Set((workers||[]).map(w=>w.obra).filter(Boolean))].sort(); return o.length?o:OBRAS_CANON.slice(); }
   blankDb(workers){
-    return { config:{clave:'etinar2026', medicoNombre:'Dr. Wroulin Rivas', medicoRegistro:'Médico Ocupacional', empresa:'ETINAR', obras:this.obrasFromWorkers(workers), seedVersion:SEED_VERSION},
+    return { config:{clave:'etinar2026', medicoNombre:'Dr. Wroulin Rivas', medicoRegistro:'Médico Ocupacional', empresa:'ETINAR', obras:this.obrasFromWorkers(workers), accesos:[], seedVersion:SEED_VERSION},
       workers:workers||[], fichas:[],consultas:[],descansos:[],accidentes:[],vacunas:[],capacitaciones:[],botiquin:[], especiales:{}, notas:[], alertas:[] };
   }
   persistLocal(db){ try{ localStorage.setItem(STORE_KEY, JSON.stringify(db)); }catch(e){} }
@@ -1727,17 +1744,17 @@ class Component extends DCLogic {
       const rec={id:id||this.uid(),cedula,vacuna:g('vacuna'),dosis:g('dosis'),fecha:g('fecha')||this.todayISO(),lote:g('lote')};
       this.save(db=>{const i=db.vacunas.findIndex(x=>x.id===rec.id); if(i>=0)db.vacunas[i]=rec; else db.vacunas.unshift(rec);});
     } else if(t==='capacitacion'){
-      const rec={id:id||this.uid(),obra:g('obra'),tema:g('tema'),fecha:g('fecha')||this.todayISO(),facilitador:g('facilitador'),duracion:g('duracion'),asistentes:num('asistentes')||0,obs:g('obs')};
+      const rec={id:id||this.uid(),obra:(this.myObra()||g('obra')),tema:g('tema'),fecha:g('fecha')||this.todayISO(),facilitador:g('facilitador'),duracion:g('duracion'),asistentes:num('asistentes')||0,obs:g('obs')};
       this.save(db=>{const i=db.capacitaciones.findIndex(x=>x.id===rec.id); if(i>=0)db.capacitaciones[i]=rec; else db.capacitaciones.unshift(rec);});
     } else if(t==='botiquin'){
-      const rec={id:id||this.uid(),obra:g('obra'),item:g('item'),categoria:g('categoria'),stock:num('stock')||0,minimo:num('minimo')||0,unidad:g('unidad'),vence:g('vence')};
+      const rec={id:id||this.uid(),obra:(this.myObra()||g('obra')),item:g('item'),categoria:g('categoria'),stock:num('stock')||0,minimo:num('minimo')||0,unidad:g('unidad'),vence:g('vence')};
       this.save(db=>{const i=db.botiquin.findIndex(x=>x.id===rec.id); if(i>=0)db.botiquin[i]=rec; else db.botiquin.unshift(rec);});
     } else if(t==='trabajador'){
       const ced=g('cedula'); if(!ced){ alert('La cédula es obligatoria.'); return; }
       const editing=!!cedula;
       if(!editing && this.state.db.workers.some(w=>w.cedula===ced)){ alert('Ya existe un trabajador registrado con la cédula '+ced+'.'); return; }
       let edad=g('edad'); const fn=g('fechaNac'); if(!edad && fn){ const d=new Date(fn+'T00:00:00'); if(!isNaN(d)){ edad=String(Math.floor((Date.now()-d.getTime())/31557600000)); } }
-      const rec={cedula:ced,nombre:g('nombre'),obra:(g('obra')||'').toUpperCase(),cargo:g('cargo'),departamento:g('departamento'),jefe:g('jefe'),sexo:g('sexo'),fechaNac:fn,edad,estadoCivil:g('estadoCivil'),email:g('email'),celular:g('celular'),direccion:g('direccion'),tipoContrato:g('tipoContrato'),fechaIngreso:g('fechaIngreso'),estado:g('estado')||'A'};
+      const rec={cedula:ced,nombre:g('nombre'),obra:(this.myObra()||(g('obra')||'').toUpperCase()),cargo:g('cargo'),departamento:g('departamento'),jefe:g('jefe'),sexo:g('sexo'),fechaNac:fn,edad,estadoCivil:g('estadoCivil'),email:g('email'),celular:g('celular'),direccion:g('direccion'),tipoContrato:g('tipoContrato'),fechaIngreso:g('fechaIngreso'),estado:g('estado')||'A'};
       this.save(db=>{ const i=db.workers.findIndex(w=>w.cedula===(cedula||ced)); if(i>=0) db.workers[i]={...db.workers[i],...rec}; else db.workers.unshift(rec); if(rec.obra && db.config.obras.indexOf(rec.obra)<0) db.config.obras.push(rec.obra); });
       this.closeModal(); this.toast(editing?'Datos del trabajador actualizados':'Trabajador agregado'); return;
     } else if(t==='notaAcc'){
@@ -1764,6 +1781,9 @@ class Component extends DCLogic {
     this.toast('Registro eliminado');
   };
 
+  myObra(){ const s=this.state, db=s.db; if(!db||!s.userEmail) return null; const acc=(db.config&&db.config.accesos)||[]; const em=String(s.userEmail).trim().toLowerCase(); const m=acc.find(a=>String(a.email||'').trim().toLowerCase()===em); return (m&&m.obra)?m.obra:null; }
+  isRestricted(){ return !!this.myObra(); }
+  scopedDb(){ const db=this.state.db; if(!db) return db; const obra=this.myObra(); if(!obra) return db; const ces=new Set((db.workers||[]).filter(w=>w.obra===obra).map(w=>w.cedula)); const f=arr=>(arr||[]).filter(x=>ces.has(x.cedula)); const esp={}; Object.keys(db.especiales||{}).forEach(c=>{ if(ces.has(c)) esp[c]=db.especiales[c]; }); return Object.assign({},db,{ workers:(db.workers||[]).filter(w=>w.obra===obra), consultas:f(db.consultas), descansos:f(db.descansos), fichas:f(db.fichas), accidentes:f(db.accidentes), vacunas:f(db.vacunas), notas:f(db.notas), alertas:f(db.alertas), capacitaciones:(db.capacitaciones||[]).filter(x=>!x.obra||x.obra===obra), botiquin:(db.botiquin||[]).filter(x=>!x.obra||x.obra===obra), especiales:esp }); }
   workerName(c){ const db=this.state.db; if(!db) return c; const w=db.workers.find(x=>x.cedula===c); return w?w.nombre:c; }
   workerObra(c){ const db=this.state.db; if(!db) return ''; const w=db.workers.find(x=>x.cedula===c); return w?w.obra:''; }
   latestFicha(c){ const db=this.state.db; const fs=db.fichas.filter(f=>f.cedula===c).slice().sort((a,b)=>(b.fecha||'').localeCompare(a.fecha||'')); return fs[0]||null; }
@@ -1850,7 +1870,7 @@ class Component extends DCLogic {
   }
 
   computeReporte(){
-    const db=this.state.db; const obra=this.state.repObra; const mes=this.state.repMes;
+    const db=this.scopedDb(); const obra=this.myObra()||this.state.repObra; const mes=this.state.repMes;
     const inObra=c=>obra==='TODAS'||this.workerObra(c)===obra;
     const pp=mes.split('-').map(Number); const pd=new Date(pp[0],pp[1]-2,1); const prevMes=pd.toISOString().slice(0,7);
     const cons=db.consultas.filter(x=>inObra(x.cedula)&&this.monthOf(x.fecha)===mes);
@@ -1927,9 +1947,9 @@ class Component extends DCLogic {
   setIndYear=(e)=>this.setState({indYear:e.target.value});
   setIndObra=(e)=>this.setState({indObra:e.target.value});
   printIndicadores=()=>{ window.print(); };
-  availableYears(){ const ys=new Set([String(new Date().getFullYear())]); const db=this.state.db; const add=(arr,k)=>arr.forEach(x=>{const y=String(x[k]||'').slice(0,4); if(/^\d{4}$/.test(y))ys.add(y);}); add(db.consultas,'fecha');add(db.fichas,'fecha');add(db.descansos,'inicio');add(db.accidentes,'fecha');add(db.capacitaciones,'fecha');add(db.vacunas,'fecha'); return [...ys].sort((a,b)=>b.localeCompare(a)); }
+  availableYears(){ const ys=new Set([String(new Date().getFullYear())]); const db=this.scopedDb(); const add=(arr,k)=>arr.forEach(x=>{const y=String(x[k]||'').slice(0,4); if(/^\d{4}$/.test(y))ys.add(y);}); add(db.consultas,'fecha');add(db.fichas,'fecha');add(db.descansos,'inicio');add(db.accidentes,'fecha');add(db.capacitaciones,'fecha');add(db.vacunas,'fecha'); return [...ys].sort((a,b)=>b.localeCompare(a)); }
   computeIndicadores(){
-    const db=this.state.db, year=this.state.indYear, obra=this.state.indObra;
+    const db=this.scopedDb(), year=this.state.indYear, obra=this.myObra()||this.state.indObra;
     const inObra=c=>obra==='TODAS'||this.workerObra(c)===obra; const yOf=v=>String(v||'').slice(0,4);
     const consY=db.consultas.filter(x=>inObra(x.cedula)&&yOf(x.fecha)===year);
     const fichY=db.fichas.filter(x=>inObra(x.cedula)&&yOf(x.fecha)===year);
@@ -2047,12 +2067,14 @@ class Component extends DCLogic {
     r.readAsText(file,'UTF-8'); e.target.value='';
   };
   saveConfig=(e)=>{ e.preventDefault(); const f=e.target; const nombre=f.elements.nombre.value.trim(), registro=f.elements.registro.value.trim(); this.save(db=>{db.config.medicoNombre=nombre;db.config.medicoRegistro=registro;}); this.toast('Configuración guardada'); };
+  addAcceso=(e)=>{ e.preventDefault(); const f=e.target; const email=String(f.elements.email.value||'').trim().toLowerCase(); const obra=String(f.elements.obra.value||'').trim(); if(!email||!obra){ alert('Ingrese el correo y seleccione la obra.'); return; } this.save(db=>{ if(!db.config.accesos)db.config.accesos=[]; const i=db.config.accesos.findIndex(a=>String(a.email||'').trim().toLowerCase()===email); const rec={email:email,obra:obra}; if(i>=0)db.config.accesos[i]=rec; else db.config.accesos.push(rec); }); try{f.reset();}catch(_){} this.toast('Acceso asignado a '+obra); };
+  delAcceso=(email)=>()=>{ this.save(db=>{ db.config.accesos=(db.config.accesos||[]).filter(a=>String(a.email||'').trim().toLowerCase()!==String(email).trim().toLowerCase()); }); this.toast('Acceso eliminado'); };
   addObra=(e)=>{ e.preventDefault(); const f=e.target; const v=f.elements.obra.value.trim().toUpperCase(); if(!v) return; this.save(db=>{ if(db.config.obras.indexOf(v)<0) db.config.obras.push(v); }); f.reset(); this.toast('Obra agregada'); };
   delObra=(o)=>()=>{ if(!confirm('¿Quitar la obra "'+o+'" del catálogo? No elimina trabajadores.')) return; this.save(db=>{db.config.obras=db.config.obras.filter(x=>x!==o);}); };
   borrarTodo=()=>{ if(!confirm('¿BORRAR TODOS los registros médicos (consultas, descansos, fichas, etc.) y dejar solo el listado de trabajadores? Esta acción no se puede deshacer.')) return; if(!confirm('Confirme nuevamente: se eliminarán todos los registros médicos.')) return; this.save(db=>{db.fichas=[];db.consultas=[];db.descansos=[];db.accidentes=[];db.vacunas=[];db.capacitaciones=[];db.botiquin=[];db.especiales={};}); this.toast('Registros médicos eliminados'); };
 
   renderVals(){
-    const s=this.state, db=s.db;
+    const s=this.state, db=this.scopedDb();
     const busyMsg = s.bootLoading ? 'Conectando con el servidor…' : 'Cargando la base de datos…';
     const base={ showLogin: !s.authed && !s.bootLoading, showApp: s.authed && !!db, appBusy: s.bootLoading || (s.authed && !db), busyMsg,
       loginErr:s.loginErr, login:this.login, logout:this.logout, toast:s.toast, signingIn:s.signingIn,
@@ -2078,7 +2100,8 @@ class Component extends DCLogic {
       {key:'reportes',label:'Reportes mensuales',icon:'summarize'},
       {key:'config',label:'Configuración',icon:'settings'},
     ];
-    const navItems=NAV.map(n=>{ const active=s.view===n.key; return {...n, onClick:this.setView(n.key),
+    const _restricted=this.isRestricted(); const _myObra=this.myObra();
+    const navItems=NAV.filter(n=>!(_restricted && n.key==='config')).map(n=>{ const active=s.view===n.key; return {...n, onClick:this.setView(n.key),
       style:'width:100%;display:flex;align-items:center;gap:11px;padding:10px 12px;margin-bottom:2px;border:none;border-radius:9px;cursor:pointer;font-size:13.5px;font-weight:'+(active?'700':'500')+';text-align:left;'+(active?'background:#F2B200;color:#2C2A28;':'background:transparent;color:#cfc9c2;') }; });
 
     const isPerfil = s.view==='trabajadores' && !!s.selectedCedula;
@@ -2090,11 +2113,12 @@ class Component extends DCLogic {
       isPerfil,
       isConsultas:s.view==='consultas', isDescansos:s.view==='descansos', isFichas:s.view==='fichas',
       isAccidentes:s.view==='accidentes', isCapac:s.view==='capacitaciones', isVacunas:s.view==='vacunas',
-      isBotiquin:s.view==='botiquin', isEspeciales:s.view==='especiales', isReportes:s.view==='reportes', isConfig:s.view==='config', isIndicadores:s.view==='indicadores',
+      isBotiquin:s.view==='botiquin', isEspeciales:s.view==='especiales', isReportes:s.view==='reportes', isConfig:(s.view==='config' && !_restricted), isIndicadores:s.view==='indicadores',
       obras: db.config.obras, obrasCount: db.config.obras.length,
       todayLabel: this.fmt(this.todayISO()),
       search:s.search, setSearch:this.setSearch, obraFilter:s.obraFilter, setObraFilter:this.setObraFilter,
       backToList:this.backToList,
+      restricted:_restricted, myObra:(_myObra||''), scopeLabel:(_restricted?('Obra: '+_myObra):'Administrador'), showObras:!_restricted,
     };
 
     if(R.isDash){
@@ -2234,7 +2258,7 @@ class Component extends DCLogic {
     }
     if(R.isReportes){ R.repObra=s.repObra; R.repMes=s.repMes; R.repHHT=s.repHHT; R.setRepObra=this.setRepObra; R.setRepMes=this.setRepMes; R.setRepHHT=this.setRepHHT; R.printReporte=this.printReporte; R.exportReporteCSV=this.exportReporteCSV; const r=this.computeReporte(); R.rep=r; R.repObraLabel=r.obra==='TODAS'?'Todas las obras':r.obra; R.repMesLabel=this.mesLabel(r.mes); R.repMorb=r.morbList.map(m=>({...m,pct:Math.round((m.n/r.maxMorb)*100)+'%'})); R.repHasMorb=r.morbList.length>0; R.repHasIndices=r.IF!==null; R.repDescTipos=r.descTipos; R.repHasDesc=r.descTipos.length>0; R.repHoy=this.fmt(this.todayISO()); }
 
-    if(R.isConfig){ R.cfgNombre=db.config.medicoNombre; R.cfgRegistro=db.config.medicoRegistro; R.saveConfig=this.saveConfig; R.exportBackup=this.exportBackup; R.importBackup=this.importBackup; R.importWorkersCSV=this.importWorkersCSV; R.addObra=this.addObra; R.obrasConfig=db.config.obras.map(o=>({nombre:o,count:db.workers.filter(w=>w.obra===o).length,del:this.delObra(o)})); R.borrarTodo=this.borrarTodo; R.totalRegistros=db.consultas.length+db.descansos.length+db.fichas.length+db.accidentes.length+db.vacunas.length; R.totalTrab=db.workers.length; }
+    if(R.isConfig){ R.cfgNombre=db.config.medicoNombre; R.cfgRegistro=db.config.medicoRegistro; R.saveConfig=this.saveConfig; R.exportBackup=this.exportBackup; R.importBackup=this.importBackup; R.importWorkersCSV=this.importWorkersCSV; R.addObra=this.addObra; R.obrasConfig=db.config.obras.map(o=>({nombre:o,count:db.workers.filter(w=>w.obra===o).length,del:this.delObra(o)})); R.borrarTodo=this.borrarTodo; R.totalRegistros=db.consultas.length+db.descansos.length+db.fichas.length+db.accidentes.length+db.vacunas.length; R.totalTrab=db.workers.length; R.addAcceso=this.addAcceso; var _accs=(db.config.accesos||[]); R.accesosList=_accs.map(a=>({email:a.email,obra:a.obra,del:this.delAcceso(a.email)})); R.noAccesos=_accs.length===0; }
 
     return R;
   }
