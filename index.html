@@ -1981,7 +1981,7 @@ class Component extends DCLogic {
     this.download('Indicadores_'+(d.obra==='TODAS'?'GENERAL':d.obra.replace(/\s+/g,'_'))+'_'+d.year+'.csv',csv,'text/csv;charset=utf-8'); this.toast('Indicadores CSV descargado');
   };
   computePrioritarios(){
-    const db=this.state.db; const types=['adultoMayor','discapacidad','cronica','catastrofica','embarazo','lactancia'];
+    const db=this.scopedDb(); const types=['adultoMayor','discapacidad','cronica','catastrofica','embarazo','lactancia'];
     const byType={adultoMayor:0,discapacidad:0,cronica:0,catastrofica:0,embarazo:0,lactancia:0}; const obraMap={}; let total=0;
     db.workers.forEach(w=>{
       const e=db.especiales[w.cedula]||{};
