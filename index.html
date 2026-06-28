@@ -1383,12 +1383,12 @@ window.WORKERS_SEED = [{"cedula":"0926211590","nombre":"ABAD GUTIERREZ PAULINA",
 
           <div style="font-family:Archivo;font-weight:800;font-size:18px;color:#423D3B;border-bottom:2px solid #F2B200;padding-bottom:7px;margin-bottom:12px">8. Morbilidad — diagnósticos más frecuentes</div>
           <sc-if value="{{ informe.morbEmpty }}" hint-placeholder-val=""><p style="font-size:13px;color:#8C857E;margin:0 0 22px">No se registraron diagnósticos en el período seleccionado.</p></sc-if>
-          <table style="width:100%;border-collapse:collapse;font-size:13px;margin-bottom:18px">
-            <thead><tr style="background:#423D3B;color:#fff"><th style="padding:9px 12px;text-align:left;width:34px">#</th><th style="padding:9px 12px;text-align:left">Diagnóstico</th><th style="padding:9px 12px;text-align:right;width:70px">Casos</th><th style="padding:9px 12px;text-align:right;width:60px">%</th></tr></thead>
-            <tbody>
-              <sc-for list="{{ informe.morb }}" as="m" hint-placeholder-count="0"><tr><td style="padding:9px 12px;border:1px solid #E6E2DD">{{ m.rank }}</td><td style="padding:9px 12px;border:1px solid #E6E2DD">{{ m.dx }}</td><td style="padding:9px 12px;border:1px solid #E6E2DD;text-align:right;font-weight:700">{{ m.n }}</td><td style="padding:9px 12px;border:1px solid #E6E2DD;text-align:right">{{ m.pct }}%</td></tr></sc-for>
-            </tbody>
-          </table>
+          <div class="inf-avoid" style="margin-bottom:18px">
+            <div style="display:flex;align-items:center;background:#423D3B;color:#fff;font-size:11.5px;font-weight:700;padding:9px 12px;border-radius:7px 7px 0 0">
+              <div style="width:26px">#</div><div style="flex:1">Diagnóstico</div><div style="width:130px;padding:0 8px">Frecuencia</div><div style="width:52px;text-align:right">Casos</div><div style="width:46px;text-align:right">%</div>
+            </div>
+            <sc-for list="{{ informe.morb }}" as="m" hint-placeholder-count="0"><div style="display:flex;align-items:center;padding:8px 12px;border:1px solid #E6E2DD;border-top:none;font-size:12.5px"><div style="width:26px;color:#8C857E">{{ m.rank }}</div><div style="flex:1;color:#2C2A28;padding-right:8px">{{ m.dx }}</div><div style="width:130px;padding:0 8px"><div style="background:#EDE9E4;border-radius:5px;height:10px;overflow:hidden"><div style="height:100%;background:#423D3B;border-radius:5px;width:{{ m.barW }}"></div></div></div><div style="width:52px;text-align:right;font-weight:700">{{ m.n }}</div><div style="width:46px;text-align:right;color:#8C857E">{{ m.pct }}%</div></div></sc-for>
+          </div>
           <sc-if value="{{ informe.origenHasData }}" hint-placeholder-val="">
             <div class="inf-avoid" style="margin-bottom:24px">
               <div style="font-size:12.5px;font-weight:700;color:#423D3B;margin-bottom:10px">Consultas por origen</div>
@@ -2313,13 +2313,14 @@ class Component extends DCLogic {
     // Marco normativo (Ecuador)
     var normas=[
       {n:'Constitución de la República del Ecuador',d:'Artículo 326, numeral 5: toda persona tiene derecho a desarrollar sus labores en un ambiente adecuado y propicio que garantice su salud, integridad, seguridad, higiene y bienestar.'},
-      {n:'Decreto Ejecutivo 2393',d:'Reglamento de Seguridad y Salud de los Trabajadores y Mejoramiento del Medio Ambiente de Trabajo; norma técnica base para la prevención de riesgos laborales en el país.'},
+      {n:'Decreto Ejecutivo 255 (2024)',d:'Reglamento de Seguridad y Salud en el Trabajo, vigente desde mayo de 2024. Reemplazó al Decreto Ejecutivo 2393 de 1986 y moderniza la prevención: enfoque proactivo y cultura preventiva, inclusión de la salud mental, cobertura ampliada (incluye teletrabajadores y autónomos) y obligaciones diferenciadas según el número de trabajadores y el nivel de riesgo de la empresa.'},
+      {n:'Decreto Ejecutivo 2393 (estándares técnicos transitorios)',d:'Aunque fue reemplazado por el Decreto 255, varios de sus estándares técnicos (por ejemplo, niveles de ruido e iluminación) continúan aplicándose de forma transitoria hasta que el ente rector expida los nuevos.'},
       {n:'Resolución C.D. 513 del IESS',d:'Reglamento del Seguro General de Riesgos del Trabajo: define el accidente de trabajo y la enfermedad profesional, las prestaciones y las obligaciones preventivas del empleador.'},
       {n:'Código del Trabajo',d:'Establece las obligaciones del empleador en materia de seguridad, salud y prevención de riesgos del trabajo.'},
       {n:'Ley de Seguridad Social',d:'Artículos 155 y 156: lineamientos del Seguro General de Riesgos del Trabajo y de la prevención de los riesgos derivados del trabajo.'},
       {n:'Decisión 584 de la CAN y Resolución 957',d:'Instrumento Andino de Seguridad y Salud en el Trabajo y su reglamento: lineamientos regionales de gestión preventiva.'},
       {n:'Convenios de la OIT ratificados por el Ecuador',d:'Marco internacional en materia de seguridad, salud y condiciones de trabajo.'},
-      {n:'Acuerdos del Ministerio del Trabajo y Ley Orgánica de Salud',d:'Vigilancia de la salud, exámenes médicos ocupacionales y conformación del Comité Paritario de Seguridad e Higiene en empresas con más de 15 trabajadores.'}
+      {n:'Acuerdos del Ministerio del Trabajo y Ley Orgánica de Salud',d:'Vigilancia de la salud y exámenes médicos ocupacionales (preocupacional, periódico y de retiro). Conforme al Decreto 255, se conforma un Comité de Seguridad y Salud en empresas con 50 o más trabajadores, y un Delegado de Seguridad y Salud en empresas de 10 a 49 trabajadores.'}
     ];
     return { obra:obra, year:year, medico:(db.config.medicoNombre||'Médico Ocupacional'), registro:(db.config.medicoRegistro||''), empresa:(db.config.empresa||'ETINAR'), hoy:this.fmt(this.todayISO()),
       kpis:d.kpis, total:total, sexM:sexM, sexF:sexF, donut:donut, donutHasData:donutHasData, noDonut:noDonut, origenHasData:origenHasData, prHasData:prHasData,
