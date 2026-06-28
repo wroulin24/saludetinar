@@ -346,6 +346,8 @@ window.WORKERS_SEED = [{"cedula":"0926211590","nombre":"ABAD GUTIERREZ PAULINA",
     body.print-informe #informe-doc{margin:0 !important;max-width:none !important;width:100% !important;box-shadow:none !important;border-radius:0 !important}
     body.print-informe #informe-doc *{-webkit-print-color-adjust:exact !important;print-color-adjust:exact !important}
     body.print-informe .inf-pb{page-break-after:always}
+    body.print-informe .inf-bpb{page-break-before:always}
+    body.print-informe .inf-avoid{page-break-inside:avoid}
     @page{margin:12mm}
   }
 </style>
@@ -1149,6 +1151,13 @@ window.WORKERS_SEED = [{"cedula":"0926211590","nombre":"ABAD GUTIERREZ PAULINA",
             </div>
           </div>
 
+          <div style="background:#FFFBF0;border:1px solid #F2D98A;border-radius:13px;padding:20px 22px;margin-bottom:14px">
+            <div style="font-family:Archivo;font-weight:700;font-size:15px;margin-bottom:6px;color:#423D3B">Archivos adjuntos (almacenamiento)</div>
+            <div style="font-size:13px;color:#7a6f57;margin-bottom:14px;line-height:1.55">Los certificados, fichas e informes ahora se guardan en el almacenamiento de Supabase (no dentro de la base), lo que mantiene el sistema rápido. Si tiene archivos antiguos pendientes de mover (los respaldados durante el mantenimiento), pulse este botón <b>una sola vez</b> para subirlos al almacenamiento y reconectarlos a sus registros. Requiere haber creado en Supabase el “bucket” llamado <b>adjuntos</b>.</div>
+            <button onClick="{{ migrarAdjuntos }}" style="display:inline-flex;align-items:center;gap:7px;background:#F2B200;color:#2C2A28;border:none;border-radius:9px;padding:11px 16px;font-weight:800;font-size:13.5px;cursor:pointer"><span class="ms" style="font-size:18px">cloud_upload</span> Migrar archivos al almacenamiento</button>
+            <sc-if value="{{ migEstado }}" hint-placeholder-val=""><div style="margin-top:12px;font-size:13px;font-weight:600;color:#423D3B;background:#fff;border:1px solid #EDE3C4;border-radius:8px;padding:10px 12px">{{ migEstado }}</div></sc-if>
+          </div>
+
           <div style="background:#fff;border:1px solid #E6E2DD;border-radius:13px;padding:20px 22px;margin-bottom:14px">
             <div style="font-family:Archivo;font-weight:700;font-size:15px;margin-bottom:6px;color:#423D3B">Cargar trabajadores (Excel / CSV)</div>
             <div style="font-size:13px;color:#8C857E;margin-bottom:14px;line-height:1.5">Para cargar otras obras: en Excel use <b>Guardar como → CSV</b> y súbalo aquí. Se reconocen las columnas CEDULA, EMPLEADO, SUCURSAL, CARGO, SEXO, FECHA NACIMIENTO, etc. Los trabajadores existentes se actualizan por cédula y los nuevos se agregan.</div>
@@ -1267,8 +1276,8 @@ window.WORKERS_SEED = [{"cedula":"0926211590","nombre":"ABAD GUTIERREZ PAULINA",
             <span style="width:42px;height:42px;background:#F2B200;border-radius:8px;display:inline-block"></span>
             <span style="font-family:Archivo;font-weight:800;font-size:30px;letter-spacing:.08em">ETINAR</span>
           </div>
-          <div style="margin-top:90px">
-            <div style="font-size:13px;letter-spacing:.28em;color:#F2B200;font-weight:700">INFORME DE</div>
+          <div style="margin-top:84px">
+            <div style="font-size:13px;letter-spacing:.28em;color:#F2B200;font-weight:700">INFORME TÉCNICO DE</div>
             <div style="font-family:Archivo;font-weight:800;font-size:44px;line-height:1.08;margin-top:8px">Salud Ocupacional</div>
             <div style="width:76px;height:5px;background:#F2B200;margin:24px 0"></div>
             <div style="font-size:23px;font-weight:700">{{ informe.obra }}</div>
@@ -1283,16 +1292,75 @@ window.WORKERS_SEED = [{"cedula":"0926211590","nombre":"ABAD GUTIERREZ PAULINA",
         </div>
 
         <div style="padding:46px 56px">
-          <div style="font-family:Archivo;font-weight:800;font-size:18px;color:#423D3B;border-bottom:2px solid #F2B200;padding-bottom:7px;margin-bottom:12px">1. Objetivo general</div>
-          <p style="font-size:13.5px;line-height:1.75;color:#444;margin:0 0 26px;text-align:justify">{{ informe.objetivoGeneral }}</p>
 
-          <div style="font-family:Archivo;font-weight:800;font-size:18px;color:#423D3B;border-bottom:2px solid #F2B200;padding-bottom:7px;margin-bottom:12px">2. Objetivos específicos</div>
-          <ul style="font-size:13.5px;line-height:1.7;color:#444;margin:0 0 26px;padding-left:20px">
-            <sc-for list="{{ informe.objetivosEspecificos }}" as="o" hint-placeholder-count="5"><li style="margin-bottom:6px">{{ o }}</li></sc-for>
+          <div style="font-family:Archivo;font-weight:800;font-size:18px;color:#423D3B;border-bottom:2px solid #F2B200;padding-bottom:7px;margin-bottom:12px">Contenido</div>
+          <div style="font-size:13px;line-height:2;color:#444;columns:2;margin-bottom:8px">
+            <div>1. Introducción</div>
+            <div>2. Marco normativo</div>
+            <div>3. Objetivo general</div>
+            <div>4. Objetivos específicos</div>
+            <div>5. Metodología</div>
+            <div>6. Caracterización de la población</div>
+            <div>7. Indicadores de gestión</div>
+            <div>8. Morbilidad</div>
+            <div>9. Accidentalidad laboral</div>
+            <div>10. Atención prioritaria</div>
+            <div>11. Plan de acción</div>
+            <div>12. Conclusiones</div>
+            <div>13. Recomendaciones</div>
+          </div>
+
+          <div style="font-family:Archivo;font-weight:800;font-size:18px;color:#423D3B;border-bottom:2px solid #F2B200;padding-bottom:7px;margin-bottom:12px;margin-top:30px">1. Introducción</div>
+          <p style="font-size:13.5px;line-height:1.75;color:#444;margin:0 0 22px;text-align:justify">El presente documento constituye el informe técnico de salud ocupacional de <b>{{ informe.obra }}</b> correspondiente al período <b>{{ informe.year }}</b>. Su finalidad es presentar, de forma estructurada, la caracterización de la población trabajadora, la morbilidad atendida, los indicadores de gestión y las condiciones de salud identificadas, así como proponer un plan de acción y recomendaciones orientadas a la prevención de riesgos y la promoción de la salud, en concordancia con la normativa ecuatoriana vigente en seguridad y salud en el trabajo.</p>
+
+          <div style="font-family:Archivo;font-weight:800;font-size:18px;color:#423D3B;border-bottom:2px solid #F2B200;padding-bottom:7px;margin-bottom:12px">2. Marco normativo</div>
+          <p style="font-size:12.5px;color:#777;margin:0 0 14px">El programa de salud ocupacional de la empresa se sustenta en la siguiente normativa vigente en el Ecuador:</p>
+          <sc-for list="{{ informe.normas }}" as="nm" hint-placeholder-count="8">
+            <div style="margin-bottom:12px;border-left:3px solid #F2B200;padding-left:14px">
+              <div style="font-weight:700;font-size:13.5px;color:#423D3B">{{ nm.n }}</div>
+              <div style="font-size:12.5px;line-height:1.6;color:#555;margin-top:2px">{{ nm.d }}</div>
+            </div>
+          </sc-for>
+
+          <div style="font-family:Archivo;font-weight:800;font-size:18px;color:#423D3B;border-bottom:2px solid #F2B200;padding-bottom:7px;margin-bottom:12px;margin-top:30px">3. Objetivo general</div>
+          <p style="font-size:13.5px;line-height:1.75;color:#444;margin:0 0 22px;text-align:justify">{{ informe.objetivoGeneral }}</p>
+
+          <div style="font-family:Archivo;font-weight:800;font-size:18px;color:#423D3B;border-bottom:2px solid #F2B200;padding-bottom:7px;margin-bottom:12px">4. Objetivos específicos</div>
+          <ul style="font-size:13.5px;line-height:1.7;color:#444;margin:0 0 22px;padding-left:20px">
+            <sc-for list="{{ informe.objetivosEspecificos }}" as="o" hint-placeholder-count="6"><li style="margin-bottom:6px">{{ o }}</li></sc-for>
           </ul>
 
-          <div style="font-family:Archivo;font-weight:800;font-size:18px;color:#423D3B;border-bottom:2px solid #F2B200;padding-bottom:7px;margin-bottom:12px">3. Indicadores de gestión</div>
-          <table style="width:100%;border-collapse:collapse;font-size:13px;margin-bottom:14px">
+          <div style="font-family:Archivo;font-weight:800;font-size:18px;color:#423D3B;border-bottom:2px solid #F2B200;padding-bottom:7px;margin-bottom:12px">5. Metodología</div>
+          <p style="font-size:13.5px;line-height:1.75;color:#444;margin:0 0 22px;text-align:justify">{{ informe.metodologia }}</p>
+
+          <div class="inf-bpb" style="font-family:Archivo;font-weight:800;font-size:18px;color:#423D3B;border-bottom:2px solid #F2B200;padding-bottom:7px;margin-bottom:12px">6. Caracterización de la población</div>
+          <p style="font-size:13.5px;line-height:1.75;color:#444;margin:0 0 22px;text-align:justify">La población trabajadora activa de {{ informe.obra }} en el período fue de <b>{{ informe.total }}</b> trabajadores. A continuación se presenta su distribución por sexo y por grupos de edad.</p>
+          <div class="inf-avoid" style="display:flex;gap:30px;align-items:center;flex-wrap:wrap;margin-bottom:24px">
+            <div style="text-align:center">
+              <div style="font-size:12.5px;font-weight:700;color:#423D3B;margin-bottom:8px">Distribución por sexo</div>
+              <sc-if value="{{ informe.donutHasData }}" hint-placeholder-val="">
+                <svg viewBox="0 0 140 140" width="150" height="150" style="display:block;margin:0 auto">
+                  <g transform="rotate(-90 70 70)">
+                    <circle cx="70" cy="70" r="54" fill="none" stroke="#EDE9E4" stroke-width="22"></circle>
+                    <sc-for list="{{ informe.donut }}" as="seg" hint-placeholder-count="2"><circle cx="70" cy="70" r="54" fill="none" stroke="{{ seg.color }}" stroke-width="22" stroke-dasharray="{{ seg.dash }}" stroke-dashoffset="{{ seg.offset }}"></circle></sc-for>
+                  </g>
+                  <text x="70" y="66" text-anchor="middle" font-size="24" font-weight="700" fill="#423D3B" font-family="Archivo">{{ informe.total }}</text>
+                  <text x="70" y="84" text-anchor="middle" font-size="9.5" fill="#8C857E">trabajadores</text>
+                </svg>
+                <div style="display:flex;gap:16px;justify-content:center;margin-top:10px;font-size:12px;flex-wrap:wrap">
+                  <sc-for list="{{ informe.donut }}" as="seg" hint-placeholder-count="2"><span style="display:inline-flex;align-items:center;gap:6px"><span style="width:11px;height:11px;border-radius:3px;background:{{ seg.color }};display:inline-block"></span>{{ seg.label }}: {{ seg.n }} ({{ seg.pct }}%)</span></sc-for>
+                </div>
+              </sc-if>
+              <sc-if value="{{ informe.noDonut }}" hint-placeholder-val=""><div style="font-size:12.5px;color:#8C857E;padding:30px 10px">Sin datos de sexo registrados.</div></sc-if>
+            </div>
+            <div style="flex:1;min-width:260px">
+              <div style="font-size:12.5px;font-weight:700;color:#423D3B;margin-bottom:10px">Distribución por grupos de edad</div>
+              <sc-for list="{{ informe.ageGroups }}" as="g" hint-placeholder-count="0"><div style="margin-bottom:9px"><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#444">{{ g.label }}</span><span style="font-weight:700;color:#423D3B">{{ g.n }}{{ g.pctTxt }}</span></div><div style="background:#EDE9E4;border-radius:5px;height:14px;overflow:hidden"><div style="width:{{ g.barW }};height:100%;background:#423D3B;border-radius:5px"></div></div></div></sc-for>
+            </div>
+          </div>
+
+          <div style="font-family:Archivo;font-weight:800;font-size:18px;color:#423D3B;border-bottom:2px solid #F2B200;padding-bottom:7px;margin-bottom:12px">7. Indicadores de gestión</div>
+          <table style="width:100%;border-collapse:collapse;font-size:13px;margin-bottom:16px">
             <tbody>
               <tr><td style="padding:9px 12px;border:1px solid #E6E2DD;background:#FAF9F7;font-weight:600">Trabajadores (plantilla activa)</td><td style="padding:9px 12px;border:1px solid #E6E2DD;text-align:right;font-weight:700">{{ informe.kpis.plantilla }}</td></tr>
               <tr><td style="padding:9px 12px;border:1px solid #E6E2DD">Consultas médicas realizadas</td><td style="padding:9px 12px;border:1px solid #E6E2DD;text-align:right;font-weight:700">{{ informe.kpis.consultas }}</td></tr>
@@ -1304,21 +1372,44 @@ window.WORKERS_SEED = [{"cedula":"0926211590","nombre":"ABAD GUTIERREZ PAULINA",
               <tr><td style="padding:9px 12px;border:1px solid #E6E2DD">Cobertura de fichas vigentes</td><td style="padding:9px 12px;border:1px solid #E6E2DD;text-align:right;font-weight:700">{{ informe.kpis.cobertura }}%</td></tr>
             </tbody>
           </table>
-          <p style="font-size:13.5px;line-height:1.75;color:#444;margin:0 0 28px;text-align:justify">{{ informe.analisis }}</p>
+          <div class="inf-avoid" style="background:#FAF9F7;border:1px solid #EDE9E4;border-radius:10px;padding:16px 18px 10px;margin-bottom:16px">
+            <div style="font-size:12.5px;font-weight:700;color:#423D3B;margin-bottom:6px">Consultas médicas por mes</div>
+            <svg viewBox="0 0 380 130" width="100%" style="display:block;max-width:560px">
+              <line x1="16" y1="110.5" x2="372" y2="110.5" stroke="#D8D2CA" stroke-width="1"></line>
+              <sc-for list="{{ informe.barsMes }}" as="b" hint-placeholder-count="12"><rect x="{{ b.x }}" y="{{ b.y }}" width="16" height="{{ b.h }}" rx="2" fill="#F2B200"></rect><text x="{{ b.lx }}" y="124" text-anchor="middle" font-size="9" fill="#8C857E">{{ b.label }}</text></sc-for>
+            </svg>
+          </div>
+          <p style="font-size:13.5px;line-height:1.75;color:#444;margin:0 0 22px;text-align:justify">{{ informe.analisis }}</p>
 
-          <div style="font-family:Archivo;font-weight:800;font-size:18px;color:#423D3B;border-bottom:2px solid #F2B200;padding-bottom:7px;margin-bottom:12px">4. Morbilidad — diagnósticos más frecuentes</div>
-          <sc-if value="{{ informe.morbEmpty }}" hint-placeholder-val=""><p style="font-size:13px;color:#8C857E;margin:0 0 26px">No se registraron diagnósticos en el período seleccionado.</p></sc-if>
-          <table style="width:100%;border-collapse:collapse;font-size:13px;margin-bottom:28px">
+          <div style="font-family:Archivo;font-weight:800;font-size:18px;color:#423D3B;border-bottom:2px solid #F2B200;padding-bottom:7px;margin-bottom:12px">8. Morbilidad — diagnósticos más frecuentes</div>
+          <sc-if value="{{ informe.morbEmpty }}" hint-placeholder-val=""><p style="font-size:13px;color:#8C857E;margin:0 0 22px">No se registraron diagnósticos en el período seleccionado.</p></sc-if>
+          <table style="width:100%;border-collapse:collapse;font-size:13px;margin-bottom:18px">
             <thead><tr style="background:#423D3B;color:#fff"><th style="padding:9px 12px;text-align:left;width:34px">#</th><th style="padding:9px 12px;text-align:left">Diagnóstico</th><th style="padding:9px 12px;text-align:right;width:70px">Casos</th><th style="padding:9px 12px;text-align:right;width:60px">%</th></tr></thead>
             <tbody>
               <sc-for list="{{ informe.morb }}" as="m" hint-placeholder-count="0"><tr><td style="padding:9px 12px;border:1px solid #E6E2DD">{{ m.rank }}</td><td style="padding:9px 12px;border:1px solid #E6E2DD">{{ m.dx }}</td><td style="padding:9px 12px;border:1px solid #E6E2DD;text-align:right;font-weight:700">{{ m.n }}</td><td style="padding:9px 12px;border:1px solid #E6E2DD;text-align:right">{{ m.pct }}%</td></tr></sc-for>
             </tbody>
           </table>
+          <sc-if value="{{ informe.origenHasData }}" hint-placeholder-val="">
+            <div class="inf-avoid" style="margin-bottom:24px">
+              <div style="font-size:12.5px;font-weight:700;color:#423D3B;margin-bottom:10px">Consultas por origen</div>
+              <sc-for list="{{ informe.origenList }}" as="og" hint-placeholder-count="0"><div style="margin-bottom:9px"><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#444">{{ og.label }}</span><span style="font-weight:700;color:#423D3B">{{ og.n }}{{ og.pctTxt }}</span></div><div style="background:#EDE9E4;border-radius:5px;height:14px;overflow:hidden"><div style="width:{{ og.barW }};height:100%;background:#C9821A;border-radius:5px"></div></div></div></sc-for>
+            </div>
+          </sc-if>
 
-          <div style="font-family:Archivo;font-weight:800;font-size:18px;color:#423D3B;border-bottom:2px solid #F2B200;padding-bottom:7px;margin-bottom:6px">5. Plan de acción</div>
+          <div style="font-family:Archivo;font-weight:800;font-size:18px;color:#423D3B;border-bottom:2px solid #F2B200;padding-bottom:7px;margin-bottom:12px">9. Accidentalidad laboral</div>
+          <p style="font-size:13.5px;line-height:1.75;color:#444;margin:0 0 22px;text-align:justify">{{ informe.introAccidentes }}</p>
+
+          <div style="font-family:Archivo;font-weight:800;font-size:18px;color:#423D3B;border-bottom:2px solid #F2B200;padding-bottom:7px;margin-bottom:12px">10. Atención prioritaria</div>
+          <p style="font-size:13.5px;line-height:1.75;color:#444;margin:0 0 22px;text-align:justify">Se identificaron <b>{{ informe.prTotal }}</b> trabajador(es) en condición de atención prioritaria, cuya distribución por tipo se presenta a continuación. Estos grupos requieren vigilancia y seguimiento diferenciado conforme a la normativa.</p>
+          <sc-if value="{{ informe.prHasData }}" hint-placeholder-val="">
+            <div class="inf-avoid" style="margin-bottom:24px"><sc-for list="{{ informe.prioridad }}" as="pp" hint-placeholder-count="0"><div style="margin-bottom:9px"><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#444">{{ pp.label }}</span><span style="font-weight:700;color:#423D3B">{{ pp.n }}{{ pp.pctTxt }}</span></div><div style="background:#EDE9E4;border-radius:5px;height:14px;overflow:hidden"><div style="width:{{ pp.barW }};height:100%;background:#B8791A;border-radius:5px"></div></div></div></sc-for></div>
+          </sc-if>
+          <sc-if value="{{ informe.prEmpty }}" hint-placeholder-val=""><p style="font-size:13px;color:#8C857E;margin:0 0 22px">No se registraron trabajadores en condición de atención prioritaria en el alcance seleccionado.</p></sc-if>
+
+          <div class="inf-bpb" style="font-family:Archivo;font-weight:800;font-size:18px;color:#423D3B;border-bottom:2px solid #F2B200;padding-bottom:7px;margin-bottom:12px">11. Plan de acción</div>
           <p style="font-size:12.5px;color:#777;margin:0 0 16px">Acciones recomendadas según la morbilidad y los hallazgos del período:</p>
           <sc-for list="{{ informe.planAccion }}" as="pa" hint-placeholder-count="0">
-            <div style="margin-bottom:17px;border-left:3px solid #F2B200;padding-left:14px">
+            <div class="inf-avoid" style="margin-bottom:17px;border-left:3px solid #F2B200;padding-left:14px">
               <div style="font-weight:700;font-size:14px;color:#423D3B;margin-bottom:6px">{{ pa.area }}</div>
               <ul style="font-size:13px;line-height:1.6;color:#444;margin:0;padding-left:18px">
                 <sc-for list="{{ pa.acciones }}" as="ac" hint-placeholder-count="0"><li style="margin-bottom:4px">{{ ac }}</li></sc-for>
@@ -1326,10 +1417,21 @@ window.WORKERS_SEED = [{"cedula":"0926211590","nombre":"ABAD GUTIERREZ PAULINA",
             </div>
           </sc-for>
 
-          <div style="margin-top:54px;display:flex;justify-content:flex-start">
+          <div style="font-family:Archivo;font-weight:800;font-size:18px;color:#423D3B;border-bottom:2px solid #F2B200;padding-bottom:7px;margin-bottom:12px;margin-top:30px">12. Conclusiones</div>
+          <ul style="font-size:13.5px;line-height:1.7;color:#444;margin:0 0 22px;padding-left:20px">
+            <sc-for list="{{ informe.conclusiones }}" as="c" hint-placeholder-count="0"><li style="margin-bottom:7px">{{ c }}</li></sc-for>
+          </ul>
+
+          <div style="font-family:Archivo;font-weight:800;font-size:18px;color:#423D3B;border-bottom:2px solid #F2B200;padding-bottom:7px;margin-bottom:12px">13. Recomendaciones</div>
+          <ul style="font-size:13.5px;line-height:1.7;color:#444;margin:0 0 22px;padding-left:20px">
+            <sc-for list="{{ informe.recomendaciones }}" as="r" hint-placeholder-count="0"><li style="margin-bottom:7px">{{ r }}</li></sc-for>
+          </ul>
+
+          <div class="inf-avoid" style="margin-top:54px;display:flex;justify-content:flex-start">
             <div style="width:280px;border-top:1px solid #999;padding-top:8px;font-size:13px;text-align:center">
               <div style="font-weight:700">{{ informe.medico }}</div>
               <div style="color:#666;font-size:12px">{{ informe.registro }}</div>
+              <div style="color:#999;font-size:11px;margin-top:2px">{{ informe.empresa }} · {{ informe.hoy }}</div>
             </div>
           </div>
         </div>
@@ -1642,6 +1744,7 @@ const SEED_VERSION = 2;
 const SUPABASE_URL = 'https://sogbuxyhhlldwbpgixkf.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_IlOqf6Q0sxiNyMUNEy_68A_28_bG5R-';
 const CLOUD_TABLE = 'etinar_db';
+const BUCKET = 'adjuntos';
 let SB = null;
 function getSB(){ if(SB) return SB; if(window.supabase && window.supabase.createClient){ SB = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY); } return SB; }
 const OBRAS_CANON = ['MILLENIUM MED HOSPITAL','ÁGORA XXI','OFICINA CENTRAL','SOLCA MACHALA','TERRANOSTRA','GRAND BAY','HIPERMARKET SANTO DOMINGO','TITANIUM II','TORRE MAXXIMUS','MILLENIUM PARK TORRE 1','MILLENIUM PARK TORRE 3'];
@@ -1662,7 +1765,7 @@ class Component extends DCLogic {
       bootLoading:true, signingIn:false, syncing:false, cloudError:'', userEmail:'',
       view:'dashboard', search:'', obraFilter:'TODAS', estadoFilter:'A',
       selectedCedula:null, perfilTab:'datos',
-      modalType:null, modalEditId:null, modalCedula:null, modalAdjunto:null, modalNotaAccId:null,
+      modalType:null, modalEditId:null, modalCedula:null, modalAdjunto:null, modalNotaAccId:null, savingAdj:false, migRunning:false, migEstado:'',
       consObraFilter:'TODAS', fichaObraFilter:'TODAS', vacObraFilter:'TODAS', vacTipoFilter:'TODAS',
       cie10:[], cieQuery:'', ciePick:null,
       repObra:'TODAS', repMes:new Date().toISOString().slice(0,7), repHHT:'',
@@ -1808,11 +1911,82 @@ class Component extends DCLogic {
   setCieQuery=(e)=>this.setState({cieQuery:e.target.value});
   pickCie=(code,text)=>()=>this.setState({ciePick:[code,text],cieQuery:''});
   clearCie=()=>this.setState({ciePick:null,cieQuery:''});
-  onAdjuntoChange=(e)=>{ const f=e.target.files[0]; if(!f) return; const MAX=2*1024*1024; if(f.size>MAX){ alert('El archivo pesa '+(Math.round(f.size/1024/1024*10)/10)+' MB y supera el límite de 2 MB. Comprima el PDF o reduzca la imagen e intente de nuevo.'); e.target.value=''; return; } const r=new FileReader(); r.onload=()=>this.setState({modalAdjunto:{name:f.name,type:f.type,size:f.size,data:r.result}}); r.readAsDataURL(f); e.target.value=''; };
+  onAdjuntoChange=(e)=>{ const f=e.target.files[0]; if(!f) return; const MAX=2*1024*1024; if(f.size>MAX){ alert('El archivo pesa '+(Math.round(f.size/1024/1024*10)/10)+' MB y supera el límite de 2 MB. Comprima el PDF o reduzca la imagen e intente de nuevo.'); e.target.value=''; return; } this.setState({modalAdjunto:{name:f.name,type:f.type,size:f.size,file:f}}); e.target.value=''; };
   removeAdjunto=()=>this.setState({modalAdjunto:null});
-  openAdjunto=(adj)=>()=>{ try{ const arr=adj.data.split(','); const mime=((arr[0].match(/:(.*?);/)||[])[1])||adj.type||'application/octet-stream'; const bstr=atob(arr[1]); let n=bstr.length; const u8=new Uint8Array(n); while(n--)u8[n]=bstr.charCodeAt(n); const blob=new Blob([u8],{type:mime}); const url=URL.createObjectURL(blob); window.open(url,'_blank'); setTimeout(()=>URL.revokeObjectURL(url),15000); }catch(err){ alert('No se pudo abrir el adjunto.'); } };
+  openAdjunto=(adj)=>async ()=>{
+    try{
+      if(adj && adj.path){ const sb=getSB(); if(!sb) throw new Error('sin conexión'); const { data, error } = await sb.storage.from(BUCKET).createSignedUrl(adj.path, 3600); if(error||!data||!data.signedUrl) throw (error||new Error('no url')); window.open(data.signedUrl,'_blank'); return; }
+      if(adj && adj.data){ const arr=adj.data.split(','); const mime=((arr[0].match(/:(.*?);/)||[])[1])||adj.type||'application/octet-stream'; const bstr=atob(arr[1]); let n=bstr.length; const u8=new Uint8Array(n); while(n--)u8[n]=bstr.charCodeAt(n); const blob=new Blob([u8],{type:mime}); const url=URL.createObjectURL(blob); window.open(url,'_blank'); setTimeout(()=>URL.revokeObjectURL(url),15000); return; }
+      alert('Este registro no tiene un archivo adjunto disponible.');
+    }catch(err){ alert('No se pudo abrir el adjunto. '+((err&&err.message)||'')); }
+  };
+  resolveAdjunto=async (tipo, recId)=>{
+    const a=this.state.modalAdjunto;
+    if(!a) return null;
+    if(!a.file) return a;
+    const sb=getSB(); if(!sb) throw new Error('sin conexión');
+    const safe=String(a.name||'archivo').replace(/[^a-zA-Z0-9._-]/g,'_');
+    const path=tipo+'/'+recId+'_'+Date.now()+'_'+safe;
+    this.setState({savingAdj:true});
+    const { error } = await sb.storage.from(BUCKET).upload(path, a.file, { contentType:a.type||'application/octet-stream', upsert:true });
+    this.setState({savingAdj:false});
+    if(error) throw error;
+    return { name:a.name, type:a.type, size:a.size, path:path };
+  };
+  migrarAdjuntos=async ()=>{
+    const sb=getSB(); if(!sb){ this.setState({migEstado:'Sin conexión con el servidor.'}); return; }
+    if(this.state.migRunning) return;
+    this.setState({migRunning:true, migEstado:'Iniciando migración...'});
+    let ok=0, err=0;
+    try{
+      while(true){
+        const sel=await sb.from('etinar_adjuntos_backup').select('id,tipo,registro_id,nombre,adjunto').eq('migrado',false).limit(1);
+        if(sel.error) throw sel.error;
+        const rows=sel.data||[];
+        if(rows.length===0) break;
+        const row=rows[0];
+        try{
+          const a=row.adjunto||{}; const dataUrl=String(a.data||''); const arr=dataUrl.split(','); const mime=((arr[0].match(/:(.*?);/)||[])[1])||a.type||'application/octet-stream';
+          const bstr=atob(arr[1]||''); let n=bstr.length; const u8=new Uint8Array(n); while(n--)u8[n]=bstr.charCodeAt(n); const blob=new Blob([u8],{type:mime});
+          const safe=String(a.name||'archivo').replace(/[^a-zA-Z0-9._-]/g,'_');
+          const path=row.tipo+'/'+row.registro_id+'_'+row.id+'_'+safe;
+          const up=await sb.storage.from(BUCKET).upload(path, blob, {contentType:mime, upsert:true});
+          if(up.error) throw up.error;
+          const arrName= row.tipo==='descanso'?'descansos':(row.tipo==='ficha'?'fichas':'accidentes');
+          const ref={name:a.name,type:a.type,size:a.size,path:path};
+          await new Promise((res)=>{ this.setState(st=>{ const db=JSON.parse(JSON.stringify(st.db)); const r=(db[arrName]||[]).find(x=>x.id===row.registro_id); if(r) r.adjunto=ref; this.persistLocal(db); return {db}; }, res); });
+          await this.cloudPush(this.state.db);
+          await sb.from('etinar_adjuntos_backup').update({migrado:true, error:null}).eq('id',row.id);
+          ok++;
+        }catch(e2){ err++; try{ await sb.from('etinar_adjuntos_backup').update({migrado:true, error:String((e2&&e2.message)||e2)}).eq('id',row.id); }catch(_){} }
+        this.setState({migEstado:'Migrados: '+ok+(err?(' · con error: '+err):'')+' ...'});
+      }
+      const tipos2=[['descansos','descanso'],['fichas','ficha'],['accidentes','accidente']];
+      for(let ti=0; ti<tipos2.length; ti++){
+        const arrName=tipos2[ti][0], tipo=tipos2[ti][1];
+        while(true){
+          const list=(this.state.db[arrName]||[]); let rec=null;
+          for(let k=0;k<list.length;k++){ const ad=list[k].adjunto; if(ad&&ad.data&&!ad.path&&!ad._migErr){ rec=list[k]; break; } }
+          if(!rec) break;
+          const recId=rec.id;
+          try{
+            const a=rec.adjunto; const arr=String(a.data).split(','); const mime=((arr[0].match(/:(.*?);/)||[])[1])||a.type||'application/octet-stream';
+            const bstr=atob(arr[1]||''); let n=bstr.length; const u8=new Uint8Array(n); while(n--)u8[n]=bstr.charCodeAt(n); const blob=new Blob([u8],{type:mime});
+            const safe=String(a.name||'archivo').replace(/[^a-zA-Z0-9._-]/g,'_'); const path=tipo+'/'+recId+'_'+Date.now()+'_'+safe;
+            const up=await sb.storage.from(BUCKET).upload(path, blob, {contentType:mime, upsert:true}); if(up.error) throw up.error;
+            const ref={name:a.name,type:a.type,size:a.size,path:path};
+            await new Promise((res)=>{ this.setState((st)=>{ const d=JSON.parse(JSON.stringify(st.db)); const r=(d[arrName]||[]).find(x=>x.id===recId); if(r) r.adjunto=ref; this.persistLocal(d); return {db:d}; }, res); });
+            await this.cloudPush(this.state.db); ok++;
+          }catch(e4){ err++; await new Promise((res)=>{ this.setState((st)=>{ const d=JSON.parse(JSON.stringify(st.db)); const r=(d[arrName]||[]).find(x=>x.id===recId); if(r&&r.adjunto) r.adjunto._migErr=true; this.persistLocal(d); return {db:d}; }, res); }); }
+          this.setState({migEstado:'Migrados: '+ok+(err?(' · con error: '+err):'')+' ...'});
+        }
+      }
+      this.setState({migEstado:'Listo. Archivos migrados: '+ok+(err?(' · con error: '+err+' (quedan en la tabla de respaldo).'):'.'), migRunning:false});
+      this.toast('Migración terminada: '+ok+' archivo(s)');
+    }catch(e){ this.setState({migEstado:'Se detuvo: '+((e&&e.message)||e)+'. Puede volver a intentarlo.', migRunning:false}); }
+  };
 
-  submitModal=(e)=>{
+  submitModal=async (e)=>{
     e.preventDefault();
     const f=e.target, t=this.state.modalType, cedula=this.state.modalCedula, id=this.state.modalEditId;
     const g=n=>{ const el=f.elements[n]; if(!el) return ''; return el.type==='checkbox'?el.checked:String(el.value).trim(); };
@@ -1824,16 +1998,22 @@ class Component extends DCLogic {
       this.save(db=>{const i=db.consultas.findIndex(x=>x.id===rec.id); if(i>=0)db.consultas[i]=rec; else db.consultas.unshift(rec);});
     } else if(t==='descanso'){
       if(!cedula) return;
-      const rec={id:id||this.uid(),cedula,inicio:g('inicio')||this.todayISO(),dias:num('dias')||0,tipo:g('tipo'),entidad:g('entidad'),estado:g('estado'),dxCodigo:dx?dx[0]:'',dxTexto:dx?dx[1]:'',obs:g('obs'),adjunto:this.state.modalAdjunto||null};
+      const rid=id||this.uid();
+      let adjunto; try{ adjunto=await this.resolveAdjunto('descanso', rid); }catch(err){ this.setState({savingAdj:false}); alert('No se pudo subir el archivo adjunto. Verifique su conexión e intente de nuevo.'); return; }
+      const rec={id:rid,cedula,inicio:g('inicio')||this.todayISO(),dias:num('dias')||0,tipo:g('tipo'),entidad:g('entidad'),estado:g('estado'),dxCodigo:dx?dx[0]:'',dxTexto:dx?dx[1]:'',obs:g('obs'),adjunto};
       this.save(db=>{const i=db.descansos.findIndex(x=>x.id===rec.id); if(i>=0)db.descansos[i]=rec; else db.descansos.unshift(rec);});
     } else if(t==='ficha'){
       if(!cedula) return;
-      const rec={id:id||this.uid(),cedula,tipo:g('tipo'),aptitud:g('aptitud'),fecha:g('fecha')||this.todayISO(),vence:g('vence'),restricciones:g('restricciones'),riesgos:g('riesgos'),adjunto:this.state.modalAdjunto||null};
+      const rid=id||this.uid();
+      let adjunto; try{ adjunto=await this.resolveAdjunto('ficha', rid); }catch(err){ this.setState({savingAdj:false}); alert('No se pudo subir el archivo adjunto. Verifique su conexión e intente de nuevo.'); return; }
+      const rec={id:rid,cedula,tipo:g('tipo'),aptitud:g('aptitud'),fecha:g('fecha')||this.todayISO(),vence:g('vence'),restricciones:g('restricciones'),riesgos:g('riesgos'),adjunto};
       this.save(db=>{const i=db.fichas.findIndex(x=>x.id===rec.id); if(i>=0)db.fichas[i]=rec; else db.fichas.unshift(rec);});
     } else if(t==='accidente'){
       const ced=cedula||g('cedula');
       const prev = id ? (this.state.db.accidentes.find(x=>x.id===id)||{}) : {};
-      const rec={id:id||this.uid(),cedula:ced,obra:g('obra')||this.workerObra(ced),fecha:g('fecha')||this.todayISO(),hora:g('hora'),lugar:g('lugar'),parteCuerpo:g('parteCuerpo'),agente:g('agente'),gravedad:g('gravedad'),diasPerdidos:num('diasPerdidos')||0,descripcion:g('descripcion'),proxCitaRT:g('proxCitaRT'),proxCitaEsp:g('proxCitaEsp'),estadoCaso:g('estadoCaso'),adjunto:this.state.modalAdjunto||null,notas:(prev.notas||[])};
+      const rid=id||this.uid();
+      let adjunto; try{ adjunto=await this.resolveAdjunto('accidente', rid); }catch(err){ this.setState({savingAdj:false}); alert('No se pudo subir el archivo adjunto. Verifique su conexión e intente de nuevo.'); return; }
+      const rec={id:rid,cedula:ced,obra:g('obra')||this.workerObra(ced),fecha:g('fecha')||this.todayISO(),hora:g('hora'),lugar:g('lugar'),parteCuerpo:g('parteCuerpo'),agente:g('agente'),gravedad:g('gravedad'),diasPerdidos:num('diasPerdidos')||0,descripcion:g('descripcion'),proxCitaRT:g('proxCitaRT'),proxCitaEsp:g('proxCitaEsp'),estadoCaso:g('estadoCaso'),adjunto,notas:(prev.notas||[])};
       this.save(db=>{const i=db.accidentes.findIndex(x=>x.id===rec.id); if(i>=0)db.accidentes[i]=rec; else db.accidentes.unshift(rec);});
     } else if(t==='vacuna'){
       if(!cedula) return;
@@ -2080,16 +2260,74 @@ class Component extends DCLogic {
     return plan;
   }
   informeData(){
-    var d=this.computeIndicadores(); var db=this.scopedDb();
-    var obra=(d.obra==='TODAS')?'Todas las obras':d.obra;
-    var tot=d.morbList.reduce(function(a,m){return a+m.n;},0);
-    var morb=d.morbList.map(function(m,i){return {rank:i+1,dx:m.dx,n:m.n,pct:tot?Math.round(m.n/tot*100):0};});
-    var og='Evaluar el estado de salud ocupacional de los trabajadores de '+obra+' durante el per\u00edodo '+d.year+', mediante el an\u00e1lisis de la morbilidad, los indicadores de gesti\u00f3n y las condiciones de salud identificadas, con el fin de orientar acciones de prevenci\u00f3n y promoci\u00f3n que contribuyan a reducir el ausentismo y la accidentalidad laboral.';
-    var oe=['Identificar la morbilidad y los diagn\u00f3sticos m\u00e1s frecuentes en los trabajadores de la obra.','Evaluar la cobertura de fichas m\u00e9dicas ocupacionales y el estado de aptitud laboral.','Cuantificar las consultas m\u00e9dicas, los descansos y los accidentes de trabajo del per\u00edodo.','Reconocer los grupos de atenci\u00f3n prioritaria y sus necesidades de seguimiento.','Formular un plan de acci\u00f3n orientado a la prevenci\u00f3n seg\u00fan los hallazgos.'];
-    var an='Durante el per\u00edodo '+d.year+' se registraron '+d.kpis.consultas+' consultas m\u00e9dicas, '+d.kpis.descansos+' descansos m\u00e9dicos y '+d.kpis.accidentes+' accidentes de trabajo en '+obra+', sobre una plantilla activa de '+d.kpis.plantilla+' trabajadores. ';
-    if(d.morbList.length){ an+='El diagn\u00f3stico m\u00e1s frecuente fue '+d.morbList[0].dx+' ('+d.morbList[0].n+' caso(s)). '; }
-    an+='La cobertura de fichas m\u00e9dicas vigentes alcanz\u00f3 el '+d.kpis.cobertura+'%.';
-    return { obra:obra, year:d.year, medico:(db.config.medicoNombre||'M\u00e9dico Ocupacional'), registro:(db.config.medicoRegistro||''), empresa:(db.config.empresa||'ETINAR'), hoy:this.fmt(this.todayISO()), kpis:d.kpis, analisis:an, objetivoGeneral:og, objetivosEspecificos:oe, morb:morb, morbEmpty:(morb.length===0), planAccion:this.planAccionDesde(d.morbList) };
+    var self=this; var d=this.computeIndicadores(); var db=this.scopedDb();
+    var obraReal=d.obra; var obra=(d.obra==='TODAS')?'Todas las obras':d.obra; var year=d.year;
+    var wk=db.workers.filter(function(w){ return (obraReal==='TODAS'||w.obra===obraReal) && (w.estado||'A')==='A'; });
+    var total=wk.length;
+    var sexM=wk.filter(function(w){return String(w.sexo||'').toUpperCase().charAt(0)==='M';}).length;
+    var sexF=wk.filter(function(w){return String(w.sexo||'').toUpperCase().charAt(0)==='F';}).length;
+    var ag=[0,0,0,0];
+    wk.forEach(function(w){ var a=self.ageOf(w); if(a==null) return; if(a<30)ag[0]++; else if(a<45)ag[1]++; else if(a<60)ag[2]++; else ag[3]++; });
+    // Donut sexo (SVG)
+    var C=339.292; var sexTot=sexM+sexF; var cum=0; var donut=[];
+    [{n:sexM,color:'#423D3B',label:'Hombres'},{n:sexF,color:'#F2B200',label:'Mujeres'}].forEach(function(sg){ var fr=sexTot?(sg.n/sexTot):0; donut.push({dash:(fr*C).toFixed(2)+' '+C.toFixed(2),offset:(-cum*C).toFixed(2),color:sg.color,label:sg.label,n:sg.n,pct:sexTot?Math.round(fr*100):0}); cum+=fr; });
+    var donutHasData=sexTot>0; var noDonut=!donutHasData;
+    // Barras verticales: consultas por mes (SVG)
+    var Mx=['E','F','M','A','M','J','J','A','S','O','N','D']; var maxC=Math.max(1,Math.max.apply(null,d.mc)); var bh=96; var barsMes=[];
+    for(var i=0;i<12;i++){ var h=d.mc[i]>0?Math.max(Math.round(d.mc[i]/maxC*bh),2):1; barsMes.push({x:20+i*30,y:14+(bh-h),h:h,n:d.mc[i],label:Mx[i],lx:20+i*30+8,tx:20+i*30+8,ty:14+(bh-h)-3}); }
+    // Morbilidad horizontal (div)
+    var totMorb=d.morbList.reduce(function(a,m){return a+m.n;},0); var maxMorb=Math.max(1,Math.max.apply(null,d.morbList.map(function(m){return m.n;}).concat([1])));
+    var morb=d.morbList.map(function(m,i){ return {rank:i+1,dx:m.dx,n:m.n,pct:totMorb?Math.round(m.n/totMorb*100):0,barW:Math.round(m.n/maxMorb*100)+'%'}; });
+    // Grupos de edad (div)
+    var maxAg=Math.max(1,Math.max.apply(null,ag.concat([1])));
+    var ageGroups=[{label:'Menores de 30 años',n:ag[0]},{label:'De 30 a 44 años',n:ag[1]},{label:'De 45 a 59 años',n:ag[2]},{label:'60 años o más',n:ag[3]}].map(function(g){ var pc=total?Math.round(g.n/total*100):0; return {label:g.label,n:g.n,barW:Math.round(g.n/maxAg*100)+'%',pct:pc,pctTxt:' ('+pc+'%)'}; });
+    // Consultas por origen (div)
+    var consY=db.consultas.filter(function(x){ return (obraReal==='TODAS'||self.workerObra(x.cedula)===obraReal) && String(x.fecha||'').slice(0,4)===year; });
+    var oMap={}; consY.forEach(function(x){ var o=x.origen||'No especificado'; oMap[o]=(oMap[o]||0)+1; });
+    var maxOri=Math.max(1,Math.max.apply(null,Object.keys(oMap).map(function(k){return oMap[k];}).concat([1])));
+    var origenList=Object.keys(oMap).map(function(k){ var pc=consY.length?Math.round(oMap[k]/consY.length*100):0; return {label:k,n:oMap[k],barW:Math.round(oMap[k]/maxOri*100)+'%',pct:pc,pctTxt:' ('+pc+'%)'}; }).sort(function(a,b){return b.n-a.n;});
+    var origenEmpty=origenList.length===0; var origenHasData=!origenEmpty;
+    // Atención prioritaria (div)
+    var pr=this.computePrioritarios();
+    var prDefs=[{k:'adultoMayor',label:'Adultos mayores'},{k:'discapacidad',label:'Discapacidad'},{k:'cronica',label:'Enfermedad crónica'},{k:'catastrofica',label:'Enfermedad catastrófica'},{k:'embarazo',label:'Embarazo'},{k:'lactancia',label:'Lactancia'}];
+    var maxPr=Math.max(1,Math.max.apply(null,prDefs.map(function(t){return pr.byType[t.k]||0;}).concat([1])));
+    var prioridad=prDefs.map(function(t){ return {label:t.label,n:pr.byType[t.k]||0,barW:Math.round((pr.byType[t.k]||0)/maxPr*100)+'%',pctTxt:''}; }).filter(function(x){return x.n>0;});
+    var prTotal=pr.total; var prEmpty=prTotal===0; var prHasData=!prEmpty;
+    // Textos
+    var og='Evaluar el estado de salud ocupacional de los trabajadores de '+obra+' durante el período '+year+', mediante el análisis de la morbilidad, los indicadores de gestión, la caracterización de la población y las condiciones de salud identificadas, con el fin de orientar acciones de prevención y promoción que contribuyan a reducir el ausentismo y la accidentalidad laboral, en cumplimiento de la normativa vigente.';
+    var oe=['Caracterizar a la población trabajadora según sexo y grupos de edad.','Identificar la morbilidad y los diagnósticos más frecuentes en los trabajadores de la obra.','Evaluar la cobertura de fichas médicas ocupacionales y el estado de aptitud laboral.','Cuantificar las consultas médicas, los descansos y los accidentes de trabajo del período.','Reconocer los grupos de atención prioritaria y sus necesidades de seguimiento.','Formular un plan de acción y recomendaciones orientadas a la prevención según los hallazgos.'];
+    var metodologia='El presente informe se elabora a partir de los registros del sistema de gestión ocupacional de '+obra+' correspondientes al período '+year+'. La información se obtiene de las atenciones médicas, fichas de aptitud, descansos, accidentes y condiciones especiales documentadas, y se procesa de forma agregada para describir la morbilidad, los indicadores de gestión y las características de la población trabajadora.';
+    var an='Durante el período '+year+' se registraron '+d.kpis.consultas+' consultas médicas, '+d.kpis.descansos+' descansos médicos y '+d.kpis.accidentes+' accidentes de trabajo en '+obra+', sobre una plantilla activa de '+total+' trabajadores. ';
+    if(d.morbList.length){ an+='El diagnóstico más frecuente fue '+d.morbList[0].dx+' ('+d.morbList[0].n+' caso(s)). '; }
+    an+='La cobertura de fichas médicas vigentes alcanzó el '+d.kpis.cobertura+'%.';
+    var introAccidentes='En el período '+year+' se registraron '+d.kpis.accidentes+' accidente(s) de trabajo en '+obra+'. '+(d.kpis.accidentes>0?'Cada evento debe ser investigado para identificar causas y establecer medidas correctivas, y notificado al IESS conforme a la Resolución C.D. 513.':'No obstante, se mantiene la vigilancia y la cultura de reporte de incidentes para sostener este resultado.');
+    // Conclusiones
+    var conclu=[];
+    conclu.push('La población trabajadora activa de '+obra+' en el período '+year+' fue de '+total+' personas ('+sexM+' hombres y '+sexF+' mujeres), con la distribución por edad detallada en el informe.');
+    conclu.push('Se realizaron '+d.kpis.consultas+' consultas médicas y '+d.kpis.fichas+' fichas de aptitud, con una cobertura de fichas vigentes del '+d.kpis.cobertura+'% sobre la plantilla activa.');
+    if(d.morbList.length){ conclu.push('La morbilidad estuvo encabezada por '+d.morbList[0].dx+', lo que orienta las principales líneas de acción preventiva propuestas.'); } else { conclu.push('No se registraron diagnósticos en el período, por lo que se recomienda fortalecer el registro de las atenciones.'); }
+    conclu.push('Se identificaron '+prTotal+' trabajador(es) en condición de atención prioritaria que requieren seguimiento diferenciado.');
+    conclu.push('Se reportaron '+d.kpis.descansos+' descanso(s) médico(s) y '+d.kpis.accidentes+' accidente(s) de trabajo, indicadores a vigilar para reducir el ausentismo y la siniestralidad.');
+    // Recomendaciones
+    var recom=['Ejecutar y dar seguimiento al plan de acción propuesto según la morbilidad identificada.','Mantener actualizadas las fichas médicas ocupacionales y la aptitud laboral, priorizando los casos próximos a vencer.','Garantizar la realización de exámenes médicos ocupacionales (preocupacional, periódico y de retiro) conforme a la normativa.','Fortalecer la investigación y prevención de accidentes de trabajo, con notificación oportuna al IESS.','Continuar el seguimiento individualizado de los grupos de atención prioritaria.','Reforzar las capacitaciones en autocuidado y en los riesgos propios de la obra.','Realizar el seguimiento periódico de estos indicadores para evaluar el impacto de las acciones.'];
+    // Marco normativo (Ecuador)
+    var normas=[
+      {n:'Constitución de la República del Ecuador',d:'Artículo 326, numeral 5: toda persona tiene derecho a desarrollar sus labores en un ambiente adecuado y propicio que garantice su salud, integridad, seguridad, higiene y bienestar.'},
+      {n:'Decreto Ejecutivo 2393',d:'Reglamento de Seguridad y Salud de los Trabajadores y Mejoramiento del Medio Ambiente de Trabajo; norma técnica base para la prevención de riesgos laborales en el país.'},
+      {n:'Resolución C.D. 513 del IESS',d:'Reglamento del Seguro General de Riesgos del Trabajo: define el accidente de trabajo y la enfermedad profesional, las prestaciones y las obligaciones preventivas del empleador.'},
+      {n:'Código del Trabajo',d:'Establece las obligaciones del empleador en materia de seguridad, salud y prevención de riesgos del trabajo.'},
+      {n:'Ley de Seguridad Social',d:'Artículos 155 y 156: lineamientos del Seguro General de Riesgos del Trabajo y de la prevención de los riesgos derivados del trabajo.'},
+      {n:'Decisión 584 de la CAN y Resolución 957',d:'Instrumento Andino de Seguridad y Salud en el Trabajo y su reglamento: lineamientos regionales de gestión preventiva.'},
+      {n:'Convenios de la OIT ratificados por el Ecuador',d:'Marco internacional en materia de seguridad, salud y condiciones de trabajo.'},
+      {n:'Acuerdos del Ministerio del Trabajo y Ley Orgánica de Salud',d:'Vigilancia de la salud, exámenes médicos ocupacionales y conformación del Comité Paritario de Seguridad e Higiene en empresas con más de 15 trabajadores.'}
+    ];
+    return { obra:obra, year:year, medico:(db.config.medicoNombre||'Médico Ocupacional'), registro:(db.config.medicoRegistro||''), empresa:(db.config.empresa||'ETINAR'), hoy:this.fmt(this.todayISO()),
+      kpis:d.kpis, total:total, sexM:sexM, sexF:sexF, donut:donut, donutHasData:donutHasData, noDonut:noDonut, origenHasData:origenHasData, prHasData:prHasData,
+      barsMes:barsMes, ageGroups:ageGroups, origenList:origenList, origenEmpty:origenEmpty,
+      prioridad:prioridad, prTotal:prTotal, prEmpty:prEmpty,
+      analisis:an, introAccidentes:introAccidentes, metodologia:metodologia,
+      objetivoGeneral:og, objetivosEspecificos:oe, morb:morb, morbEmpty:(morb.length===0),
+      planAccion:this.planAccionDesde(d.morbList), conclusiones:conclu, recomendaciones:recom, normas:normas };
   }
   abrirInforme=()=>{ this.setState({showInforme:true}); };
   cerrarInforme=()=>{ this.setState({showInforme:false}); };
@@ -2384,7 +2622,7 @@ class Component extends DCLogic {
     }
     if(R.isReportes){ R.repObra=s.repObra; R.repMes=s.repMes; R.repHHT=s.repHHT; R.setRepObra=this.setRepObra; R.setRepMes=this.setRepMes; R.setRepHHT=this.setRepHHT; R.printReporte=this.printReporte; R.exportReporteCSV=this.exportReporteCSV; const r=this.computeReporte(); R.rep=r; R.repObraLabel=r.obra==='TODAS'?'Todas las obras':r.obra; R.repMesLabel=this.mesLabel(r.mes); R.repMorb=r.morbList.map(m=>({...m,pct:Math.round((m.n/r.maxMorb)*100)+'%'})); R.repHasMorb=r.morbList.length>0; R.repHasIndices=r.IF!==null; R.repDescTipos=r.descTipos; R.repHasDesc=r.descTipos.length>0; R.repHoy=this.fmt(this.todayISO()); }
 
-    if(R.isConfig){ R.cfgNombre=db.config.medicoNombre; R.cfgRegistro=db.config.medicoRegistro; R.saveConfig=this.saveConfig; R.exportBackup=this.exportBackup; R.importBackup=this.importBackup; R.importWorkersCSV=this.importWorkersCSV; R.addObra=this.addObra; R.obrasConfig=db.config.obras.map(o=>({nombre:o,count:db.workers.filter(w=>w.obra===o).length,del:this.delObra(o)})); R.borrarTodo=this.borrarTodo; R.totalRegistros=db.consultas.length+db.descansos.length+db.fichas.length+db.accidentes.length+db.vacunas.length; R.totalTrab=db.workers.length; R.addAcceso=this.addAcceso; var _accs=(db.config.accesos||[]); R.accesosList=_accs.map(a=>({email:a.email,obra:a.obra,del:this.delAcceso(a.email)})); R.noAccesos=_accs.length===0; }
+    if(R.isConfig){ R.cfgNombre=db.config.medicoNombre; R.cfgRegistro=db.config.medicoRegistro; R.saveConfig=this.saveConfig; R.exportBackup=this.exportBackup; R.importBackup=this.importBackup; R.importWorkersCSV=this.importWorkersCSV; R.addObra=this.addObra; R.obrasConfig=db.config.obras.map(o=>({nombre:o,count:db.workers.filter(w=>w.obra===o).length,del:this.delObra(o)})); R.borrarTodo=this.borrarTodo; R.totalRegistros=db.consultas.length+db.descansos.length+db.fichas.length+db.accidentes.length+db.vacunas.length; R.totalTrab=db.workers.length; R.addAcceso=this.addAcceso; R.migrarAdjuntos=this.migrarAdjuntos; R.migEstado=s.migEstado; var _accs=(db.config.accesos||[]); R.accesosList=_accs.map(a=>({email:a.email,obra:a.obra,del:this.delAcceso(a.email)})); R.noAccesos=_accs.length===0; }
 
     R.showInforme=s.showInforme; R.cerrarInforme=this.cerrarInforme; R.imprimirInforme=this.imprimirInforme;
     if(s.showInforme){ R.informe=this.informeData(); }
