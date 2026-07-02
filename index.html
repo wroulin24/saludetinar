@@ -525,10 +525,10 @@ window.WORKERS_SEED = [{"cedula":"0926211590","nombre":"ABAD GUTIERREZ PAULINA",
               <span class="ms" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#a59e96;font-size:20px">search</span>
               <input value="{{ search }}" onInput="{{ setSearch }}" placeholder="Buscar por cédula o nombre…" style="width:100%;padding:12px 14px 12px 40px;border:1px solid #E0DBD4;border-radius:10px;font-size:14.5px;background:#fff" />
             </div>
-<sc-if value="{{ showObras }}">            <select value="{{ obraFilter }}" onChange="{{ setObraFilter }}" style="padding:12px 14px;border:1px solid #E0DBD4;border-radius:10px;font-size:14px;background:#fff;min-width:200px">
+<sc-if value="{{ showObras }}">            <sc-raw-select value="{{ obraFilter }}" onChange="{{ setObraFilter }}" style="padding:12px 14px;border:1px solid #E0DBD4;border-radius:10px;font-size:14px;background:#fff;min-width:200px">
               <option value="TODAS">Todas las obras</option>
               <sc-for list="{{ obras }}" as="o" hint-placeholder-count="6"><option value="{{ o }}">{{ o }}</option></sc-for>
-            </select></sc-if>
+            </sc-raw-select></sc-if>
             <select value="{{ estadoFilter }}" onChange="{{ setEstadoFilter }}" style="padding:12px 14px;border:1px solid #E0DBD4;border-radius:10px;font-size:14px;background:#fff;min-width:150px">
               <option value="A">Activos</option>
               <option value="I">Inactivos</option>
@@ -780,7 +780,7 @@ window.WORKERS_SEED = [{"cedula":"0926211590","nombre":"ABAD GUTIERREZ PAULINA",
         <div style="max-width:1180px;margin:0 auto">
           <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:18px;flex-wrap:wrap">
             <div><div style="font-family:Archivo;font-weight:800;font-size:27px">Consultas médicas</div><div style="color:#8C857E;font-size:14px;margin-top:2px">{{ consultasCount }} consultas registradas · {{ consultasMes }} este mes</div></div>
-            <sc-if value="{{ showObras }}"><select value="{{ consObraFilter }}" onChange="{{ setConsObraFilter }}" style="padding:11px 14px;border:1px solid #E0DBD4;border-radius:10px;font-size:14px;background:#fff;min-width:200px"><option value="TODAS">Todas las obras</option><sc-for list="{{ obras }}" as="o" hint-placeholder-count="6"><option value="{{ o }}">{{ o }}</option></sc-for></select></sc-if>
+            <sc-if value="{{ showObras }}"><sc-raw-select value="{{ consObraFilter }}" onChange="{{ setConsObraFilter }}" style="padding:11px 14px;border:1px solid #E0DBD4;border-radius:10px;font-size:14px;background:#fff;min-width:200px"><option value="TODAS">Todas las obras</option><sc-for list="{{ obras }}" as="o" hint-placeholder-count="6"><option value="{{ o }}">{{ o }}</option></sc-for></sc-raw-select></sc-if>
           </div>
           <sc-if value="{{ consultasEmpty }}" hint-placeholder-val=""><div style="background:#fff;border:1px dashed #DAD4CC;border-radius:13px;padding:48px;text-align:center;color:#8C857E;font-size:14px">No hay consultas para el filtro seleccionado.</div></sc-if>
           <div style="display:flex;flex-direction:column;gap:10px">
@@ -821,7 +821,7 @@ window.WORKERS_SEED = [{"cedula":"0926211590","nombre":"ABAD GUTIERREZ PAULINA",
         <div style="max-width:1180px;margin:0 auto">
           <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:18px;flex-wrap:wrap">
             <div><div style="font-family:Archivo;font-weight:800;font-size:27px">Fichas médicas / Aptitud</div><div style="color:#8C857E;font-size:14px;margin-top:2px">{{ fichasCount }} trabajadores · las fichas vencidas y por vencer aparecen primero.</div></div>
-            <sc-if value="{{ showObras }}"><select value="{{ fichaObraFilter }}" onChange="{{ setFichaObraFilter }}" style="padding:11px 14px;border:1px solid #E0DBD4;border-radius:10px;font-size:14px;background:#fff;min-width:200px"><option value="TODAS">Todas las obras</option><sc-for list="{{ obras }}" as="o" hint-placeholder-count="6"><option value="{{ o }}">{{ o }}</option></sc-for></select></sc-if>
+            <sc-if value="{{ showObras }}"><sc-raw-select value="{{ fichaObraFilter }}" onChange="{{ setFichaObraFilter }}" style="padding:11px 14px;border:1px solid #E0DBD4;border-radius:10px;font-size:14px;background:#fff;min-width:200px"><option value="TODAS">Todas las obras</option><sc-for list="{{ obras }}" as="o" hint-placeholder-count="6"><option value="{{ o }}">{{ o }}</option></sc-for></sc-raw-select></sc-if>
           </div>
           <div style="background:#fff;border:1px solid #E6E2DD;border-radius:13px;overflow:hidden">
             <div style="display:grid;grid-template-columns:1.4fr 1fr 1fr 110px 130px;gap:12px;padding:12px 18px;background:#FAF9F7;border-bottom:1px solid #EDE9E4;font-size:11.5px;font-weight:700;color:#8C857E;text-transform:uppercase;letter-spacing:.03em"><div>Trabajador</div><div>Tipo examen</div><div>Aptitud</div><div>Vence</div><div>Estado</div></div>
@@ -893,10 +893,48 @@ window.WORKERS_SEED = [{"cedula":"0926211590","nombre":"ABAD GUTIERREZ PAULINA",
             </div>
           </div>
 
+          <div data-noprint style="display:flex;gap:14px;align-items:flex-end;flex-wrap:wrap;background:#fff;border:1px solid #E6E2DD;border-radius:14px;padding:16px 18px;margin-bottom:18px">
+            <sc-if value="{{ showObras }}"><label style="font-size:12px;font-weight:600;color:#6b655f">Centro de trabajo (obra)<sc-raw-select value="{{ prObraFilter }}" onChange="{{ setPrObraFilter }}" style="display:block;margin-top:5px;padding:10px 12px;border:1px solid #E0DBD4;border-radius:9px;font-size:14px;background:#fff;min-width:230px"><option value="TODAS">Todas las obras</option><sc-for list="{{ obras }}" as="o" hint-placeholder-count="6"><option value="{{ o }}">{{ o }}</option></sc-for></sc-raw-select></label></sc-if>
+            <label style="font-size:12px;font-weight:600;color:#6b655f">Año (atenciones)<sc-raw-select value="{{ prYear }}" onChange="{{ setPrYear }}" style="display:block;margin-top:5px;padding:10px 12px;border:1px solid #E0DBD4;border-radius:9px;font-size:14px;background:#fff;min-width:110px"><sc-for list="{{ prYears }}" as="y" hint-placeholder-count="1"><option value="{{ y }}">{{ y }}</option></sc-for></sc-raw-select></label>
+            <div style="flex:1"></div>
+            <button onClick="{{ abrirInformePr }}" style="display:inline-flex;align-items:center;gap:6px;background:#F2B200;color:#2C2A28;border:none;border-radius:9px;padding:11px 16px;font-weight:800;font-size:13.5px;cursor:pointer"><span class="ms" style="font-size:18px">description</span> Informe de atención prioritaria</button>
+          </div>
+
           <div style="background:#fff;border:1px solid #E6E2DD;border-radius:14px;padding:28px 30px;margin-bottom:18px">
             <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px;border-bottom:2px solid #423D3B;padding-bottom:16px;margin-bottom:22px;flex-wrap:wrap">
               <div style="display:flex;align-items:center;gap:12px"><span style="width:32px;height:32px;background:#F2B200;border-radius:5px;display:inline-block"></span><div><div style="font-family:Archivo;font-weight:800;font-size:20px;letter-spacing:.05em;color:#423D3B">ETINAR</div><div style="font-size:11px;color:#8C857E;letter-spacing:.05em;text-transform:uppercase">Atención prioritaria · Salud Ocupacional</div></div></div>
               <div style="text-align:right;font-size:12.5px;color:#5b554f"><div style="font-weight:700;font-size:22px;color:#2C2A28;font-family:Archivo">{{ prTotal }}</div><div>personas en atención prioritaria</div><div style="color:#a59e96">Emitido: {{ prHoy }}</div></div>
+            </div>
+
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:12px;margin-bottom:26px">
+              <div style="border:1px solid #EDE9E4;border-radius:10px;padding:13px"><div style="font-size:11px;color:#8C857E;font-weight:600">Personal activo</div><div style="font-family:Archivo;font-weight:800;font-size:26px">{{ prKpis.activos }}</div></div>
+              <div style="border:1px solid #EDE9E4;border-radius:10px;padding:13px"><div style="font-size:11px;color:#8C857E;font-weight:600">Atención prioritaria</div><div style="font-family:Archivo;font-weight:800;font-size:26px;color:#7A5AB0">{{ prKpis.total }}</div></div>
+              <div style="border:1px solid #EDE9E4;border-radius:10px;padding:13px"><div style="font-size:11px;color:#8C857E;font-weight:600">% del personal</div><div style="font-family:Archivo;font-weight:800;font-size:26px">{{ prKpis.pct }}%</div></div>
+              <div style="border:1px solid #EDE9E4;border-radius:10px;padding:13px"><div style="font-size:11px;color:#8C857E;font-weight:600">Atenciones {{ prKpis.year }}</div><div style="font-family:Archivo;font-weight:800;font-size:26px">{{ prKpis.at }}</div></div>
+              <div style="border:1px solid #EDE9E4;border-radius:10px;padding:13px"><div style="font-size:11px;color:#8C857E;font-weight:600">Controles {{ prKpis.year }}</div><div style="font-family:Archivo;font-weight:800;font-size:26px">{{ prKpis.ctrl }}</div></div>
+            </div>
+
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:22px;margin-bottom:30px">
+              <div style="border:1px solid #EDE9E4;border-radius:12px;padding:16px">
+                <div style="font-family:Archivo;font-weight:700;font-size:14px;color:#423D3B;margin-bottom:10px">Cobertura de atención prioritaria</div>
+                <sc-if value="{{ prCobHas }}" hint-placeholder-val="">
+                  <svg viewBox="0 0 140 140" width="140" height="140" style="display:block;margin:0 auto">
+                    <circle cx="70" cy="70" r="54" fill="none" stroke="#EDE9E4" stroke-width="22"></circle>
+                    <g transform="rotate(-90 70 70)"><sc-for list="{{ prCob }}" as="seg" hint-placeholder-count="2"><circle cx="70" cy="70" r="54" fill="none" stroke="{{ seg.color }}" stroke-width="22" stroke-dasharray="{{ seg.dash }}" stroke-dashoffset="{{ seg.offset }}"></circle></sc-for></g>
+                    <text x="70" y="67" text-anchor="middle" font-size="24" font-weight="800" fill="#2C2A28" font-family="Archivo">{{ prCobPct }}%</text>
+                    <text x="70" y="85" text-anchor="middle" font-size="8.5" fill="#8C857E">DEL PERSONAL</text>
+                  </svg>
+                  <div style="display:flex;justify-content:center;gap:14px;flex-wrap:wrap;font-size:11.5px;color:#444;margin-top:10px"><sc-for list="{{ prCob }}" as="seg" hint-placeholder-count="2"><span style="display:inline-flex;align-items:center;gap:5px"><span style="width:10px;height:10px;border-radius:3px;background:{{ seg.color }};display:inline-block"></span>{{ seg.label }}: {{ seg.n }}</span></sc-for></div>
+                </sc-if>
+              </div>
+              <div style="border:1px solid #EDE9E4;border-radius:12px;padding:16px">
+                <div style="font-family:Archivo;font-weight:700;font-size:14px;color:#423D3B;margin-bottom:2px">Atenciones al grupo prioritario por mes</div>
+                <div style="font-size:11px;color:#8C857E;margin-bottom:8px">Consultas y controles registrados en {{ prKpis.year }}</div>
+                <svg viewBox="0 0 380 130" width="100%" style="display:block">
+                  <line x1="16" y1="110" x2="372" y2="110" stroke="#E6E2DD" stroke-width="1"></line>
+                  <sc-for list="{{ prBars }}" as="b" hint-placeholder-count="12"><rect x="{{ b.x }}" y="{{ b.y }}" width="16" height="{{ b.h }}" rx="2" fill="#7A5AB0"></rect><text x="{{ b.lx }}" y="124" text-anchor="middle" font-size="9" fill="#8C857E">{{ b.label }}</text></sc-for>
+                </svg>
+              </div>
             </div>
 
             <div style="font-family:Archivo;font-weight:700;font-size:15px;margin-bottom:16px;color:#423D3B">Personas por tipo de atención</div>
@@ -993,8 +1031,8 @@ window.WORKERS_SEED = [{"cedula":"0926211590","nombre":"ABAD GUTIERREZ PAULINA",
           <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:18px;flex-wrap:wrap">
             <div><div style="font-family:Archivo;font-weight:800;font-size:27px">Vacunación</div><div style="color:#8C857E;font-size:14px;margin-top:2px">{{ vacunasCount }} dosis registradas. Registre vacunas desde el perfil del trabajador.</div></div>
             <div style="display:flex;gap:10px;flex-wrap:wrap">
-              <sc-if value="{{ showObras }}"><select value="{{ vacObraFilter }}" onChange="{{ setVacObraFilter }}" style="padding:11px 14px;border:1px solid #E0DBD4;border-radius:10px;font-size:14px;background:#fff;min-width:180px"><option value="TODAS">Todas las obras</option><sc-for list="{{ obras }}" as="o" hint-placeholder-count="6"><option value="{{ o }}">{{ o }}</option></sc-for></select></sc-if>
-              <select value="{{ vacTipoFilter }}" onChange="{{ setVacTipoFilter }}" style="padding:11px 14px;border:1px solid #E0DBD4;border-radius:10px;font-size:14px;background:#fff;min-width:170px"><option value="TODAS">Todas las vacunas</option><sc-for list="{{ vacTipos }}" as="t" hint-placeholder-count="3"><option value="{{ t }}">{{ t }}</option></sc-for></select>
+              <sc-if value="{{ showObras }}"><sc-raw-select value="{{ vacObraFilter }}" onChange="{{ setVacObraFilter }}" style="padding:11px 14px;border:1px solid #E0DBD4;border-radius:10px;font-size:14px;background:#fff;min-width:180px"><option value="TODAS">Todas las obras</option><sc-for list="{{ obras }}" as="o" hint-placeholder-count="6"><option value="{{ o }}">{{ o }}</option></sc-for></sc-raw-select></sc-if>
+              <sc-raw-select value="{{ vacTipoFilter }}" onChange="{{ setVacTipoFilter }}" style="padding:11px 14px;border:1px solid #E0DBD4;border-radius:10px;font-size:14px;background:#fff;min-width:170px"><option value="TODAS">Todas las vacunas</option><sc-for list="{{ vacTipos }}" as="t" hint-placeholder-count="3"><option value="{{ t }}">{{ t }}</option></sc-for></sc-raw-select>
             </div>
           </div>
           <sc-if value="{{ vacunasEmpty }}" hint-placeholder-val=""><div style="background:#fff;border:1px dashed #DAD4CC;border-radius:13px;padding:48px;text-align:center;color:#8C857E;font-size:14px">No hay vacunas para el filtro seleccionado.</div></sc-if>
@@ -1043,7 +1081,7 @@ window.WORKERS_SEED = [{"cedula":"0926211590","nombre":"ABAD GUTIERREZ PAULINA",
             <div><div style="font-family:Archivo;font-weight:800;font-size:27px">Reportes mensuales</div><div style="color:#8C857E;font-size:14px;margin-top:2px">Resumen de actividad, morbilidad, ausentismo y seguridad por centro de trabajo.</div></div>
           </div>
           <div data-noprint style="background:#fff;border:1px solid #E6E2DD;border-radius:13px;padding:16px 18px;margin-bottom:18px;display:flex;gap:14px;align-items:flex-end;flex-wrap:wrap">
-            <sc-if value="{{ showObras }}"><label style="font-size:12px;font-weight:600;color:#6b655f">Centro de trabajo<select value="{{ repObra }}" onChange="{{ setRepObra }}" style="display:block;margin-top:5px;padding:10px 12px;border:1px solid #E0DBD4;border-radius:9px;font-size:14px;background:#fff;min-width:220px"><option value="TODAS">Todas las obras</option><sc-for list="{{ obras }}" as="o" hint-placeholder-count="6"><option value="{{ o }}">{{ o }}</option></sc-for></select></label></sc-if>
+            <sc-if value="{{ showObras }}"><label style="font-size:12px;font-weight:600;color:#6b655f">Centro de trabajo<sc-raw-select value="{{ repObra }}" onChange="{{ setRepObra }}" style="display:block;margin-top:5px;padding:10px 12px;border:1px solid #E0DBD4;border-radius:9px;font-size:14px;background:#fff;min-width:220px"><option value="TODAS">Todas las obras</option><sc-for list="{{ obras }}" as="o" hint-placeholder-count="6"><option value="{{ o }}">{{ o }}</option></sc-for></sc-raw-select></label></sc-if>
             <label style="font-size:12px;font-weight:600;color:#6b655f">Mes<input type="month" value="{{ repMes }}" onChange="{{ setRepMes }}" style="display:block;margin-top:5px;padding:10px 12px;border:1px solid #E0DBD4;border-radius:9px;font-size:14px" /></label>
             <label style="font-size:12px;font-weight:600;color:#6b655f">Horas-hombre trabajadas<input type="number" value="{{ repHHT }}" onInput="{{ setRepHHT }}" placeholder="opcional, para IF/IG" style="display:block;margin-top:5px;padding:10px 12px;border:1px solid #E0DBD4;border-radius:9px;font-size:14px;width:200px" /></label>
             <div style="flex:1"></div>
@@ -1131,7 +1169,7 @@ window.WORKERS_SEED = [{"cedula":"0926211590","nombre":"ABAD GUTIERREZ PAULINA",
             <div style="font-size:13px;color:#8C857E;margin-bottom:14px;line-height:1.5">Asigne a cada asistente una obra: ese usuario solo verá y editará la información de su obra. Primero cree el usuario (correo y contraseña) en Supabase → Authentication → Users; luego agréguelo aquí con el mismo correo. Los correos que <b>no</b> estén en esta lista tienen acceso total (administrador).</div>
             <form onSubmit="{{ addAcceso }}" style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">
               <input name="email" type="email" placeholder="correo@etinar.com" style="flex:2;min-width:200px;padding:10px 12px;border:1px solid #E0DBD4;border-radius:8px;font-size:14px" />
-              <select name="obra" style="flex:1;min-width:160px;padding:10px 12px;border:1px solid #E0DBD4;border-radius:8px;font-size:14px;background:#fff"><option value="">Seleccione obra…</option><sc-for list="{{ obras }}" as="o" hint-placeholder-count="6"><option value="{{ o }}">{{ o }}</option></sc-for></select>
+              <sc-raw-select name="obra" style="flex:1;min-width:160px;padding:10px 12px;border:1px solid #E0DBD4;border-radius:8px;font-size:14px;background:#fff"><option value="">Seleccione obra…</option><sc-for list="{{ obras }}" as="o" hint-placeholder-count="6"><option value="{{ o }}">{{ o }}</option></sc-for></sc-raw-select>
               <button type="submit" style="padding:10px 16px;background:#423D3B;color:#fff;border:none;border-radius:8px;font-weight:700;font-size:13.5px;cursor:pointer">Asignar</button>
             </form>
             <sc-if value="{{ noAccesos }}" hint-placeholder-val=""><div style="color:#8C857E;font-size:13px;padding:6px 0">Aún no hay asistentes asignados. Todos los usuarios tienen acceso total.</div></sc-if>
@@ -1188,8 +1226,8 @@ window.WORKERS_SEED = [{"cedula":"0926211590","nombre":"ABAD GUTIERREZ PAULINA",
           <div data-noprint style="display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:18px;flex-wrap:wrap">
             <div><div style="font-family:Archivo;font-weight:800;font-size:27px">Indicadores e informes</div><div style="color:#8C857E;font-size:14px;margin-top:2px">Indicadores de gestión sobre la actividad realizada.</div></div>
             <div style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap">
-              <label style="font-size:12px;font-weight:600;color:#6b655f">Año<select value="{{ indYear }}" onChange="{{ setIndYear }}" style="display:block;margin-top:5px;padding:10px 12px;border:1px solid #E0DBD4;border-radius:9px;font-size:14px;background:#fff"><sc-for list="{{ indYears }}" as="y" hint-placeholder-count="1"><option value="{{ y }}">{{ y }}</option></sc-for></select></label>
-              <sc-if value="{{ showObras }}"><label style="font-size:12px;font-weight:600;color:#6b655f">Obra<select value="{{ indObra }}" onChange="{{ setIndObra }}" style="display:block;margin-top:5px;padding:10px 12px;border:1px solid #E0DBD4;border-radius:9px;font-size:14px;background:#fff;min-width:180px"><option value="TODAS">Todas las obras</option><sc-for list="{{ obras }}" as="o" hint-placeholder-count="6"><option value="{{ o }}">{{ o }}</option></sc-for></select></label></sc-if>
+              <label style="font-size:12px;font-weight:600;color:#6b655f">Año<sc-raw-select value="{{ indYear }}" onChange="{{ setIndYear }}" style="display:block;margin-top:5px;padding:10px 12px;border:1px solid #E0DBD4;border-radius:9px;font-size:14px;background:#fff"><sc-for list="{{ indYears }}" as="y" hint-placeholder-count="1"><option value="{{ y }}">{{ y }}</option></sc-for></sc-raw-select></label>
+              <sc-if value="{{ showObras }}"><label style="font-size:12px;font-weight:600;color:#6b655f">Obra<sc-raw-select value="{{ indObra }}" onChange="{{ setIndObra }}" style="display:block;margin-top:5px;padding:10px 12px;border:1px solid #E0DBD4;border-radius:9px;font-size:14px;background:#fff;min-width:180px"><option value="TODAS">Todas las obras</option><sc-for list="{{ obras }}" as="o" hint-placeholder-count="6"><option value="{{ o }}">{{ o }}</option></sc-for></sc-raw-select></label></sc-if>
               <button onClick="{{ exportIndicadoresCSV }}" style="display:inline-flex;align-items:center;gap:6px;background:#fff;border:1px solid #E0DBD4;border-radius:9px;padding:11px 15px;font-weight:700;font-size:13.5px;cursor:pointer;color:#423D3B"><span class="ms" style="font-size:18px">table_view</span> CSV</button>
               <button onClick="{{ printIndicadores }}" style="display:inline-flex;align-items:center;gap:6px;background:#423D3B;color:#fff;border:none;border-radius:9px;padding:11px 15px;font-weight:700;font-size:13.5px;cursor:pointer"><span class="ms" style="font-size:18px">picture_as_pdf</span> Imprimir / PDF</button>
               <button onClick="{{ abrirInforme }}" style="display:inline-flex;align-items:center;gap:6px;background:#F2B200;color:#2C2A28;border:none;border-radius:9px;padding:11px 15px;font-weight:800;font-size:13.5px;cursor:pointer"><span class="ms" style="font-size:18px">description</span> Informe completo</button>
@@ -1439,6 +1477,164 @@ window.WORKERS_SEED = [{"cedula":"0926211590","nombre":"ABAD GUTIERREZ PAULINA",
     </div>
   </sc-if>
 
+  <sc-if value="{{ showInformePr }}" hint-placeholder-val="">
+    <div id="informe-overlay" style="position:fixed;inset:0;background:#6b655f;z-index:90;overflow-y:auto;animation:fadeIn .15s ease">
+      <div data-noprint style="position:sticky;top:0;background:#2C2A28;color:#fff;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 18px;z-index:2;flex-wrap:wrap">
+        <div style="font-weight:700;font-size:13.5px;display:flex;align-items:center;gap:8px"><span class="ms" style="font-size:19px;color:#F2B200">favorite</span> Informe de atención prioritaria — {{ informePr.obra }} · {{ informePr.year }}</div>
+        <div style="display:flex;gap:9px">
+          <button onClick="{{ imprimirInforme }}" style="display:inline-flex;align-items:center;gap:6px;background:#F2B200;color:#2C2A28;border:none;border-radius:9px;padding:10px 16px;font-weight:800;font-size:13.5px;cursor:pointer"><span class="ms" style="font-size:18px">picture_as_pdf</span> Imprimir / Guardar PDF</button>
+          <button onClick="{{ cerrarInformePr }}" style="display:inline-flex;align-items:center;gap:6px;background:#55504c;color:#fff;border:none;border-radius:9px;padding:10px 16px;font-weight:700;font-size:13.5px;cursor:pointer"><span class="ms" style="font-size:18px">close</span> Cerrar</button>
+        </div>
+      </div>
+      <div id="informe-doc" style="max-width:800px;margin:22px auto 60px;background:#fff;box-shadow:0 14px 50px rgba(0,0,0,.3);border-radius:6px;overflow:hidden;color:#2C2A28;font-family:'Hanken Grotesk',system-ui,sans-serif">
+
+        <div class="inf-pb" style="padding:70px 56px;min-height:920px;display:flex;flex-direction:column;background:linear-gradient(160deg,#423D3B,#2C2A28);color:#fff">
+          <div style="display:flex;align-items:center;gap:12px">
+            <span style="width:42px;height:42px;background:#F2B200;border-radius:8px;display:inline-block"></span>
+            <span style="font-family:Archivo;font-weight:800;font-size:30px;letter-spacing:.08em">ETINAR</span>
+          </div>
+          <div style="margin-top:84px">
+            <div style="font-size:13px;letter-spacing:.28em;color:#F2B200;font-weight:700">INFORME TÉCNICO DE</div>
+            <div style="font-family:Archivo;font-weight:800;font-size:44px;line-height:1.08;margin-top:8px">Atención Prioritaria</div>
+            <div style="width:76px;height:5px;background:#F2B200;margin:24px 0"></div>
+            <div style="font-size:23px;font-weight:700">{{ informePr.obra }}</div>
+            <div style="font-size:16px;color:#cfc9c2;margin-top:5px">Período {{ informePr.year }}</div>
+          </div>
+          <div style="margin-top:auto;font-size:13px;color:#cfc9c2;line-height:1.9">
+            <div><b style="color:#fff">Profesional responsable:</b> {{ informePr.medico }}</div>
+            <div><b style="color:#fff">Registro / cargo:</b> {{ informePr.registro }}</div>
+            <div><b style="color:#fff">Empresa:</b> {{ informePr.empresa }}</div>
+            <div><b style="color:#fff">Fecha de emisión:</b> {{ informePr.hoy }}</div>
+          </div>
+        </div>
+
+        <div style="padding:46px 56px">
+
+          <div style="font-family:Archivo;font-weight:800;font-size:18px;color:#423D3B;border-bottom:2px solid #F2B200;padding-bottom:7px;margin-bottom:12px">Contenido</div>
+          <div style="font-size:13px;line-height:2;color:#444;columns:2;margin-bottom:8px">
+            <div>1. Introducción</div>
+            <div>2. Marco normativo</div>
+            <div>3. Objetivo general</div>
+            <div>4. Objetivos específicos</div>
+            <div>5. Metodología</div>
+            <div>6. Población y cobertura</div>
+            <div>7. Distribución por tipo de condición</div>
+            <div>8. Atenciones y controles médicos</div>
+            <div>9. Nómina del personal prioritario</div>
+            <div>10. Plan de seguimiento</div>
+            <div>11. Conclusiones</div>
+            <div>12. Recomendaciones</div>
+          </div>
+
+          <div class="inf-bpb" style="font-family:Archivo;font-weight:800;font-size:18px;color:#423D3B;border-bottom:2px solid #F2B200;padding-bottom:7px;margin:26px 0 12px">1. Introducción</div>
+          <p style="font-size:13.5px;line-height:1.75;color:#444;margin:0 0 22px;text-align:justify">{{ informePr.intro }}</p>
+
+          <div style="font-family:Archivo;font-weight:800;font-size:18px;color:#423D3B;border-bottom:2px solid #F2B200;padding-bottom:7px;margin:26px 0 12px">2. Marco normativo</div>
+          <div style="display:flex;flex-direction:column;gap:11px;margin-bottom:22px">
+            <sc-for list="{{ informePr.normas }}" as="nr" hint-placeholder-count="0"><div class="inf-avoid" style="border-left:4px solid #F2B200;background:#FAF7F0;border-radius:0 9px 9px 0;padding:11px 15px"><div style="font-weight:700;font-size:13px;color:#423D3B">{{ nr.n }}</div><div style="font-size:12.5px;line-height:1.65;color:#555;margin-top:3px;text-align:justify">{{ nr.d }}</div></div></sc-for>
+          </div>
+
+          <div style="font-family:Archivo;font-weight:800;font-size:18px;color:#423D3B;border-bottom:2px solid #F2B200;padding-bottom:7px;margin:26px 0 12px">3. Objetivo general</div>
+          <p style="font-size:13.5px;line-height:1.75;color:#444;margin:0 0 22px;text-align:justify">{{ informePr.objetivoGeneral }}</p>
+
+          <div style="font-family:Archivo;font-weight:800;font-size:18px;color:#423D3B;border-bottom:2px solid #F2B200;padding-bottom:7px;margin:26px 0 12px">4. Objetivos específicos</div>
+          <ul style="font-size:13.5px;line-height:1.7;color:#444;margin:0 0 22px;padding-left:20px">
+            <sc-for list="{{ informePr.objetivosEspecificos }}" as="ob" hint-placeholder-count="0"><li style="margin-bottom:7px">{{ ob }}</li></sc-for>
+          </ul>
+
+          <div style="font-family:Archivo;font-weight:800;font-size:18px;color:#423D3B;border-bottom:2px solid #F2B200;padding-bottom:7px;margin:26px 0 12px">5. Metodología</div>
+          <p style="font-size:13.5px;line-height:1.75;color:#444;margin:0 0 22px;text-align:justify">{{ informePr.metodologia }}</p>
+
+          <div class="inf-bpb" style="font-family:Archivo;font-weight:800;font-size:18px;color:#423D3B;border-bottom:2px solid #F2B200;padding-bottom:7px;margin:26px 0 12px">6. Población y cobertura</div>
+          <p style="font-size:13.5px;line-height:1.75;color:#444;margin:0 0 16px;text-align:justify">{{ informePr.analisisPob }}</p>
+          <div class="inf-avoid" style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px">
+            <div style="flex:1;min-width:120px;border:1px solid #E6E2DD;border-radius:9px;padding:12px;text-align:center"><div style="font-family:Archivo;font-weight:800;font-size:24px">{{ informePr.kpis.activos }}</div><div style="font-size:11px;color:#8C857E">Personal activo</div></div>
+            <div style="flex:1;min-width:120px;border:1px solid #E6E2DD;border-radius:9px;padding:12px;text-align:center"><div style="font-family:Archivo;font-weight:800;font-size:24px;color:#B8791A">{{ informePr.kpis.total }}</div><div style="font-size:11px;color:#8C857E">Atención prioritaria</div></div>
+            <div style="flex:1;min-width:120px;border:1px solid #E6E2DD;border-radius:9px;padding:12px;text-align:center"><div style="font-family:Archivo;font-weight:800;font-size:24px">{{ informePr.kpis.pct }}%</div><div style="font-size:11px;color:#8C857E">Del personal activo</div></div>
+            <div style="flex:1;min-width:120px;border:1px solid #E6E2DD;border-radius:9px;padding:12px;text-align:center"><div style="font-family:Archivo;font-weight:800;font-size:24px">{{ informePr.kpis.atenciones }}</div><div style="font-size:11px;color:#8C857E">Atenciones {{ informePr.year }}</div></div>
+            <div style="flex:1;min-width:120px;border:1px solid #E6E2DD;border-radius:9px;padding:12px;text-align:center"><div style="font-family:Archivo;font-weight:800;font-size:24px">{{ informePr.kpis.controles }}</div><div style="font-size:11px;color:#8C857E">Controles {{ informePr.year }}</div></div>
+          </div>
+          <sc-if value="{{ informePr.donutHasData }}" hint-placeholder-val="">
+            <div class="inf-avoid" style="display:flex;align-items:center;gap:26px;flex-wrap:wrap;margin-bottom:22px">
+              <svg viewBox="0 0 140 140" width="150" height="150" style="display:block">
+                <circle cx="70" cy="70" r="54" fill="none" stroke="#EDE9E4" stroke-width="22"></circle>
+                <g transform="rotate(-90 70 70)"><sc-for list="{{ informePr.donut }}" as="seg" hint-placeholder-count="2"><circle cx="70" cy="70" r="54" fill="none" stroke="{{ seg.color }}" stroke-width="22" stroke-dasharray="{{ seg.dash }}" stroke-dashoffset="{{ seg.offset }}"></circle></sc-for></g>
+                <text x="70" y="67" text-anchor="middle" font-size="24" font-weight="800" fill="#2C2A28" font-family="Archivo">{{ informePr.kpis.pct }}%</text>
+                <text x="70" y="85" text-anchor="middle" font-size="8.5" fill="#8C857E">PRIORITARIOS</text>
+              </svg>
+              <div style="flex:1;min-width:230px">
+                <div style="font-size:12.5px;font-weight:700;color:#423D3B;margin-bottom:8px">Proporción del personal en atención prioritaria</div>
+                <div style="display:flex;flex-direction:column;gap:7px;font-size:12.5px;color:#444">
+                  <sc-for list="{{ informePr.donut }}" as="seg" hint-placeholder-count="2"><span style="display:inline-flex;align-items:center;gap:7px"><span style="width:11px;height:11px;border-radius:3px;background:{{ seg.color }};display:inline-block"></span>{{ seg.label }}: <b>{{ seg.n }}</b> ({{ seg.pct }}%)</span></sc-for>
+                </div>
+              </div>
+            </div>
+          </sc-if>
+
+          <div style="font-family:Archivo;font-weight:800;font-size:18px;color:#423D3B;border-bottom:2px solid #F2B200;padding-bottom:7px;margin:26px 0 12px">7. Distribución por tipo de condición</div>
+          <p style="font-size:13.5px;line-height:1.75;color:#444;margin:0 0 16px;text-align:justify">{{ informePr.analisisTipos }}</p>
+          <sc-if value="{{ informePr.tiposHasData }}" hint-placeholder-val="">
+            <div class="inf-avoid" style="margin-bottom:22px">
+              <sc-for list="{{ informePr.tipos }}" as="tp" hint-placeholder-count="0"><div style="margin-bottom:9px"><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#444">{{ tp.label }}</span><span style="font-weight:700;color:#423D3B">{{ tp.n }}{{ tp.pctTxt }}</span></div><div style="background:#EDE9E4;border-radius:5px;height:14px;overflow:hidden"><div style="width:{{ tp.barW }};height:100%;background:#7A5AB0;border-radius:5px"></div></div></div></sc-for>
+            </div>
+          </sc-if>
+          <sc-if value="{{ informePr.porObraHas }}" hint-placeholder-val="">
+            <div class="inf-avoid" style="margin-bottom:22px">
+              <div style="font-size:12.5px;font-weight:700;color:#423D3B;margin-bottom:10px">Personal prioritario por centro de trabajo</div>
+              <sc-for list="{{ informePr.porObra }}" as="po" hint-placeholder-count="0"><div style="margin-bottom:9px"><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#444">{{ po.obra }}</span><span style="font-weight:700;color:#423D3B">{{ po.n }}</span></div><div style="background:#EDE9E4;border-radius:5px;height:14px;overflow:hidden"><div style="width:{{ po.barW }};height:100%;background:#C9821A;border-radius:5px"></div></div></div></sc-for>
+            </div>
+          </sc-if>
+
+          <div style="font-family:Archivo;font-weight:800;font-size:18px;color:#423D3B;border-bottom:2px solid #F2B200;padding-bottom:7px;margin:26px 0 12px">8. Atenciones y controles médicos</div>
+          <p style="font-size:13.5px;line-height:1.75;color:#444;margin:0 0 16px;text-align:justify">{{ informePr.analisisAt }}</p>
+          <div class="inf-avoid" style="border:1px solid #EDE9E4;border-radius:10px;padding:16px;margin-bottom:22px">
+            <div style="font-size:12.5px;font-weight:700;color:#423D3B;margin-bottom:6px">Atenciones al grupo prioritario por mes — {{ informePr.year }}</div>
+            <svg viewBox="0 0 380 130" width="100%" style="display:block;max-width:560px">
+              <line x1="16" y1="110" x2="372" y2="110" stroke="#E6E2DD" stroke-width="1"></line>
+              <sc-for list="{{ informePr.barsMes }}" as="b" hint-placeholder-count="12"><rect x="{{ b.x }}" y="{{ b.y }}" width="16" height="{{ b.h }}" rx="2" fill="#F2B200"></rect><text x="{{ b.lx }}" y="124" text-anchor="middle" font-size="9" fill="#8C857E">{{ b.label }}</text></sc-for>
+            </svg>
+          </div>
+
+          <div class="inf-bpb" style="font-family:Archivo;font-weight:800;font-size:18px;color:#423D3B;border-bottom:2px solid #F2B200;padding-bottom:7px;margin:26px 0 12px">9. Nómina del personal prioritario</div>
+          <p style="font-size:13px;line-height:1.7;color:#666;margin:0 0 14px">Detalle nominal con el número de atenciones (At.) y controles (Ctrl.) registrados en {{ informePr.year }} y la fecha de la última atención.</p>
+          <sc-if value="{{ informePr.nominaEmpty }}" hint-placeholder-val=""><p style="font-size:13px;color:#8C857E;margin:0 0 22px">No se registra personal en atención prioritaria en el alcance seleccionado.</p></sc-if>
+          <div style="display:flex;flex-direction:column;gap:16px;margin-bottom:22px">
+            <sc-for list="{{ informePr.nomina }}" as="no" hint-placeholder-count="0">
+              <div class="inf-avoid" style="border:1px solid #E6E2DD;border-radius:10px;overflow:hidden">
+                <div style="display:flex;align-items:center;justify-content:space-between;background:#423D3B;color:#fff;padding:9px 14px"><span style="font-family:Archivo;font-weight:700;font-size:13px">{{ no.obra }}</span><span style="font-size:11.5px;font-weight:700;background:#F2B200;color:#2C2A28;padding:2px 10px;border-radius:12px">{{ no.total }} persona(s)</span></div>
+                <div style="display:flex;align-items:center;background:#FAF7F0;font-size:10.5px;font-weight:700;color:#6b655f;padding:7px 14px;border-bottom:1px solid #EDE9E4"><div style="width:22px">#</div><div style="flex:1.5">Trabajador</div><div style="flex:1.7;padding:0 6px">Condición(es)</div><div style="width:34px;text-align:right">At.</div><div style="width:38px;text-align:right">Ctrl.</div><div style="width:78px;text-align:right">Última</div></div>
+                <sc-for list="{{ no.personas }}" as="p" hint-placeholder-count="0"><div style="display:flex;align-items:flex-start;font-size:11.5px;padding:8px 14px;border-bottom:1px solid #F4F1EC"><div style="width:22px;color:#b3ada6;font-weight:700">{{ p.idx }}</div><div style="flex:1.5;min-width:0"><div style="font-weight:700;color:#2C2A28">{{ p.nombre }}</div><div style="color:#8C857E;font-size:10.5px">CI {{ p.cedula }} · {{ p.edad }} · {{ p.cargo }}</div></div><div style="flex:1.7;padding:0 6px;color:#555;line-height:1.5">{{ p.tipos }}</div><div style="width:34px;text-align:right;font-weight:800;font-family:Archivo">{{ p.nA }}</div><div style="width:38px;text-align:right;color:#555">{{ p.nC }}</div><div style="width:78px;text-align:right;color:#8C857E;font-size:10.5px">{{ p.ult }}</div></div></sc-for>
+              </div>
+            </sc-for>
+          </div>
+
+          <div style="font-family:Archivo;font-weight:800;font-size:18px;color:#423D3B;border-bottom:2px solid #F2B200;padding-bottom:7px;margin:26px 0 12px">10. Plan de seguimiento</div>
+          <ul style="font-size:13.5px;line-height:1.7;color:#444;margin:0 0 22px;padding-left:20px">
+            <sc-for list="{{ informePr.plan }}" as="pl" hint-placeholder-count="0"><li style="margin-bottom:8px;text-align:justify">{{ pl }}</li></sc-for>
+          </ul>
+
+          <div class="inf-bpb" style="font-family:Archivo;font-weight:800;font-size:18px;color:#423D3B;border-bottom:2px solid #F2B200;padding-bottom:7px;margin:26px 0 12px">11. Conclusiones</div>
+          <ul style="font-size:13.5px;line-height:1.7;color:#444;margin:0 0 22px;padding-left:20px">
+            <sc-for list="{{ informePr.conclusiones }}" as="cn" hint-placeholder-count="0"><li style="margin-bottom:8px;text-align:justify">{{ cn }}</li></sc-for>
+          </ul>
+
+          <div style="font-family:Archivo;font-weight:800;font-size:18px;color:#423D3B;border-bottom:2px solid #F2B200;padding-bottom:7px;margin:26px 0 12px">12. Recomendaciones</div>
+          <ul style="font-size:13.5px;line-height:1.7;color:#444;margin:0 0 22px;padding-left:20px">
+            <sc-for list="{{ informePr.recomendaciones }}" as="rc" hint-placeholder-count="0"><li style="margin-bottom:8px;text-align:justify">{{ rc }}</li></sc-for>
+          </ul>
+
+          <div class="inf-avoid" style="margin-top:54px;display:flex;justify-content:flex-start">
+            <div style="width:280px;border-top:1px solid #999;padding-top:8px;font-size:13px;text-align:center">
+              <div style="font-weight:700">{{ informePr.medico }}</div>
+              <div style="color:#666;font-size:12px">{{ informePr.registro }}</div>
+              <div style="color:#999;font-size:11px;margin-top:2px">{{ informePr.empresa }} · {{ informePr.hoy }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
   <sc-if value="{{ modalOpen }}" hint-placeholder-val="">
     <div data-noprint onClick="{{ closeModalBg }}" style="position:fixed;inset:0;background:rgba(44,42,40,.55);display:flex;align-items:flex-start;justify-content:center;padding:36px 16px;z-index:60;overflow-y:auto;animation:fadeIn .15s ease">
       <form onSubmit="{{ submitModal }}" onClick="{{ stop }}" style="width:640px;max-width:96vw;background:#fff;border-radius:15px;box-shadow:0 30px 80px rgba(0,0,0,.4);animation:slideUp .25s ease;margin:auto 0">
@@ -1597,7 +1793,7 @@ window.WORKERS_SEED = [{"cedula":"0926211590","nombre":"ABAD GUTIERREZ PAULINA",
 
           <sc-if value="{{ isMA }}" hint-placeholder-val="">
             <sc-if value="{{ maGlobal }}" hint-placeholder-val="">
-              <label style="font-size:12.5px;font-weight:600;color:#6b655f;display:block;margin-bottom:13px">Trabajador<select name="cedula" style="width:100%;margin-top:5px;padding:10px 11px;border:1px solid #E0DBD4;border-radius:8px;font-size:14px;background:#fff"><option value="">Seleccione…</option><sc-for list="{{ allWorkersOpts }}" as="o" hint-placeholder-count="0"><option value="{{ o.cedula }}">{{ o.label }}</option></sc-for></select></label>
+              <label style="font-size:12.5px;font-weight:600;color:#6b655f;display:block;margin-bottom:13px">Trabajador<sc-raw-select name="cedula" style="width:100%;margin-top:5px;padding:10px 11px;border:1px solid #E0DBD4;border-radius:8px;font-size:14px;background:#fff"><option value="">Seleccione…</option><sc-for list="{{ allWorkersOpts }}" as="o" hint-placeholder-count="0"><option value="{{ o.cedula }}">{{ o.label }}</option></sc-for></sc-raw-select></label>
             </sc-if>
             <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:13px">
               <label style="font-size:12.5px;font-weight:600;color:#6b655f">Fecha<input name="fecha" type="date" defaultValue="{{ mf.fecha }}" style="width:100%;margin-top:5px;padding:10px 11px;border:1px solid #E0DBD4;border-radius:8px;font-size:14px" /></label>
@@ -1655,7 +1851,7 @@ window.WORKERS_SEED = [{"cedula":"0926211590","nombre":"ABAD GUTIERREZ PAULINA",
           <sc-if value="{{ isMK }}" hint-placeholder-val="">
             <label style="font-size:12.5px;font-weight:600;color:#6b655f;display:block">Tema de la capacitación<input name="tema" defaultValue="{{ mf.tema }}" placeholder="Ej. Uso correcto de EPP" style="width:100%;margin-top:5px;padding:10px 11px;border:1px solid #E0DBD4;border-radius:8px;font-size:14px" /></label>
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:13px;margin-top:13px">
-              <label style="font-size:12.5px;font-weight:600;color:#6b655f">Obra / centro<select name="obra" defaultValue="{{ mf.obra }}" style="width:100%;margin-top:5px;padding:10px 11px;border:1px solid #E0DBD4;border-radius:8px;font-size:14px;background:#fff"><option value="">— Todas —</option><sc-for list="{{ obrasOpts }}" as="o" hint-placeholder-count="0"><option value="{{ o }}">{{ o }}</option></sc-for></select></label>
+              <label style="font-size:12.5px;font-weight:600;color:#6b655f">Obra / centro<sc-raw-select name="obra" defaultValue="{{ mf.obra }}" style="width:100%;margin-top:5px;padding:10px 11px;border:1px solid #E0DBD4;border-radius:8px;font-size:14px;background:#fff"><option value="">— Todas —</option><sc-for list="{{ obrasOpts }}" as="o" hint-placeholder-count="0"><option value="{{ o }}">{{ o }}</option></sc-for></sc-raw-select></label>
               <label style="font-size:12.5px;font-weight:600;color:#6b655f">Fecha<input name="fecha" type="date" defaultValue="{{ mf.fecha }}" style="width:100%;margin-top:5px;padding:10px 11px;border:1px solid #E0DBD4;border-radius:8px;font-size:14px" /></label>
             </div>
             <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:13px;margin-top:13px">
@@ -1672,7 +1868,7 @@ window.WORKERS_SEED = [{"cedula":"0926211590","nombre":"ABAD GUTIERREZ PAULINA",
               <label style="font-size:12.5px;font-weight:600;color:#6b655f">Categoría<select name="categoria" defaultValue="{{ mf.categoria }}" style="width:100%;margin-top:5px;padding:10px 11px;border:1px solid #E0DBD4;border-radius:8px;font-size:14px;background:#fff"><option>Medicamento</option><option>Insumo / curación</option><option>Antiséptico</option><option>Instrumental</option><option>Otro</option></select></label>
             </div>
             <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:11px;margin-top:13px">
-              <label style="font-size:12px;font-weight:600;color:#6b655f">Obra<select name="obra" defaultValue="{{ mf.obra }}" style="width:100%;margin-top:4px;padding:9px 10px;border:1px solid #E0DBD4;border-radius:8px;font-size:13.5px;background:#fff"><option value="">— General —</option><sc-for list="{{ obrasOpts }}" as="o" hint-placeholder-count="0"><option value="{{ o }}">{{ o }}</option></sc-for></select></label>
+              <label style="font-size:12px;font-weight:600;color:#6b655f">Obra<sc-raw-select name="obra" defaultValue="{{ mf.obra }}" style="width:100%;margin-top:4px;padding:9px 10px;border:1px solid #E0DBD4;border-radius:8px;font-size:13.5px;background:#fff"><option value="">— General —</option><sc-for list="{{ obrasOpts }}" as="o" hint-placeholder-count="0"><option value="{{ o }}">{{ o }}</option></sc-for></sc-raw-select></label>
               <label style="font-size:12px;font-weight:600;color:#6b655f">Stock<input name="stock" type="number" min="0" defaultValue="{{ mf.stock }}" style="width:100%;margin-top:4px;padding:9px 10px;border:1px solid #E0DBD4;border-radius:8px;font-size:13.5px" /></label>
               <label style="font-size:12px;font-weight:600;color:#6b655f">Mínimo<input name="minimo" type="number" min="0" defaultValue="{{ mf.minimo }}" style="width:100%;margin-top:4px;padding:9px 10px;border:1px solid #E0DBD4;border-radius:8px;font-size:13.5px" /></label>
               <label style="font-size:12px;font-weight:600;color:#6b655f">Unidad<input name="unidad" defaultValue="{{ mf.unidad }}" placeholder="u, caja…" style="width:100%;margin-top:4px;padding:9px 10px;border:1px solid #E0DBD4;border-radius:8px;font-size:13.5px" /></label>
@@ -1770,6 +1966,7 @@ class Component extends DCLogic {
       cie10:[], cieQuery:'', ciePick:null,
       repObra:'TODAS', repMes:new Date().toISOString().slice(0,7), repHHT:'',
       indYear:String(new Date().getFullYear()), indObra:'TODAS', showInforme:false,
+      prObraFilter:'TODAS', prYear:String(new Date().getFullYear()), showInformePr:false,
       toast:''
     };
   }
@@ -2330,8 +2527,12 @@ class Component extends DCLogic {
       objetivoGeneral:og, objetivosEspecificos:oe, morb:morb, morbEmpty:(morb.length===0),
       planAccion:this.planAccionDesde(d.morbList), conclusiones:conclu, recomendaciones:recom, normas:normas };
   }
-  abrirInforme=()=>{ this.setState({showInforme:true}); };
+  abrirInforme=()=>{ this.setState({showInforme:true, showInformePr:false}); };
   cerrarInforme=()=>{ this.setState({showInforme:false}); };
+  setPrObraFilter=(e)=>{ this.setState({prObraFilter:e.target.value}); };
+  setPrYear=(e)=>{ this.setState({prYear:e.target.value}); };
+  abrirInformePr=()=>{ this.setState({showInformePr:true, showInforme:false}); };
+  cerrarInformePr=()=>{ this.setState({showInformePr:false}); };
   imprimirInforme=()=>{ try{document.body.classList.add('print-informe');}catch(e){} window.print(); setTimeout(function(){ try{document.body.classList.remove('print-informe');}catch(e){} },700); };
   exportIndicadoresCSV=()=>{
     const d=this.computeIndicadores(); const M=['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic']; const L=[];
@@ -2345,10 +2546,11 @@ class Component extends DCLogic {
     const csv='\uFEFF'+L.map(r=>r.map(c=>'"'+String(c).replace(/"/g,'""')+'"').join(';')).join('\n');
     this.download('Indicadores_'+(d.obra==='TODAS'?'GENERAL':d.obra.replace(/\s+/g,'_'))+'_'+d.year+'.csv',csv,'text/csv;charset=utf-8'); this.toast('Indicadores CSV descargado');
   };
-  computePrioritarios(){
-    const db=this.scopedDb(); const types=['adultoMayor','discapacidad','cronica','catastrofica','embarazo','lactancia'];
+  computePrioritarios(obraFilter){
+    const db=this.scopedDb(); const _of=(obraFilter&&obraFilter!=='TODAS')?obraFilter:null; const types=['adultoMayor','discapacidad','cronica','catastrofica','embarazo','lactancia'];
     const byType={adultoMayor:0,discapacidad:0,cronica:0,catastrofica:0,embarazo:0,lactancia:0}; const obraMap={}; let total=0;
     db.workers.forEach(w=>{
+      if(_of && (w.obra||'(sin obra)')!==_of) return;
       const e=db.especiales[w.cedula]||{};
       const am=this.isAdultoMayor(w);
       const f={adultoMayor:am,discapacidad:!!e.discapacidad,cronica:!!e.cronica,catastrofica:!!e.catastrofica,embarazo:!!e.embarazo,lactancia:!!e.lactancia};
@@ -2370,6 +2572,109 @@ class Component extends DCLogic {
     if(f.embarazo) out.push({label:'Embarazo'+(e.fpp?(' · FPP '+this.fmt(e.fpp)):''),tone:'pink'});
     if(f.lactancia) out.push({label:'Lactancia',tone:'pink'});
     return out;
+  }
+  informePrData(){
+    var self=this; var db=this.scopedDb();
+    var obraSel=this.myObra()||this.state.prObraFilter||'TODAS';
+    var esTodas=(obraSel==='TODAS');
+    var obra=esTodas?'Todas las obras':obraSel;
+    var year=this.state.prYear||String(new Date().getFullYear());
+    var pr=this.computePrioritarios(obraSel);
+    var wkAct=db.workers.filter(function(w){ return (esTodas||w.obra===obraSel) && (w.estado||'A')==='A'; });
+    var activos=wkAct.length; var total=pr.total;
+    var pct=activos?Math.round(total/activos*100):0;
+    var ced={}; pr.porObra.forEach(function(o){ o.personas.forEach(function(p){ ced[p.cedula]=1; }); });
+    var yOf=function(v){ return String(v||'').slice(0,4); };
+    var consPr=db.consultas.filter(function(c){ return ced[c.cedula] && yOf(c.fecha)===year; });
+    var atenciones=consPr.length;
+    var controles=consPr.filter(function(c){ return String(c.origen||'').indexOf('Control')===0; }).length;
+    // Barras verticales: atenciones al grupo por mes (SVG)
+    var Mx=['E','F','M','A','M','J','J','A','S','O','N','D']; var mc=[0,0,0,0,0,0,0,0,0,0,0,0];
+    consPr.forEach(function(c){ var m=parseInt(String(c.fecha||'').slice(5,7),10)-1; if(m>=0&&m<12)mc[m]++; });
+    var maxC=Math.max(1,Math.max.apply(null,mc)); var bh=96; var barsMes=[];
+    for(var i=0;i<12;i++){ var h=mc[i]>0?Math.max(Math.round(mc[i]/maxC*bh),2):1; barsMes.push({x:20+i*30,y:14+(bh-h),h:h,label:Mx[i],lx:20+i*30+8}); }
+    // Dona de cobertura (SVG)
+    var C=339.292; var cum=0; var donut=[];
+    [{n:total,color:'#F2B200',label:'Atención prioritaria'},{n:Math.max(activos-total,0),color:'#423D3B',label:'Resto del personal'}].forEach(function(sg){ var fr=activos?(sg.n/activos):0; donut.push({dash:(fr*C).toFixed(2)+' '+C.toFixed(2),offset:(-cum*C).toFixed(2),color:sg.color,label:sg.label,n:sg.n,pct:activos?Math.round(fr*100):0}); cum+=fr; });
+    var donutHasData=activos>0;
+    // Tipos de condición (barras horizontales)
+    var prDefs=[{k:'adultoMayor',label:'Adultos mayores (65+)'},{k:'discapacidad',label:'Discapacidad'},{k:'cronica',label:'Enfermedad crónica'},{k:'catastrofica',label:'Enfermedad catastrófica'},{k:'embarazo',label:'Embarazo'},{k:'lactancia',label:'Lactancia'}];
+    var maxT=Math.max(1,Math.max.apply(null,prDefs.map(function(t){return pr.byType[t.k]||0;}).concat([1])));
+    var tipos=prDefs.map(function(t){ var n=pr.byType[t.k]||0; return {label:t.label,n:n,barW:Math.round(n/maxT*100)+'%',pctTxt:total?(' ('+Math.round(n/total*100)+'%)'):''}; }).filter(function(x){return x.n>0;});
+    var tiposHasData=tipos.length>0; var tiposEmpty=!tiposHasData;
+    // Distribución por obra (solo cuando es TODAS)
+    var maxO=Math.max(1,Math.max.apply(null,pr.porObra.map(function(o){return o.total;}).concat([1])));
+    var porObra=pr.porObra.map(function(o){ return {obra:o.obra,n:o.total,barW:Math.round(o.total/maxO*100)+'%'}; });
+    var porObraHas=esTodas && porObra.length>0;
+    // Nómina con atenciones y controles por persona
+    var sinAt=0;
+    var nomina=pr.porObra.map(function(o){
+      return { obra:o.obra, total:o.total, personas:o.personas.map(function(p,i){
+        var cs=db.consultas.filter(function(c){ return c.cedula===p.cedula && yOf(c.fecha)===year; });
+        var nA=cs.length; var nC=cs.filter(function(c){ return String(c.origen||'').indexOf('Control')===0; }).length;
+        var ult='—'; if(nA){ var fs=cs.map(function(c){return String(c.fecha||'');}).sort(); ult=self.fmt(fs[fs.length-1]); }
+        if(!nA) sinAt++;
+        var tl=self.prTiposPersona(p).map(function(t){return t.label;}).join(' · ');
+        return { idx:i+1, nombre:p.nombre, cedula:p.cedula, edad:(p.edad!=null?p.edad+' años':'—'), cargo:p.cargo, tipos:tl||'—', nA:nA, nC:nC, ult:ult };
+      }) };
+    });
+    var nominaHas=nomina.length>0; var nominaEmpty=!nominaHas;
+    var promedio=total?(Math.round(atenciones/total*10)/10):0;
+    // Marco normativo específico (Ecuador)
+    var normasPr=[
+      {n:'Constitución de la República — Artículo 35',d:'Las personas adultas mayores, mujeres embarazadas, personas con discapacidad y quienes adolezcan de enfermedades catastróficas o de alta complejidad, entre otras, recibirán atención prioritaria y especializada en los ámbitos público y privado, con especial protección ante la doble vulnerabilidad.'},
+      {n:'Constitución de la República — Artículos 33 y 326 (num. 5)',d:'El trabajo es un derecho y un deber social; toda persona tiene derecho a desarrollar sus labores en un ambiente adecuado y propicio que garantice su salud, integridad, seguridad, higiene y bienestar.'},
+      {n:'Constitución (Art. 332) y Código del Trabajo — protección de la maternidad',d:'Se prohíbe el despido de la mujer trabajadora asociado a su condición de gestación o maternidad. La ley garantiza la licencia de maternidad, los permisos de lactancia y la estabilidad reforzada de la trabajadora embarazada.'},
+      {n:'Ley Orgánica de Discapacidades — Artículo 47 (inclusión laboral)',d:'El empleador público o privado con un mínimo de veinticinco (25) trabajadores está obligado a contratar un mínimo del cuatro por ciento (4%) de personas con discapacidad, en labores permanentes apropiadas a sus conocimientos, condiciones físicas y aptitudes.'},
+      {n:'Ley Orgánica de las Personas Adultas Mayores',d:'Garantiza a las personas de 65 años o más el derecho al trabajo digno y a la no discriminación por edad, con condiciones laborales acordes a su situación.'},
+      {n:'Decreto Ejecutivo 255 (2024) — Reglamento de Seguridad y Salud en el Trabajo',d:'Norma vigente que reemplazó al Decreto 2393 de 1986: establece la vigilancia de la salud de los trabajadores con un enfoque preventivo, incorpora la salud mental y la consideración de las condiciones de vulnerabilidad de la población trabajadora.'},
+      {n:'Resolución C.D. 513 del IESS',d:'Reglamento del Seguro General de Riesgos del Trabajo: prestaciones y seguimiento de accidentes de trabajo y enfermedades relacionadas con la actividad laboral.'},
+      {n:'Convenios de la OIT ratificados por el Ecuador y Acuerdos del Ministerio del Trabajo',d:'Marco internacional y nacional en materia de igualdad de oportunidades, readaptación profesional, protección de la maternidad y atención a grupos prioritarios en el ámbito laboral.'}
+    ];
+    // Textos
+    var intro='El presente informe caracteriza al personal en condición de atención prioritaria de '+obra+' y describe el seguimiento médico brindado durante el período '+year+'. Se consideran integrantes de este grupo los adultos mayores (65 años o más), las personas con discapacidad, quienes padecen enfermedades crónicas o catastróficas y las trabajadoras en embarazo o lactancia, conforme al artículo 35 de la Constitución de la República. La identificación y el seguimiento diferenciado de estas personas es una obligación del servicio de salud ocupacional y una herramienta clave para prevenir complicaciones y adecuar las condiciones de trabajo.';
+    var objetivoGeneral='Identificar, caracterizar y dar seguimiento al personal en condición de atención prioritaria de '+obra+', cuantificando las atenciones y controles médicos brindados durante el período '+year+', como sustento de la vigilancia de la salud y de las decisiones preventivas.';
+    var oe=['Cuantificar al personal en atención prioritaria y su proporción respecto de la población activa.','Describir la distribución del grupo según el tipo de condición (edad, discapacidad, enfermedad crónica o catastrófica, embarazo y lactancia).'].concat(esTodas?['Comparar la distribución del personal prioritario entre los centros de trabajo.']:[]).concat(['Cuantificar las atenciones médicas y los controles de seguimiento brindados al grupo en el período.','Identificar a las personas del grupo sin atenciones registradas, como brecha de seguimiento.','Establecer un plan de seguimiento diferenciado según el tipo de condición.']);
+    var metodologia='Estudio descriptivo de corte transversal a partir de los registros del sistema de gestión ocupacional de ETINAR. La condición de atención prioritaria se determina con las condiciones especiales documentadas por el servicio médico (discapacidad, enfermedad crónica o catastrófica, embarazo y lactancia) y con la edad del trabajador (adulto mayor a partir de los 65 años, calculado automáticamente). Las atenciones corresponden a las consultas médicas registradas en '+year+' para este grupo, y los controles a aquellas cuyo origen fue "Control / seguimiento".';
+    var analisisPob='Al momento de la emisión, '+obra+' cuenta con '+activos+' trabajador(es) activo(s), de los cuales '+total+' ('+pct+'%) se encuentran en condición de atención prioritaria.';
+    var analisisTipos=tiposHasData?('La distribución por tipo de condición muestra que la categoría más frecuente es "'+tipos[0].label+'" con '+tipos[0].n+' caso(s). Una misma persona puede presentar más de una condición, por lo que la suma de categorías puede superar el total de personas.'):'No se registran condiciones especiales en el alcance seleccionado.';
+    var analisisAt='Durante '+year+' el grupo prioritario recibió '+atenciones+' atención(es) médica(s), de las cuales '+controles+' fueron controles o seguimientos programados, con un promedio de '+promedio+' atenciones por persona. '+(sinAt>0?('Se identificaron '+sinAt+' persona(s) del grupo sin ninguna atención registrada en el año.'):'Todas las personas del grupo registran al menos una atención en el año.');
+    // Plan de seguimiento según condiciones presentes
+    var plan=[];
+    if((pr.byType.embarazo||0)>0||(pr.byType.lactancia||0)>0) plan.push('Trabajadoras en embarazo o lactancia: verificar la asistencia a los controles prenatales, evaluar el puesto de trabajo y reubicar tareas de riesgo (esfuerzo físico intenso, trabajo en altura, exposición a agentes químicos), y garantizar la licencia de maternidad y los permisos de lactancia que establece la ley.');
+    if((pr.byType.discapacidad||0)>0) plan.push('Personas con discapacidad: mantener actualizados el carné y el porcentaje de discapacidad, adecuar el puesto de trabajo a sus capacidades y verificar que las tareas asignadas no agraven su condición, conforme a la inclusión laboral prevista en la Ley Orgánica de Discapacidades.');
+    if((pr.byType.cronica||0)>0) plan.push('Enfermedades crónicas: programar controles médicos periódicos, verificar la adherencia al tratamiento, vigilar cifras de presión arterial y glucemia cuando corresponda, y educar sobre signos de alarma.');
+    if((pr.byType.catastrofica||0)>0) plan.push('Enfermedades catastróficas: seguimiento individualizado y cercano, coordinación con las especialidades tratantes y flexibilidad para la asistencia a citas y tratamientos.');
+    if((pr.byType.adultoMayor||0)>0) plan.push('Adultos mayores (65+): vigilancia periódica de la salud con énfasis en la capacidad funcional, el riesgo cardiovascular y osteomuscular, y el ajuste de tareas de alta exigencia física.');
+    plan.push('Registrar en el sistema cada atención o control brindado a este grupo, para mantener la trazabilidad del seguimiento.');
+    plan.push('Actualizar este listado ante cada ingreso, reingreso o cambio en la condición de salud del personal.');
+    // Conclusiones automáticas
+    var conclu=[];
+    conclu.push('En '+obra+' se identificaron '+total+' trabajador(es) en condición de atención prioritaria, equivalentes al '+pct+'% del personal activo ('+activos+' trabajadores).');
+    if(tiposHasData) conclu.push('La condición más frecuente del grupo es "'+tipos[0].label+'" con '+tipos[0].n+' caso(s).');
+    if(porObraHas && porObra.length>1) conclu.push('El centro de trabajo con más personal prioritario es "'+porObra[0].obra+'" con '+porObra[0].n+' persona(s).');
+    conclu.push('Durante '+year+' el grupo recibió '+atenciones+' atención(es) médica(s), incluidos '+controles+' control(es) o seguimiento(s), con un promedio de '+promedio+' atenciones por persona.');
+    if(sinAt>0) conclu.push('Existen '+sinAt+' persona(s) del grupo prioritario sin atención registrada en el año, lo que constituye una brecha de seguimiento que debe cerrarse de forma programada.');
+    else if(total>0) conclu.push('Todas las personas del grupo prioritario cuentan con al menos una atención registrada en el año, lo que refleja una cobertura de seguimiento adecuada.');
+    conclu.push('El seguimiento diferenciado de estos grupos responde al mandato constitucional de atención prioritaria y a la normativa laboral y de seguridad y salud vigente, por lo que debe sostenerse de manera continua.');
+    var recom=[
+      'Programar y ejecutar el plan de seguimiento propuesto según el tipo de condición de cada persona.',
+      (sinAt>0?('Agendar de forma prioritaria la valoración médica de las '+sinAt+' persona(s) del grupo que no registran atenciones en el año.'):'Mantener la periodicidad de los controles ya establecida para el grupo.'),
+      'Documentar en el sistema todas las atenciones, controles y cambios de condición para conservar la trazabilidad.',
+      'Evaluar los puestos de trabajo del personal prioritario y aplicar las adecuaciones o reubicaciones que correspondan.',
+      'Verificar el cumplimiento de las obligaciones legales asociadas (inclusión laboral de personas con discapacidad, protección de la maternidad y de la lactancia, y no discriminación por edad).',
+      'Coordinar con el IESS y con los servicios de especialidad el manejo de los casos crónicos y catastróficos.',
+      'Revisar este informe con una periodicidad definida (se sugiere trimestral) para evaluar la evolución del grupo y la cobertura del seguimiento.'
+    ];
+    return { obra:obra, year:year, esTodas:esTodas, medico:db.config.medicoNombre||'Médico Ocupacional', registro:db.config.medicoRegistro||'', empresa:db.config.empresa||'ETINAR', hoy:this.fmt(this.todayISO()),
+      kpis:{activos:activos,total:total,pct:pct,atenciones:atenciones,controles:controles,promedio:promedio,sinAt:sinAt},
+      donut:donut, donutHasData:donutHasData, noDonut:!donutHasData, barsMes:barsMes,
+      tipos:tipos, tiposHasData:tiposHasData, tiposEmpty:tiposEmpty,
+      porObra:porObra, porObraHas:porObraHas,
+      nomina:nomina, nominaHas:nominaHas, nominaEmpty:nominaEmpty,
+      normas:normasPr, intro:intro, objetivoGeneral:objetivoGeneral, objetivosEspecificos:oe, metodologia:metodologia,
+      analisisPob:analisisPob, analisisTipos:analisisTipos, analisisAt:analisisAt,
+      plan:plan, conclusiones:conclu, recomendaciones:recom };
   }
   exportEspecialesCSV=()=>{
     const pr=this.computePrioritarios(); const L=[];
@@ -2585,7 +2890,7 @@ class Component extends DCLogic {
     if(R.isVacunas){ let all=db.vacunas.slice().sort((a,b)=>(b.fecha||'').localeCompare(a.fecha||'')); const tipos=[...new Set(db.vacunas.map(v=>(v.vacuna||'').trim()).filter(Boolean))].sort(); if(s.vacObraFilter!=='TODAS') all=all.filter(x=>this.workerObra(x.cedula)===s.vacObraFilter); if(s.vacTipoFilter!=='TODAS') all=all.filter(x=>(x.vacuna||'').trim()===s.vacTipoFilter); R.vacunasAll=all.map(x=>({...x,nombre:this.workerName(x.cedula),obra:this.workerObra(x.cedula),fechaFmt:this.fmt(x.fecha),open:this.openPerfil(x.cedula),del:this.delRecord('vacunas',x.id)})); R.vacunasEmpty=all.length===0; R.vacunasCount=all.length; R.vacObraFilter=s.vacObraFilter; R.setVacObraFilter=this.setVacObraFilter; R.vacTipoFilter=s.vacTipoFilter; R.setVacTipoFilter=this.setVacTipoFilter; R.vacTipos=tipos; }
     if(R.isBotiquin){ const all=db.botiquin.slice().sort((a,b)=>(a.obra||'').localeCompare(b.obra||'')||(a.item||'').localeCompare(b.item||'')); R.botiquinAll=all.map(x=>{ const low=(Number(x.stock)||0)<=(Number(x.minimo)||0); return {...x,low,stockStyle:chip(low?'red':'green'),venceFmt:x.vence?this.fmt(x.vence):'—',edit:this.openModal('botiquin',null,x.id),del:this.delRecord('botiquin',x.id)}; }); R.botiquinEmpty=all.length===0; R.addBotiquin=this.openModal('botiquin',null); R.botiquinLow=all.filter(x=>(Number(x.stock)||0)<=(Number(x.minimo)||0)).length; }
     if(R.isEspeciales){ const set={}; Object.keys(db.especiales).forEach(c=>set[c]=1); db.workers.forEach(w=>{ if(this.isAdultoMayor(w)) set[w.cedula]=1; }); const rows=Object.keys(set).map(c=>{ const w=db.workers.find(x=>x.cedula===c)||{}; return {cedula:c,nombre:this.workerName(c),obra:w.obra||'—',badges:this.condBadges(c),open:this.openPerfil(c)}; }); R.especialesAll=rows.sort((a,b)=>(a.nombre||'').localeCompare(b.nombre||'')); R.especialesEmpty=rows.length===0;
-      const pr=this.computePrioritarios();
+      const pr=this.computePrioritarios(s.prObraFilter);
       const TYPES=[['adultoMayor','Adulto mayor','#7A5AB0'],['discapacidad','Discapacidad','#2F6FB0'],['cronica','Enf. crónica','#B8791A'],['catastrofica','Enf. catastrófica','#C0392B'],['embarazo','Embarazo','#B0457C'],['lactancia','Lactancia','#C77DA6']];
       const maxType=Math.max(1,...TYPES.map(t=>pr.byType[t[0]]));
       R.prTipos=TYPES.map(t=>{ const n=pr.byType[t[0]]; const pct=Math.round((n/maxType)*100)+'%'; return {label:t[1],n,color:t[2],bar:'height:100%;border-radius:5px;background:'+t[2]+';width:'+pct, dot:'width:11px;height:11px;border-radius:3px;display:inline-block;background:'+t[2]}; });
@@ -2606,6 +2911,21 @@ class Component extends DCLogic {
         personas:o.personas.map((p,i)=>({ idx:i+1, cedula:p.cedula, nombre:p.nombre, cargo:p.cargo, edad:(p.edad!=null?p.edad+' años':'—'), estado:p.estado, open:this.openPerfil(p.cedula), tipos:this.prTiposPersona(p).map(t=>({label:t.label,style:chip(t.tone)})) }))
       }));
       R.printEspeciales=this.printIndicadores; R.exportEspecialesCSV=this.exportEspecialesCSV; R.prHoy=this.fmt(this.todayISO());
+      R.prObraFilter=s.prObraFilter; R.setPrObraFilter=this.setPrObraFilter;
+      R.prYear=s.prYear; R.setPrYear=this.setPrYear; R.prYears=this.availableYears(); R.abrirInformePr=this.abrirInformePr;
+      const _ofp=(s.prObraFilter&&s.prObraFilter!=='TODAS')?s.prObraFilter:null;
+      const wkActP=db.workers.filter(w=>(!_ofp||w.obra===_ofp)&&(w.estado||'A')==='A');
+      const prYr=s.prYear||String(new Date().getFullYear());
+      const cedPr={}; pr.porObra.forEach(o=>o.personas.forEach(p=>{cedPr[p.cedula]=1;}));
+      const consPrM=db.consultas.filter(c=>cedPr[c.cedula]&&String(c.fecha||'').slice(0,4)===prYr);
+      const ctrlPrM=consPrM.filter(c=>String(c.origen||'').indexOf('Control')===0).length;
+      R.prKpis={activos:wkActP.length,total:pr.total,pct:(wkActP.length?Math.round(pr.total/wkActP.length*100):0),at:consPrM.length,ctrl:ctrlPrM,year:prYr};
+      const Ccb=339.292; let cumCb=0;
+      R.prCob=[{n:pr.total,color:'#F2B200',label:'Atención prioritaria'},{n:Math.max(wkActP.length-pr.total,0),color:'#423D3B',label:'Resto del personal'}].map(sg=>{ const fr=wkActP.length?(sg.n/wkActP.length):0; const seg={dash:(fr*Ccb).toFixed(2)+' '+Ccb.toFixed(2),offset:(-cumCb*Ccb).toFixed(2),color:sg.color,label:sg.label,n:sg.n,pct:wkActP.length?Math.round(fr*100):0}; cumCb+=fr; return seg; });
+      R.prCobHas=wkActP.length>0; R.prCobPct=(wkActP.length?Math.round(pr.total/wkActP.length*100):0);
+      const mcp=Array(12).fill(0); consPrM.forEach(c=>{const m=parseInt(String(c.fecha||'').slice(5,7),10)-1; if(m>=0&&m<12)mcp[m]++;});
+      const maxCp=Math.max(1,...mcp); const bhp=96; const MXp=['E','F','M','A','M','J','J','A','S','O','N','D'];
+      R.prBars=mcp.map((n,i)=>{const h=n>0?Math.max(Math.round(n/maxCp*bhp),2):1; return {x:20+i*30,y:14+(bhp-h),h:h,label:MXp[i],lx:20+i*30+8};});
     }
 
     if(R.isIndicadores){
@@ -2627,6 +2947,8 @@ class Component extends DCLogic {
 
     R.showInforme=s.showInforme; R.cerrarInforme=this.cerrarInforme; R.imprimirInforme=this.imprimirInforme;
     if(s.showInforme){ R.informe=this.informeData(); }
+    R.showInformePr=s.showInformePr; R.cerrarInformePr=this.cerrarInformePr;
+    if(s.showInformePr){ R.informePr=this.informePrData(); }
     return R;
   }
 }
