@@ -2433,7 +2433,7 @@ class Component extends DCLogic {
   submitModal=async (e)=>{
     e.preventDefault();
     const f=e.target, t=this.state.modalType, cedula=this.state.modalCedula, id=this.state.modalEditId;
-    const g=n=>{ const el=f.elements[n]; if(!el) return ''; return el.type==='checkbox'?el.checked:String(el.value).trim(); };
+    const g=n=>{ let el=(f.elements.namedItem?f.elements.namedItem(n):f.elements[n]); if(!el||typeof el==='function') el=f.querySelector('[name="'+n+'"]'); if(!el) return ''; return el.type==='checkbox'?el.checked:String(el.value==null?'':el.value).trim(); };
     const num=n=>{ const v=g(n); return v===''?'':Number(v); };
     const dx=this.state.ciePick;
     if(t==='consulta'){
