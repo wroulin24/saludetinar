@@ -782,6 +782,60 @@ window.WORKERS_SEED = [{"cedula":"0926211590","nombre":"ABAD GUTIERREZ PAULINA",
             <div><div style="font-family:Archivo;font-weight:800;font-size:27px">Consultas médicas</div><div style="color:#8C857E;font-size:14px;margin-top:2px">{{ consultasCount }} consultas registradas · {{ consultasMes }} este mes</div></div>
             <sc-if value="{{ showObras }}"><sc-raw-select value="{{ consObraFilter }}" onChange="{{ setConsObraFilter }}" style="padding:11px 14px;border:1px solid #E0DBD4;border-radius:10px;font-size:14px;background:#fff;min-width:200px"><option value="TODAS">Todas las obras</option><sc-for list="{{ obras }}" as="o" hint-placeholder-count="6"><option value="{{ o }}">{{ o }}</option></sc-for></sc-raw-select></sc-if>
           </div>
+
+          <div data-noprint style="margin-bottom:16px"><button onClick="{{ toggleMorbPanel }}" style="display:inline-flex;align-items:center;gap:8px;background:#423D3B;color:#fff;border:none;border-radius:10px;padding:12px 18px;font-weight:700;font-size:13.5px;cursor:pointer"><span class="ms" style="font-size:19px;color:#F2B200">monitoring</span> {{ morbBtnLabel }}</button></div>
+
+          <sc-if value="{{ morbPanelOpen }}" hint-placeholder-val="">
+            <div data-noprint style="display:flex;gap:14px;align-items:flex-end;flex-wrap:wrap;background:#fff;border:1px solid #E6E2DD;border-radius:14px;padding:16px 18px;margin-bottom:18px">
+              <sc-if value="{{ showObras }}"><label style="font-size:12px;font-weight:600;color:#6b655f">Centro de trabajo (obra)<sc-raw-select value="{{ morbObra }}" onChange="{{ setMorbObra }}" style="display:block;margin-top:5px;padding:10px 12px;border:1px solid #E0DBD4;border-radius:9px;font-size:14px;background:#fff;min-width:230px"><option value="TODAS">Todas las obras</option><sc-for list="{{ obras }}" as="o" hint-placeholder-count="6"><option value="{{ o }}">{{ o }}</option></sc-for></sc-raw-select></label></sc-if>
+              <label style="font-size:12px;font-weight:600;color:#6b655f">Desde (mes)<sc-raw-select value="{{ morbDesde }}" onChange="{{ setMorbDesde }}" style="display:block;margin-top:5px;padding:10px 12px;border:1px solid #E0DBD4;border-radius:9px;font-size:14px;background:#fff;min-width:160px"><sc-for list="{{ morbMesesOpts }}" as="mo" hint-placeholder-count="1"><option value="{{ mo.v }}">{{ mo.label }}</option></sc-for></sc-raw-select></label>
+              <label style="font-size:12px;font-weight:600;color:#6b655f">Hasta (mes)<sc-raw-select value="{{ morbHasta }}" onChange="{{ setMorbHasta }}" style="display:block;margin-top:5px;padding:10px 12px;border:1px solid #E0DBD4;border-radius:9px;font-size:14px;background:#fff;min-width:160px"><sc-for list="{{ morbMesesOpts }}" as="mo" hint-placeholder-count="1"><option value="{{ mo.v }}">{{ mo.label }}</option></sc-for></sc-raw-select></label>
+              <div style="flex:1"></div>
+              <button onClick="{{ abrirInformeMorb }}" style="display:inline-flex;align-items:center;gap:6px;background:#F2B200;color:#2C2A28;border:none;border-radius:9px;padding:11px 16px;font-weight:800;font-size:13.5px;cursor:pointer"><span class="ms" style="font-size:18px">description</span> Informe de morbilidad</button>
+            </div>
+
+            <div style="background:#fff;border:1px solid #E6E2DD;border-radius:14px;padding:28px 30px;margin-bottom:18px">
+              <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px;border-bottom:2px solid #423D3B;padding-bottom:16px;margin-bottom:22px;flex-wrap:wrap">
+                <div style="display:flex;align-items:center;gap:12px"><span style="width:32px;height:32px;background:#F2B200;border-radius:5px;display:inline-block"></span><div><div style="font-family:Archivo;font-weight:800;font-size:20px;letter-spacing:.05em;color:#423D3B">ETINAR</div><div style="font-size:11px;color:#8C857E;letter-spacing:.05em;text-transform:uppercase">Morbilidad · Salud Ocupacional</div></div></div>
+                <div style="text-align:right;font-size:12.5px;color:#5b554f"><div style="font-weight:700;font-size:22px;color:#2C2A28;font-family:Archivo">{{ morbKpis.total }}</div><div>consultas por morbilidad</div><div style="color:#a59e96">{{ morbObraLabel }} · {{ morbPeriodoLabel }}</div></div>
+              </div>
+
+              <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:12px;margin-bottom:8px">
+                <div style="border:1px solid #EDE9E4;border-radius:10px;padding:13px"><div style="font-size:11px;color:#8C857E;font-weight:600">Consultas</div><div style="font-family:Archivo;font-weight:800;font-size:26px;color:#7A5AB0">{{ morbKpis.total }}</div></div>
+                <div style="border:1px solid #EDE9E4;border-radius:10px;padding:13px"><div style="font-size:11px;color:#8C857E;font-weight:600">Trabajadores atendidos</div><div style="font-family:Archivo;font-weight:800;font-size:26px">{{ morbKpis.atendidos }}</div></div>
+                <div style="border:1px solid #EDE9E4;border-radius:10px;padding:13px"><div style="font-size:11px;color:#8C857E;font-weight:600">Diagnósticos distintos</div><div style="font-family:Archivo;font-weight:800;font-size:26px">{{ morbKpis.dx }}</div></div>
+                <div style="border:1px solid #EDE9E4;border-radius:10px;padding:13px"><div style="font-size:11px;color:#8C857E;font-weight:600">Tasa de morbilidad ×100</div><div style="font-family:Archivo;font-weight:800;font-size:26px">{{ morbKpis.tasa }}</div></div>
+                <div style="border:1px solid #EDE9E4;border-radius:10px;padding:13px"><div style="font-size:11px;color:#8C857E;font-weight:600">Consultas por persona</div><div style="font-family:Archivo;font-weight:800;font-size:26px">{{ morbKpis.prom }}</div></div>
+                <div style="border:1px solid #EDE9E4;border-radius:10px;padding:13px"><div style="font-size:11px;color:#8C857E;font-weight:600">Días de reposo</div><div style="font-family:Archivo;font-weight:800;font-size:26px;color:#B8791A">{{ morbKpis.reposo }}</div></div>
+              </div>
+
+              <sc-if value="{{ morbEmpty }}" hint-placeholder-val=""><div style="border:1px dashed #DAD4CC;border-radius:11px;padding:34px;text-align:center;color:#8C857E;font-size:13.5px;margin-top:14px">No hay consultas por morbilidad en el período y obra seleccionados. Los accidentes de trabajo no se incluyen en esta estadística.</div></sc-if>
+
+              <sc-if value="{{ morbHay }}" hint-placeholder-val="">
+                <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:22px;margin-top:18px">
+                  <div style="border:1px solid #EDE9E4;border-radius:12px;padding:16px">
+                    <div style="font-family:Archivo;font-weight:700;font-size:14px;color:#423D3B;margin-bottom:12px">Principales causas de consulta</div>
+                    <sc-for list="{{ morbTop }}" as="tp" hint-placeholder-count="6"><div style="margin-bottom:9px"><div style="display:flex;justify-content:space-between;gap:10px;font-size:12px;margin-bottom:3px"><span style="color:#444;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ tp.dx }}</span><span style="font-weight:700;color:#423D3B;flex:none">{{ tp.n }}{{ tp.pctTxt }}</span></div><div style="background:#EDE9E4;border-radius:5px;height:13px;overflow:hidden"><div style="width:{{ tp.barW }};height:100%;background:#7A5AB0;border-radius:5px"></div></div></div></sc-for>
+                  </div>
+                  <div style="border:1px solid #EDE9E4;border-radius:12px;padding:16px">
+                    <div style="font-family:Archivo;font-weight:700;font-size:14px;color:#423D3B;margin-bottom:2px">Consultas por mes</div>
+                    <div style="font-size:11px;color:#8C857E;margin-bottom:8px">{{ morbPeriodoLabel }} · sin accidentes de trabajo</div>
+                    <svg viewBox="0 0 380 148" width="100%" style="display:block">
+                      <line x1="12" y1="110" x2="374" y2="110" stroke="#E6E2DD" stroke-width="1"></line>
+                      <sc-for list="{{ morbBars }}" as="b" hint-placeholder-count="6"><rect x="{{ b.x }}" y="{{ b.y }}" width="{{ b.w }}" height="{{ b.h }}" rx="2" fill="#7A5AB0"></rect><text x="{{ b.lx }}" y="{{ b.ny }}" text-anchor="middle" font-size="8.5" font-weight="700" fill="#423D3B">{{ b.nTxt }}</text><text x="{{ b.lx }}" y="123" text-anchor="middle" font-size="8" fill="#8C857E">{{ b.label }}</text><text x="{{ b.lx }}" y="134" text-anchor="middle" font-size="7.5" fill="#b3ada6">{{ b.yr }}</text></sc-for>
+                    </svg>
+                  </div>
+                </div>
+                <sc-if value="{{ morbGruposHas }}" hint-placeholder-val="">
+                  <div style="border:1px solid #EDE9E4;border-radius:12px;padding:16px;margin-top:18px">
+                    <div style="font-family:Archivo;font-weight:700;font-size:14px;color:#423D3B;margin-bottom:12px">Morbilidad por sistema o aparato (CIE-10)</div>
+                    <sc-for list="{{ morbGrupos }}" as="gp" hint-placeholder-count="4"><div style="margin-bottom:9px"><div style="display:flex;justify-content:space-between;gap:10px;font-size:12px;margin-bottom:3px"><span style="color:#444">{{ gp.label }}</span><span style="font-weight:700;color:#423D3B;flex:none">{{ gp.n }}{{ gp.pctTxt }}</span></div><div style="background:#EDE9E4;border-radius:5px;height:13px;overflow:hidden"><div style="width:{{ gp.barW }};height:100%;background:#C9821A;border-radius:5px"></div></div></div></sc-for>
+                  </div>
+                </sc-if>
+              </sc-if>
+            </div>
+          </sc-if>
+
           <sc-if value="{{ consultasEmpty }}" hint-placeholder-val=""><div style="background:#fff;border:1px dashed #DAD4CC;border-radius:13px;padding:48px;text-align:center;color:#8C857E;font-size:14px">No hay consultas para el filtro seleccionado.</div></sc-if>
           <div style="display:flex;flex-direction:column;gap:10px">
             <sc-for list="{{ consultasAll }}" as="c" hint-placeholder-count="6">
@@ -1635,6 +1689,198 @@ window.WORKERS_SEED = [{"cedula":"0926211590","nombre":"ABAD GUTIERREZ PAULINA",
     </div>
   </sc-if>
 
+  <!-- ===== INFORME DE MORBILIDAD (overlay) ===== -->
+  <sc-if value="{{ showInformeMorb }}" hint-placeholder-val="">
+    <div id="informe-overlay" style="position:fixed;inset:0;background:#6b655f;z-index:90;overflow-y:auto;animation:fadeIn .15s ease">
+      <div data-noprint style="position:sticky;top:0;background:#2C2A28;color:#fff;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 18px;z-index:2;flex-wrap:wrap">
+        <div style="font-weight:700;font-size:13.5px;display:flex;align-items:center;gap:8px"><span class="ms" style="font-size:19px;color:#F2B200">monitoring</span> Informe de morbilidad — {{ informeMorb.obra }} · {{ informeMorb.periodo }}</div>
+        <div style="display:flex;gap:9px">
+          <button onClick="{{ imprimirInforme }}" style="display:inline-flex;align-items:center;gap:6px;background:#F2B200;color:#2C2A28;border:none;border-radius:9px;padding:10px 16px;font-weight:800;font-size:13.5px;cursor:pointer"><span class="ms" style="font-size:18px">picture_as_pdf</span> Imprimir / Guardar PDF</button>
+          <button onClick="{{ cerrarInformeMorb }}" style="display:inline-flex;align-items:center;gap:6px;background:#55504c;color:#fff;border:none;border-radius:9px;padding:10px 16px;font-weight:700;font-size:13.5px;cursor:pointer"><span class="ms" style="font-size:18px">close</span> Cerrar</button>
+        </div>
+      </div>
+      <div id="informe-doc" style="max-width:800px;margin:22px auto 60px;background:#fff;box-shadow:0 14px 50px rgba(0,0,0,.3);border-radius:6px;overflow:hidden;color:#2C2A28;font-family:'Hanken Grotesk',system-ui,sans-serif">
+
+        <div class="inf-pb" style="padding:70px 56px;min-height:920px;display:flex;flex-direction:column;background:linear-gradient(160deg,#423D3B,#2C2A28);color:#fff">
+          <div style="display:flex;align-items:center;gap:12px">
+            <span style="width:42px;height:42px;background:#F2B200;border-radius:8px;display:inline-block"></span>
+            <span style="font-family:Archivo;font-weight:800;font-size:30px;letter-spacing:.08em">ETINAR</span>
+          </div>
+          <div style="margin-top:84px">
+            <div style="font-size:13px;letter-spacing:.28em;color:#F2B200;font-weight:700">INFORME TÉCNICO DE</div>
+            <div style="font-family:Archivo;font-weight:800;font-size:44px;line-height:1.08;margin-top:8px">Morbilidad Laboral</div>
+            <div style="width:76px;height:5px;background:#F2B200;margin:24px 0"></div>
+            <div style="font-size:23px;font-weight:700">{{ informeMorb.obra }}</div>
+            <div style="font-size:16px;color:#cfc9c2;margin-top:5px">Período: {{ informeMorb.periodo }}</div>
+          </div>
+          <div style="margin-top:auto;font-size:13px;color:#cfc9c2;line-height:1.9">
+            <div><b style="color:#fff">Profesional responsable:</b> {{ informeMorb.medico }}</div>
+            <div><b style="color:#fff">Registro / cargo:</b> {{ informeMorb.registro }}</div>
+            <div><b style="color:#fff">Empresa:</b> {{ informeMorb.empresa }}</div>
+            <div><b style="color:#fff">Fecha de emisión:</b> {{ informeMorb.hoy }}</div>
+          </div>
+        </div>
+
+        <div style="padding:46px 56px">
+
+          <div style="font-family:Archivo;font-weight:800;font-size:18px;color:#423D3B;border-bottom:2px solid #F2B200;padding-bottom:7px;margin-bottom:12px">Contenido</div>
+          <div style="font-size:13px;line-height:2;color:#444;columns:2;margin-bottom:8px">
+            <div>1. Introducción</div>
+            <div>2. Marco normativo</div>
+            <div>3. Objetivo general</div>
+            <div>4. Objetivos específicos</div>
+            <div>5. Metodología</div>
+            <div>6. Volumen de atención</div>
+            <div>7. Principales causas de morbilidad</div>
+            <div>8. Morbilidad por sistema o aparato</div>
+            <div>9. Evolución mensual y origen</div>
+            <div>10. Morbilidad por centro de trabajo</div>
+            <div>11. Caracterización demográfica</div>
+            <div>12. Reposo, derivaciones y recurrencia</div>
+            <div>13. Conclusiones</div>
+            <div>14. Plan de acción</div>
+            <div>15. Recomendaciones</div>
+          </div>
+
+          <div class="inf-bpb" style="font-family:Archivo;font-weight:800;font-size:18px;color:#423D3B;border-bottom:2px solid #F2B200;padding-bottom:7px;margin:26px 0 12px">1. Introducción</div>
+          <p style="font-size:13.5px;line-height:1.75;color:#444;margin:0 0 22px;text-align:justify">{{ informeMorb.intro }}</p>
+
+          <div style="font-family:Archivo;font-weight:800;font-size:18px;color:#423D3B;border-bottom:2px solid #F2B200;padding-bottom:7px;margin:26px 0 12px">2. Marco normativo</div>
+          <div style="display:flex;flex-direction:column;gap:11px;margin-bottom:22px">
+            <sc-for list="{{ informeMorb.normas }}" as="nr" hint-placeholder-count="0"><div class="inf-avoid" style="border-left:4px solid #F2B200;background:#FAF7F0;border-radius:0 9px 9px 0;padding:11px 15px"><div style="font-weight:700;font-size:13px;color:#423D3B">{{ nr.n }}</div><div style="font-size:12.5px;line-height:1.65;color:#555;margin-top:3px;text-align:justify">{{ nr.d }}</div></div></sc-for>
+          </div>
+
+          <div style="font-family:Archivo;font-weight:800;font-size:18px;color:#423D3B;border-bottom:2px solid #F2B200;padding-bottom:7px;margin:26px 0 12px">3. Objetivo general</div>
+          <p style="font-size:13.5px;line-height:1.75;color:#444;margin:0 0 22px;text-align:justify">{{ informeMorb.objetivoGeneral }}</p>
+
+          <div style="font-family:Archivo;font-weight:800;font-size:18px;color:#423D3B;border-bottom:2px solid #F2B200;padding-bottom:7px;margin:26px 0 12px">4. Objetivos específicos</div>
+          <ul style="font-size:13.5px;line-height:1.7;color:#444;margin:0 0 22px;padding-left:20px">
+            <sc-for list="{{ informeMorb.objetivosEspecificos }}" as="ob" hint-placeholder-count="0"><li style="margin-bottom:7px">{{ ob }}</li></sc-for>
+          </ul>
+
+          <div style="font-family:Archivo;font-weight:800;font-size:18px;color:#423D3B;border-bottom:2px solid #F2B200;padding-bottom:7px;margin:26px 0 12px">5. Metodología</div>
+          <p style="font-size:13.5px;line-height:1.75;color:#444;margin:0 0 22px;text-align:justify">{{ informeMorb.metodologia }}</p>
+
+          <div class="inf-bpb" style="font-family:Archivo;font-weight:800;font-size:18px;color:#423D3B;border-bottom:2px solid #F2B200;padding-bottom:7px;margin:26px 0 12px">6. Volumen de atención</div>
+          <p style="font-size:13.5px;line-height:1.75;color:#444;margin:0 0 16px;text-align:justify">{{ informeMorb.volAnalisis }}</p>
+          <sc-if value="{{ informeMorb.sinDatos }}" hint-placeholder-val=""><p style="font-size:13px;color:#8C857E;margin:0 0 22px">No se registran consultas por morbilidad en el período y alcance seleccionados.</p></sc-if>
+          <div class="inf-avoid" style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:22px">
+            <div style="flex:1;min-width:104px;border:1px solid #E6E2DD;border-radius:9px;padding:12px;text-align:center"><div style="font-family:Archivo;font-weight:800;font-size:24px;color:#7A5AB0">{{ informeMorb.kpis.consultas }}</div><div style="font-size:11px;color:#8C857E">Consultas</div></div>
+            <div style="flex:1;min-width:104px;border:1px solid #E6E2DD;border-radius:9px;padding:12px;text-align:center"><div style="font-family:Archivo;font-weight:800;font-size:24px">{{ informeMorb.kpis.atendidos }}</div><div style="font-size:11px;color:#8C857E">Trabajadores atendidos</div></div>
+            <div style="flex:1;min-width:104px;border:1px solid #E6E2DD;border-radius:9px;padding:12px;text-align:center"><div style="font-family:Archivo;font-weight:800;font-size:24px">{{ informeMorb.kpis.activos }}</div><div style="font-size:11px;color:#8C857E">Personal activo</div></div>
+            <div style="flex:1;min-width:104px;border:1px solid #E6E2DD;border-radius:9px;padding:12px;text-align:center"><div style="font-family:Archivo;font-weight:800;font-size:24px">{{ informeMorb.kpis.tasa }}</div><div style="font-size:11px;color:#8C857E">Tasa de morbilidad ×100</div></div>
+            <div style="flex:1;min-width:104px;border:1px solid #E6E2DD;border-radius:9px;padding:12px;text-align:center"><div style="font-family:Archivo;font-weight:800;font-size:24px">{{ informeMorb.kpis.promedio }}</div><div style="font-size:11px;color:#8C857E">Consultas por persona</div></div>
+            <div style="flex:1;min-width:104px;border:1px solid #E6E2DD;border-radius:9px;padding:12px;text-align:center"><div style="font-family:Archivo;font-weight:800;font-size:24px;color:#B8791A">{{ informeMorb.kpis.reposo }}</div><div style="font-size:11px;color:#8C857E">Días de reposo</div></div>
+          </div>
+
+          <div style="font-family:Archivo;font-weight:800;font-size:18px;color:#423D3B;border-bottom:2px solid #F2B200;padding-bottom:7px;margin:26px 0 12px">7. Principales causas de morbilidad</div>
+          <p style="font-size:13.5px;line-height:1.75;color:#444;margin:0 0 16px;text-align:justify">{{ informeMorb.dxAnalisis }}</p>
+          <sc-if value="{{ informeMorb.tablaHas }}" hint-placeholder-val="">
+            <div class="inf-avoid" style="border:1px solid #E6E2DD;border-radius:10px;overflow:hidden;margin-bottom:22px">
+              <div style="display:flex;align-items:center;background:#423D3B;color:#fff;font-size:11px;font-weight:700;padding:9px 14px"><div style="width:26px">#</div><div style="flex:1">Diagnóstico (CIE-10)</div><div style="width:52px;text-align:right">Casos</div><div style="width:48px;text-align:right">%</div><div style="width:62px;text-align:right">% acum.</div></div>
+              <sc-for list="{{ informeMorb.tabla }}" as="t" hint-placeholder-count="0"><div style="display:flex;align-items:center;font-size:12px;padding:8px 14px;border-bottom:1px solid #F4F1EC"><div style="width:26px;color:#b3ada6;font-weight:700">{{ t.idx }}</div><div style="flex:1;color:#2C2A28">{{ t.dx }}</div><div style="width:52px;text-align:right;font-weight:800;font-family:Archivo">{{ t.n }}</div><div style="width:48px;text-align:right;color:#555">{{ t.pct }}</div><div style="width:62px;text-align:right;color:#8C857E">{{ t.acum }}</div></div></sc-for>
+              <sc-if value="{{ informeMorb.otrosHas }}" hint-placeholder-val=""><div style="display:flex;align-items:center;font-size:12px;padding:8px 14px;background:#FAF9F7"><div style="width:26px"></div><div style="flex:1;color:#8C857E;font-style:italic">Otros diagnósticos</div><div style="width:52px;text-align:right;font-weight:700;color:#8C857E">{{ informeMorb.otrosN }}</div><div style="width:48px"></div><div style="width:62px"></div></div></sc-if>
+            </div>
+          </sc-if>
+
+          <div style="font-family:Archivo;font-weight:800;font-size:18px;color:#423D3B;border-bottom:2px solid #F2B200;padding-bottom:7px;margin:26px 0 12px">8. Morbilidad por sistema o aparato (CIE-10)</div>
+          <p style="font-size:13.5px;line-height:1.75;color:#444;margin:0 0 16px;text-align:justify">{{ informeMorb.grpAnalisis }}</p>
+          <sc-if value="{{ informeMorb.gruposHas }}" hint-placeholder-val="">
+            <div class="inf-avoid" style="margin-bottom:22px">
+              <sc-for list="{{ informeMorb.grupos }}" as="gp" hint-placeholder-count="0"><div style="margin-bottom:9px"><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#444">{{ gp.label }}</span><span style="font-weight:700;color:#423D3B">{{ gp.n }}{{ gp.pctTxt }}</span></div><div style="background:#EDE9E4;border-radius:5px;height:14px;overflow:hidden"><div style="width:{{ gp.barW }};height:100%;background:#C9821A;border-radius:5px"></div></div></div></sc-for>
+            </div>
+          </sc-if>
+
+          <div class="inf-bpb" style="font-family:Archivo;font-weight:800;font-size:18px;color:#423D3B;border-bottom:2px solid #F2B200;padding-bottom:7px;margin:26px 0 12px">9. Evolución mensual y origen de las atenciones</div>
+          <p style="font-size:13.5px;line-height:1.75;color:#444;margin:0 0 16px;text-align:justify">{{ informeMorb.evoAnalisis }}</p>
+          <div class="inf-avoid" style="border:1px solid #EDE9E4;border-radius:10px;padding:16px;margin-bottom:14px">
+            <div style="font-size:12.5px;font-weight:700;color:#423D3B;margin-bottom:6px">Consultas por morbilidad por mes — {{ informeMorb.periodo }}</div>
+            <svg viewBox="0 0 380 148" width="100%" style="display:block;max-width:600px">
+              <line x1="12" y1="110" x2="374" y2="110" stroke="#E6E2DD" stroke-width="1"></line>
+              <sc-for list="{{ informeMorb.barsMes }}" as="b" hint-placeholder-count="6"><rect x="{{ b.x }}" y="{{ b.y }}" width="{{ b.w }}" height="{{ b.h }}" rx="2" fill="#F2B200"></rect><text x="{{ b.lx }}" y="{{ b.ny }}" text-anchor="middle" font-size="8.5" font-weight="700" fill="#423D3B">{{ b.nTxt }}</text><text x="{{ b.lx }}" y="123" text-anchor="middle" font-size="8" fill="#8C857E">{{ b.label }}</text><text x="{{ b.lx }}" y="134" text-anchor="middle" font-size="7.5" fill="#b3ada6">{{ b.yr }}</text></sc-for>
+            </svg>
+          </div>
+          <div class="inf-avoid" style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:22px">
+            <sc-for list="{{ informeMorb.origList }}" as="og" hint-placeholder-count="2"><div style="flex:1;min-width:150px;border:1px solid #E6E2DD;border-radius:9px;padding:11px;text-align:center"><div style="font-family:Archivo;font-weight:800;font-size:20px">{{ og.n }}</div><div style="font-size:11px;color:#8C857E">{{ og.label }} ({{ og.pct }}%)</div></div></sc-for>
+          </div>
+
+          <div style="font-family:Archivo;font-weight:800;font-size:18px;color:#423D3B;border-bottom:2px solid #F2B200;padding-bottom:7px;margin:26px 0 12px">10. Morbilidad por centro de trabajo</div>
+          <sc-if value="{{ informeMorb.esObraUnica }}" hint-placeholder-val=""><p style="font-size:13.5px;line-height:1.75;color:#666;margin:0 0 22px;text-align:justify">El presente informe corresponde exclusivamente al centro de trabajo {{ informeMorb.obra }}, por lo que no aplica la comparación entre obras. Para el comparativo, genere el informe con el filtro "Todas las obras".</p></sc-if>
+          <sc-if value="{{ informeMorb.porObraHas }}" hint-placeholder-val="">
+            <div class="inf-avoid" style="margin-bottom:22px">
+              <sc-for list="{{ informeMorb.porObra }}" as="po" hint-placeholder-count="0"><div style="margin-bottom:9px"><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#444">{{ po.obra }}</span><span style="font-weight:700;color:#423D3B">{{ po.n }}</span></div><div style="background:#EDE9E4;border-radius:5px;height:14px;overflow:hidden"><div style="width:{{ po.barW }};height:100%;background:#7A5AB0;border-radius:5px"></div></div></div></sc-for>
+            </div>
+          </sc-if>
+
+          <div class="inf-bpb" style="font-family:Archivo;font-weight:800;font-size:18px;color:#423D3B;border-bottom:2px solid #F2B200;padding-bottom:7px;margin:26px 0 12px">11. Caracterización demográfica</div>
+          <p style="font-size:13.5px;line-height:1.75;color:#444;margin:0 0 16px;text-align:justify">{{ informeMorb.demoAnalisis }}</p>
+          <sc-if value="{{ informeMorb.donutSexoHas }}" hint-placeholder-val="">
+            <div class="inf-avoid" style="display:flex;align-items:center;gap:26px;flex-wrap:wrap;border:1px solid #EDE9E4;border-radius:10px;padding:16px;margin-bottom:14px">
+              <svg viewBox="0 0 140 140" width="130" height="130" style="flex:none">
+                <circle cx="70" cy="70" r="54" fill="none" stroke="#EDE9E4" stroke-width="22"></circle>
+                <g transform="rotate(-90 70 70)"><sc-for list="{{ informeMorb.donutSexo }}" as="seg" hint-placeholder-count="2"><circle cx="70" cy="70" r="54" fill="none" stroke="{{ seg.color }}" stroke-width="22" stroke-dasharray="{{ seg.dash }}" stroke-dashoffset="{{ seg.offset }}"></circle></sc-for></g>
+                <text x="70" y="67" text-anchor="middle" font-size="22" font-weight="800" fill="#2C2A28" font-family="Archivo">{{ informeMorb.sxTotal }}</text>
+                <text x="70" y="85" text-anchor="middle" font-size="8.5" fill="#8C857E">CONSULTAS</text>
+              </svg>
+              <div style="flex:1;min-width:220px">
+                <div style="font-size:12.5px;font-weight:700;color:#423D3B;margin-bottom:8px">Distribución por sexo</div>
+                <div style="display:flex;flex-direction:column;gap:7px;font-size:12.5px;color:#444">
+                  <sc-for list="{{ informeMorb.donutSexo }}" as="seg" hint-placeholder-count="2"><span style="display:inline-flex;align-items:center;gap:7px"><span style="width:11px;height:11px;border-radius:3px;background:{{ seg.color }};display:inline-block"></span>{{ seg.label }}: <b>{{ seg.n }}</b> ({{ seg.pct }}%)</span></sc-for>
+                </div>
+              </div>
+            </div>
+          </sc-if>
+          <sc-if value="{{ informeMorb.etarioHas }}" hint-placeholder-val="">
+            <div class="inf-avoid" style="margin-bottom:22px">
+              <div style="font-size:12.5px;font-weight:700;color:#423D3B;margin-bottom:10px">Consultas por grupo etario</div>
+              <sc-for list="{{ informeMorb.etario }}" as="ej" hint-placeholder-count="0"><div style="margin-bottom:9px"><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#444">{{ ej.label }}</span><span style="font-weight:700;color:#423D3B">{{ ej.n }}{{ ej.pctTxt }}</span></div><div style="background:#EDE9E4;border-radius:5px;height:14px;overflow:hidden"><div style="width:{{ ej.barW }};height:100%;background:#2F6FB0;border-radius:5px"></div></div></div></sc-for>
+            </div>
+          </sc-if>
+
+          <div style="font-family:Archivo;font-weight:800;font-size:18px;color:#423D3B;border-bottom:2px solid #F2B200;padding-bottom:7px;margin:26px 0 12px">12. Reposo médico, derivaciones y recurrencia</div>
+          <p style="font-size:13.5px;line-height:1.75;color:#444;margin:0 0 16px;text-align:justify">{{ informeMorb.repAnalisis }}</p>
+          <div class="inf-avoid" style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px">
+            <div style="flex:1;min-width:120px;border:1px solid #E6E2DD;border-radius:9px;padding:12px;text-align:center"><div style="font-family:Archivo;font-weight:800;font-size:24px;color:#B8791A">{{ informeMorb.rep.dias }}</div><div style="font-size:11px;color:#8C857E">Días de reposo</div></div>
+            <div style="flex:1;min-width:120px;border:1px solid #E6E2DD;border-radius:9px;padding:12px;text-align:center"><div style="font-family:Archivo;font-weight:800;font-size:24px">{{ informeMorb.rep.conReposo }}</div><div style="font-size:11px;color:#8C857E">Consultas con reposo</div></div>
+            <div style="flex:1;min-width:120px;border:1px solid #E6E2DD;border-radius:9px;padding:12px;text-align:center"><div style="font-family:Archivo;font-weight:800;font-size:24px">{{ informeMorb.rep.derivados }}</div><div style="font-size:11px;color:#8C857E">Derivaciones</div></div>
+            <div style="flex:1;min-width:120px;border:1px solid #E6E2DD;border-radius:9px;padding:12px;text-align:center"><div style="font-family:Archivo;font-weight:800;font-size:24px">{{ informeMorb.rep.conMed }}</div><div style="font-size:11px;color:#8C857E">Con medicación</div></div>
+          </div>
+          <sc-if value="{{ informeMorb.recurHas }}" hint-placeholder-val="">
+            <div class="inf-avoid" style="border:1px solid #E6E2DD;border-radius:10px;overflow:hidden;margin-bottom:22px">
+              <div style="display:flex;align-items:center;background:#FAF7F0;font-size:10.5px;font-weight:700;color:#6b655f;padding:8px 14px;border-bottom:1px solid #EDE9E4"><div style="width:26px">#</div><div style="flex:1.6">Trabajador con consultas recurrentes (3 o más)</div><div style="flex:1.2;padding:0 6px">Centro de trabajo</div><div style="width:76px;text-align:right">Consultas</div></div>
+              <sc-for list="{{ informeMorb.recur }}" as="rq" hint-placeholder-count="0"><div style="display:flex;align-items:center;font-size:12px;padding:8px 14px;border-bottom:1px solid #F4F1EC"><div style="width:26px;color:#b3ada6;font-weight:700">{{ rq.idx }}</div><div style="flex:1.6;font-weight:700;color:#2C2A28">{{ rq.nombre }}</div><div style="flex:1.2;padding:0 6px;color:#555">{{ rq.obra }}</div><div style="width:76px;text-align:right;font-weight:800;font-family:Archivo">{{ rq.n }}</div></div></sc-for>
+            </div>
+          </sc-if>
+
+          <div class="inf-bpb" style="font-family:Archivo;font-weight:800;font-size:18px;color:#423D3B;border-bottom:2px solid #F2B200;padding-bottom:7px;margin:26px 0 12px">13. Conclusiones</div>
+          <ul style="font-size:13.5px;line-height:1.7;color:#444;margin:0 0 22px;padding-left:20px">
+            <sc-for list="{{ informeMorb.conclusiones }}" as="cn" hint-placeholder-count="0"><li style="margin-bottom:8px;text-align:justify">{{ cn }}</li></sc-for>
+          </ul>
+
+          <div style="font-family:Archivo;font-weight:800;font-size:18px;color:#423D3B;border-bottom:2px solid #F2B200;padding-bottom:7px;margin:26px 0 12px">14. Plan de acción</div>
+          <p style="font-size:13px;line-height:1.7;color:#666;margin:0 0 14px">Acciones propuestas de acuerdo con los resultados de los indicadores y gráficos de morbilidad de este período.</p>
+          <div class="inf-avoid" style="border:1px solid #E6E2DD;border-radius:10px;overflow:hidden;margin-bottom:22px">
+            <div style="display:flex;align-items:flex-start;background:#423D3B;color:#fff;font-size:11px;font-weight:700;padding:9px 14px"><div style="flex:1.3;padding-right:8px">Hallazgo</div><div style="flex:2;padding-right:8px">Acción recomendada</div><div style="width:118px;padding-right:8px">Responsable</div><div style="width:82px">Plazo</div></div>
+            <sc-for list="{{ informeMorb.plan }}" as="pl" hint-placeholder-count="0"><div class="inf-avoid" style="display:flex;align-items:flex-start;font-size:11.5px;padding:9px 14px;border-bottom:1px solid #F4F1EC;line-height:1.55"><div style="flex:1.3;padding-right:8px;font-weight:700;color:#2C2A28">{{ pl.hallazgo }}</div><div style="flex:2;padding-right:8px;color:#444;text-align:justify">{{ pl.accion }}</div><div style="width:118px;padding-right:8px;color:#555">{{ pl.resp }}</div><div style="width:82px;color:#8C857E">{{ pl.plazo }}</div></div></sc-for>
+          </div>
+
+          <div style="font-family:Archivo;font-weight:800;font-size:18px;color:#423D3B;border-bottom:2px solid #F2B200;padding-bottom:7px;margin:26px 0 12px">15. Recomendaciones</div>
+          <ul style="font-size:13.5px;line-height:1.7;color:#444;margin:0 0 22px;padding-left:20px">
+            <sc-for list="{{ informeMorb.recomendaciones }}" as="rc" hint-placeholder-count="0"><li style="margin-bottom:8px;text-align:justify">{{ rc }}</li></sc-for>
+          </ul>
+
+          <div class="inf-avoid" style="margin-top:54px;display:flex;justify-content:flex-start">
+            <div style="width:280px;border-top:1px solid #999;padding-top:8px;font-size:13px;text-align:center">
+              <div style="font-weight:700">{{ informeMorb.medico }}</div>
+              <div style="color:#666;font-size:12px">{{ informeMorb.registro }}</div>
+              <div style="color:#999;font-size:11px;margin-top:2px">{{ informeMorb.empresa }} · {{ informeMorb.hoy }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
   <sc-if value="{{ modalOpen }}" hint-placeholder-val="">
     <div data-noprint onClick="{{ closeModalBg }}" style="position:fixed;inset:0;background:rgba(44,42,40,.55);display:flex;align-items:flex-start;justify-content:center;padding:36px 16px;z-index:60;overflow-y:auto;animation:fadeIn .15s ease">
       <form onSubmit="{{ submitModal }}" onClick="{{ stop }}" style="width:640px;max-width:96vw;background:#fff;border-radius:15px;box-shadow:0 30px 80px rgba(0,0,0,.4);animation:slideUp .25s ease;margin:auto 0">
@@ -1967,6 +2213,7 @@ class Component extends DCLogic {
       repObra:'TODAS', repMes:new Date().toISOString().slice(0,7), repHHT:'',
       indYear:String(new Date().getFullYear()), indObra:'TODAS', showInforme:false,
       prObraFilter:'TODAS', prYear:String(new Date().getFullYear()), showInformePr:false,
+      morbObra:'TODAS', morbDesde:'', morbHasta:'', morbPanel:false, showInformeMorb:false,
       toast:''
     };
   }
@@ -2527,12 +2774,18 @@ class Component extends DCLogic {
       objetivoGeneral:og, objetivosEspecificos:oe, morb:morb, morbEmpty:(morb.length===0),
       planAccion:this.planAccionDesde(d.morbList), conclusiones:conclu, recomendaciones:recom, normas:normas };
   }
-  abrirInforme=()=>{ this.setState({showInforme:true, showInformePr:false}); };
+  abrirInforme=()=>{ this.setState({showInforme:true, showInformePr:false, showInformeMorb:false}); };
   cerrarInforme=()=>{ this.setState({showInforme:false}); };
   setPrObraFilter=(e)=>{ this.setState({prObraFilter:e.target.value}); };
   setPrYear=(e)=>{ this.setState({prYear:e.target.value}); };
-  abrirInformePr=()=>{ this.setState({showInformePr:true, showInforme:false}); };
+  abrirInformePr=()=>{ this.setState({showInformePr:true, showInforme:false, showInformeMorb:false}); };
   cerrarInformePr=()=>{ this.setState({showInformePr:false}); };
+  toggleMorbPanel=()=>{ this.setState({morbPanel:!this.state.morbPanel}); };
+  setMorbObra=(e)=>{ this.setState({morbObra:e.target.value}); };
+  setMorbDesde=(e)=>{ const v=e.target.value; const r=this.morbRango(); this.setState({morbDesde:v, morbHasta:(r.hasta<v)?v:r.hasta}); };
+  setMorbHasta=(e)=>{ const v=e.target.value; const r=this.morbRango(); this.setState({morbDesde:(r.desde>v)?v:r.desde, morbHasta:v}); };
+  abrirInformeMorb=()=>{ this.setState({showInformeMorb:true, showInforme:false, showInformePr:false}); };
+  cerrarInformeMorb=()=>{ this.setState({showInformeMorb:false}); };
   imprimirInforme=()=>{ try{document.body.classList.add('print-informe');}catch(e){} window.print(); setTimeout(function(){ try{document.body.classList.remove('print-informe');}catch(e){} },700); };
   exportIndicadoresCSV=()=>{
     const d=this.computeIndicadores(); const M=['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic']; const L=[];
@@ -2675,6 +2928,201 @@ class Component extends DCLogic {
       normas:normasPr, intro:intro, objetivoGeneral:objetivoGeneral, objetivosEspecificos:oe, metodologia:metodologia,
       analisisPob:analisisPob, analisisTipos:analisisTipos, analisisAt:analisisAt,
       plan:plan, conclusiones:conclu, recomendaciones:recom };
+  }
+  // ===== MORBILIDAD (módulo de consultas) =====
+  capituloCIE(cod){
+    var s=String(cod||'').toUpperCase().replace(/\s/g,'');
+    var m=s.match(/^([A-Z])(\d\d)/); if(!m) return 'Sin código CIE-10';
+    var val=function(c){ return (c.charCodeAt(0)-65)*100+parseInt(c.slice(1),10); };
+    var v=val(m[1]+m[2]);
+    var R=[['A00','B99','Enfermedades infecciosas y parasitarias'],['C00','D48','Tumores (neoplasias)'],['D50','D89','Sangre y órganos hematopoyéticos'],['E00','E90','Endocrinas, nutricionales y metabólicas'],['F00','F99','Trastornos mentales y del comportamiento'],['G00','G99','Sistema nervioso'],['H00','H59','Ojo y sus anexos'],['H60','H95','Oído y apófisis mastoides'],['I00','I99','Sistema circulatorio'],['J00','J99','Sistema respiratorio'],['K00','K93','Sistema digestivo'],['L00','L99','Piel y tejido subcutáneo'],['M00','M99','Sistema osteomuscular y tejido conjuntivo'],['N00','N99','Sistema genitourinario'],['O00','O99','Embarazo, parto y puerperio'],['P00','P96','Afecciones del período perinatal'],['Q00','Q99','Malformaciones congénitas'],['R00','R99','Síntomas y signos generales'],['S00','T98','Traumatismos y otras consecuencias de causas externas'],['V01','Y98','Causas externas'],['Z00','Z99','Controles y factores que influyen en la salud']];
+    for(var i=0;i<R.length;i++){ if(v>=val(R[i][0])&&v<=val(R[i][1])) return R[i][2]; }
+    return 'Otros';
+  }
+  morbMeses(){
+    var set={}; this.scopedDb().consultas.forEach(function(c){ if(String(c.origen||'')==='Accidente de trabajo') return; var m=String(c.fecha||'').slice(0,7); if(/^\d{4}-\d{2}$/.test(m)) set[m]=1; });
+    var arr=Object.keys(set).sort(); if(!arr.length) arr=[this.todayISO().slice(0,7)]; return arr;
+  }
+  morbRango(){
+    var ms=this.morbMeses();
+    var hasta=this.state.morbHasta; if(ms.indexOf(hasta)<0) hasta=ms[ms.length-1];
+    var desde=this.state.morbDesde;
+    if(ms.indexOf(desde)<0){ var ene=hasta.slice(0,4)+'-01'; desde=null; for(var i=0;i<ms.length;i++){ if(ms[i]>=ene&&ms[i]<=hasta){desde=ms[i];break;} } if(!desde)desde=ms[0]; }
+    if(desde>hasta){ var t=desde; desde=hasta; hasta=t; }
+    return {desde:desde,hasta:hasta,meses:ms};
+  }
+  mesesEntre(a,b){
+    var out=[]; var y=parseInt(a.slice(0,4),10),m=parseInt(a.slice(5,7),10);
+    var yb=parseInt(b.slice(0,4),10),mb=parseInt(b.slice(5,7),10); var g=0;
+    while((y<yb||(y===yb&&m<=mb))&&g<240){ out.push(y+'-'+('0'+m).slice(-2)); m++; if(m>12){m=1;y++;} g++; }
+    return out;
+  }
+  mesCorto(m){ var M=['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic']; var i=parseInt(String(m).slice(5,7),10)-1; return M[i]||''; }
+  computeMorbilidad(){
+    var self=this; var db=this.scopedDb();
+    var obraSel=this.myObra()||this.state.morbObra||'TODAS';
+    var esTodas=(obraSel==='TODAS');
+    var rg=this.morbRango(); var desde=rg.desde, hasta=rg.hasta;
+    var d0=desde+'-01', d1=hasta+'-31';
+    var wmap={}; db.workers.forEach(function(w){ wmap[w.cedula]=w; });
+    var cons=db.consultas.filter(function(c){
+      if(String(c.origen||'')==='Accidente de trabajo') return false;
+      var f=String(c.fecha||''); if(f<d0||f>d1) return false;
+      if(!esTodas){ var w=wmap[c.cedula]; if(!w||w.obra!==obraSel) return false; }
+      return true;
+    });
+    var total=cons.length;
+    var cedSet={}; cons.forEach(function(c){cedSet[c.cedula]=1;}); var atendidos=Object.keys(cedSet).length;
+    var wkAct=db.workers.filter(function(w){ return (esTodas||w.obra===obraSel)&&(w.estado||'A')==='A'; });
+    var tasa=wkAct.length?(Math.round(atendidos/wkAct.length*1000)/10):0;
+    var promedio=atendidos?(Math.round(total/atendidos*10)/10):0;
+    // diagnósticos
+    var dxMap={}; cons.forEach(function(c){ var k=(c.dxTexto||c.motivo||'Sin diagnóstico')+(c.dxCodigo?(' ('+c.dxCodigo+')'):''); if(!dxMap[k])dxMap[k]={n:0,cod:c.dxCodigo||''}; dxMap[k].n++; });
+    var dxList=Object.keys(dxMap).map(function(k){return {dx:k,n:dxMap[k].n,cod:dxMap[k].cod};}).sort(function(a,b){return b.n-a.n||a.dx.localeCompare(b.dx);});
+    // grupos CIE-10
+    var grpMap={}; cons.forEach(function(c){ var g=self.capituloCIE(c.dxCodigo); grpMap[g]=(grpMap[g]||0)+1; });
+    var grupos=Object.keys(grpMap).map(function(g){return {g:g,n:grpMap[g]};}).sort(function(a,b){return b.n-a.n;});
+    // por mes (eje continuo)
+    var mesMap={}; cons.forEach(function(c){ var m=String(c.fecha||'').slice(0,7); mesMap[m]=(mesMap[m]||0)+1; });
+    var porMes=this.mesesEntre(desde,hasta).map(function(m){ return {m:m,label:self.mesCorto(m),n:mesMap[m]||0}; });
+    var pico=null; porMes.forEach(function(p){ if(!pico||p.n>pico.n) pico=p; });
+    // por origen
+    var origMap={}; cons.forEach(function(c){ var o=c.origen||'Sin origen'; origMap[o]=(origMap[o]||0)+1; });
+    var origList=Object.keys(origMap).map(function(o){return {label:o,n:origMap[o],pct:total?Math.round(origMap[o]/total*100):0};}).sort(function(a,b){return b.n-a.n;});
+    // por obra
+    var porObra=[];
+    if(esTodas){ var om={}; cons.forEach(function(c){ var w=wmap[c.cedula]; var o=(w&&w.obra)||'Sin obra'; om[o]=(om[o]||0)+1; }); porObra=Object.keys(om).map(function(o){return {obra:o,n:om[o]};}).sort(function(a,b){return b.n-a.n;}); }
+    // sexo y edad
+    var sx={M:0,F:0,ND:0};
+    var et=[{k:'18-29',n:0},{k:'30-39',n:0},{k:'40-49',n:0},{k:'50-59',n:0},{k:'60 o más',n:0},{k:'Sin dato',n:0}];
+    cons.forEach(function(c){ var w=wmap[c.cedula];
+      var s=(w&&String(w.sexo||'').toUpperCase())||''; if(s==='M')sx.M++; else if(s==='F')sx.F++; else sx.ND++;
+      var e=self.ageOf(w); if(e==null)et[5].n++; else if(e<30)et[0].n++; else if(e<40)et[1].n++; else if(e<50)et[2].n++; else if(e<60)et[3].n++; else et[4].n++;
+    });
+    // reposo, derivaciones, medicación
+    var reposoDias=0, conReposo=0, derivados=0, conMed=0;
+    cons.forEach(function(c){ var d=parseInt(c.reposoDias,10)||0; if(d>0){reposoDias+=d;conReposo++;} if(String(c.derivacion||'').trim())derivados++; if(String(c.medicacion||'').trim())conMed++; });
+    // recurrentes (3+ consultas)
+    var pc={}; cons.forEach(function(c){pc[c.cedula]=(pc[c.cedula]||0)+1;});
+    var recurrentes=Object.keys(pc).filter(function(c){return pc[c]>=3;}).map(function(c){ var w=wmap[c]||{}; return {cedula:c,nombre:w.nombre||c,obra:w.obra||'—',n:pc[c]}; }).sort(function(a,b){return b.n-a.n;});
+    return {obraSel:obraSel,esTodas:esTodas,desde:desde,hasta:hasta,meses:rg.meses,total:total,atendidos:atendidos,activos:wkAct.length,tasa:tasa,promedio:promedio,dxList:dxList,dxDistintos:dxList.length,grupos:grupos,porMes:porMes,pico:pico,origList:origList,porObra:porObra,sx:sx,et:et,reposoDias:reposoDias,conReposo:conReposo,derivados:derivados,conMed:conMed,recurrentes:recurrentes};
+  }
+  morbBarsSVG(porMes){
+    var n=porMes.length||1; var maxN=1; porMes.forEach(function(p){ if(p.n>maxN)maxN=p.n; });
+    var W=356, slot=W/n, bw=Math.max(5,Math.min(24,Math.floor(slot-5))), bh=92;
+    return porMes.map(function(p,i){
+      var h=p.n>0?Math.max(Math.round(p.n/maxN*bh),2):1;
+      var x=16+i*slot+(slot-bw)/2, lx=16+i*slot+slot/2, y=16+(bh-h);
+      return {x:x.toFixed(1),y:y,h:h,w:bw,lx:lx.toFixed(1),ny:(y-4),label:(n<=20?p.label:(p.m.slice(5,7)==='01'?p.label:'')),yr:((i===0||p.m.slice(5,7)==='01')?("'"+p.m.slice(2,4)):''),nTxt:((p.n>0&&n<=14)?String(p.n):'')};
+    });
+  }
+  informeMorbData(){
+    var self=this; var db=this.scopedDb();
+    var mb=this.computeMorbilidad();
+    var obra=mb.esTodas?'Todas las obras':mb.obraSel;
+    var periodo=(mb.desde===mb.hasta)?this.mesLabel(mb.desde):(this.mesLabel(mb.desde)+' a '+this.mesLabel(mb.hasta));
+    var nMeses=mb.porMes.length;
+    var pctOf=function(n){ return mb.total?Math.round(n/mb.total*100):0; };
+    // Tabla de principales causas (Pareto, top 15)
+    var acum=0;
+    var tabla=mb.dxList.slice(0,15).map(function(d,i){ acum+=d.n; return {idx:i+1,dx:d.dx,n:d.n,pct:pctOf(d.n)+'%',acum:(mb.total?Math.round(acum/mb.total*100):0)+'%'}; });
+    var otrosN=mb.total-mb.dxList.slice(0,15).reduce(function(a,d){return a+d.n;},0);
+    var top3pct=pctOf(mb.dxList.slice(0,3).reduce(function(a,d){return a+d.n;},0));
+    // Grupos con barras
+    var maxG=1; mb.grupos.forEach(function(g){ if(g.n>maxG)maxG=g.n; });
+    var grupos=mb.grupos.map(function(g){ return {label:g.g,n:g.n,pctTxt:' ('+pctOf(g.n)+'%)',barW:Math.round(g.n/maxG*100)+'%'}; });
+    // Barras mensuales
+    var barsMes=this.morbBarsSVG(mb.porMes);
+    // Por obra
+    var maxO=1; mb.porObra.forEach(function(o){ if(o.n>maxO)maxO=o.n; });
+    var porObra=mb.porObra.map(function(o){ return {obra:o.obra,n:o.n,barW:Math.round(o.n/maxO*100)+'%'}; });
+    var porObraHas=mb.esTodas&&porObra.length>0;
+    // Dona por sexo
+    var C=339.292, cum=0, donutSexo=[]; var sxTot=mb.sx.M+mb.sx.F+mb.sx.ND;
+    [{n:mb.sx.M,color:'#2F6FB0',label:'Hombres'},{n:mb.sx.F,color:'#B0457C',label:'Mujeres'},{n:mb.sx.ND,color:'#8C857E',label:'Sin dato'}].forEach(function(sg){ if(sg.n<=0)return; var fr=sxTot?(sg.n/sxTot):0; donutSexo.push({dash:(fr*C).toFixed(2)+' '+C.toFixed(2),offset:(-cum*C).toFixed(2),color:sg.color,label:sg.label,n:sg.n,pct:sxTot?Math.round(fr*100):0}); cum+=fr; });
+    // Etario
+    var maxE=1; mb.et.forEach(function(e){ if(e.n>maxE)maxE=e.n; });
+    var etario=mb.et.filter(function(e){return e.n>0;}).map(function(e){ return {label:e.k+' años',n:e.n,pctTxt:' ('+pctOf(e.n)+'%)',barW:Math.round(e.n/maxE*100)+'%'}; });
+    // Recurrentes
+    var recur=mb.recurrentes.slice(0,10).map(function(r,i){ return {idx:i+1,nombre:r.nombre,obra:r.obra,n:r.n}; });
+    // ---- Marco normativo (Ecuador, verificado) ----
+    var normas=[
+      {n:'Constitución de la República — Artículos 32 y 326 (num. 5)',d:'La salud es un derecho garantizado por el Estado, y toda persona tiene derecho a desarrollar sus labores en un ambiente adecuado y propicio que garantice su salud, integridad, seguridad, higiene y bienestar.'},
+      {n:'Código del Trabajo — servicio médico de empresa y obligaciones del empleador',d:'Establece la obligación del empleador de velar por la salud de los trabajadores y el funcionamiento del servicio médico en los centros de trabajo, base legal de la atención médica registrada en este informe.'},
+      {n:'Acuerdo Ministerial MSP 00004-2026 — Reglamento SISAT (Servicios Integrales de Salud en el Trabajo)',d:'Norma de salud ocupacional expedida en mayo de 2026, que derogó el Acuerdo Ministerial 1404 de 1978. Organiza los servicios de salud en el trabajo por categorías según el número de trabajadores y el nivel de riesgo, exige profesionales habilitados ante la ACESS y consagra la confidencialidad de la información médica: el análisis de morbilidad se presenta de forma agregada y estadística, sin exponer diagnósticos individuales al empleador.'},
+      {n:'Decreto Ejecutivo 255 (2024) — Reglamento de Seguridad y Salud en el Trabajo',d:'Norma vigente que reemplazó al Decreto 2393 de 1986: dispone la vigilancia de la salud de los trabajadores con enfoque preventivo. El perfil de morbilidad es un insumo directo de esa vigilancia y de la planificación preventiva del centro de trabajo.'},
+      {n:'Resolución C.D. 513 del IESS — Seguro General de Riesgos del Trabajo',d:'Regula las prestaciones y la gestión de los accidentes de trabajo y enfermedades profesionales. Por corresponder a un canal de gestión propio, los accidentes de trabajo se excluyen expresamente de este análisis de morbilidad.'},
+      {n:'CIE-10 (OPS/OMS) — Clasificación Internacional de Enfermedades, 10.ª revisión',d:'Estándar internacional utilizado para codificar los diagnósticos de las consultas y agruparlos por capítulos (sistemas o aparatos), lo que permite comparar el perfil de morbilidad entre períodos y centros de trabajo.'},
+      {n:'Lineamientos OIT/OMS sobre vigilancia de la salud de los trabajadores',d:'Recomiendan el análisis periódico de la morbilidad registrada por los servicios de salud en el trabajo como herramienta para orientar programas preventivos y de promoción de la salud.'}
+    ];
+    // ---- Textos ----
+    var intro='El presente informe describe el perfil de morbilidad del personal de '+obra+' atendido por el servicio médico durante el período '+periodo+' ('+nMeses+' mes(es)). La morbilidad —el conjunto de enfermedades y motivos de consulta registrados— se analiza a partir de las consultas médicas del sistema de gestión ocupacional de ETINAR, clasificadas con la CIE-10. Por decisión metodológica, se excluyen del análisis los accidentes de trabajo, que se gestionan y reportan por su propio canal (Resolución C.D. 513 del IESS); el informe se concentra en la enfermedad común, los controles de seguimiento y la eventual enfermedad profesional.';
+    var objetivoGeneral='Caracterizar la morbilidad atendida por el servicio médico de '+obra+' durante el período '+periodo+', identificando las principales causas de consulta, los sistemas afectados, su evolución temporal y los grupos más afectados, para orientar el plan de acción preventivo del centro de trabajo.';
+    var oe=['Cuantificar el volumen de consultas por morbilidad y la población trabajadora atendida en el período.','Identificar y jerarquizar las principales causas de consulta según diagnóstico CIE-10.','Agrupar la morbilidad por sistemas o aparatos (capítulos CIE-10) para facilitar su interpretación.','Describir la evolución mensual de las atenciones y detectar los meses de mayor demanda.'].concat(mb.esTodas?['Comparar la carga de morbilidad entre los centros de trabajo.']:[]).concat(['Caracterizar la morbilidad según sexo y grupo etario.','Cuantificar los días de reposo médico generados, las derivaciones y los casos con consultas recurrentes.','Formular un plan de acción basado en los hallazgos.']);
+    var metodologia='Estudio descriptivo de corte transversal. La fuente es el registro de consultas médicas del sistema de gestión ocupacional de ETINAR correspondiente a '+obra+' entre '+this.mesLabel(mb.desde)+' y '+this.mesLabel(mb.hasta)+'. Se excluyeron las atenciones con origen "Accidente de trabajo". Cada consulta se clasificó con su código CIE-10 y se agrupó por capítulos (sistemas). Los resultados se presentan de forma agregada y anonimizada, en cumplimiento del principio de confidencialidad de la información médica del Reglamento SISAT; las frecuencias se expresan en números absolutos y porcentajes, y la tasa de morbilidad se calcula por cada 100 trabajadores activos del alcance seleccionado.';
+    // ---- Análisis automáticos ----
+    var volAnalisis='Durante el período se registraron '+mb.total+' consulta(s) por morbilidad, correspondientes a '+mb.atendidos+' trabajador(es) distintos de una población activa de '+mb.activos+' persona(s), lo que equivale a una tasa de morbilidad de '+mb.tasa+' trabajadores atendidos por cada 100 activos y un promedio de '+mb.promedio+' consulta(s) por persona atendida.';
+    var dxAnalisis=mb.total?('La primera causa de morbilidad fue "'+(mb.dxList[0]?mb.dxList[0].dx:'—')+'" con '+(mb.dxList[0]?mb.dxList[0].n:0)+' caso(s) ('+pctOf(mb.dxList[0]?mb.dxList[0].n:0)+'% del total). Las tres primeras causas concentran el '+top3pct+'% de la morbilidad del período, sobre '+mb.dxDistintos+' diagnóstico(s) distintos registrados.'):'No se registran consultas por morbilidad en el período y alcance seleccionados.';
+    var grpAnalisis=mb.grupos.length?('Agrupada por sistemas (CIE-10), la morbilidad se concentra en "'+mb.grupos[0].g+'" con '+mb.grupos[0].n+' caso(s) ('+pctOf(mb.grupos[0].n)+'%)'+(mb.grupos[1]?(', seguida de "'+mb.grupos[1].g+'" con '+mb.grupos[1].n+' caso(s) ('+pctOf(mb.grupos[1].n)+'%)'):'')+'. Esta agrupación orienta el tipo de intervención preventiva prioritaria.'):'Sin datos para agrupar por sistemas.';
+    var evoAnalisis=(mb.pico&&mb.pico.n>0)?('El mes de mayor demanda fue '+this.mesLabel(mb.pico.m)+' con '+mb.pico.n+' consulta(s). '+(mb.origList.length?('Según el origen, predominó "'+mb.origList[0].label+'" ('+mb.origList[0].pct+'%).'):'')):'Sin variación mensual relevante en el período.';
+    var demoAnalisis=(sxTot?('Por sexo, '+mb.sx.M+' consulta(s) ('+Math.round(mb.sx.M/sxTot*100)+'%) corresponden a hombres y '+mb.sx.F+' ('+Math.round(mb.sx.F/sxTot*100)+'%) a mujeres'+(mb.sx.ND?(', con '+mb.sx.ND+' sin dato'):'')+'. '):'')+(etario.length?('El grupo etario con más consultas es el de '+etario.slice().sort(function(a,b){return b.n-a.n;})[0].label+'.'):'');
+    var repAnalisis='La morbilidad del período generó '+mb.reposoDias+' día(s) de reposo médico en '+mb.conReposo+' consulta(s). Se registraron '+mb.derivados+' derivación(es) a niveles de mayor complejidad (IESS/MSP u otros) y '+mb.conMed+' consulta(s) con entrega de medicación. '+(mb.recurrentes.length?('Se identificaron '+mb.recurrentes.length+' trabajador(es) con 3 o más consultas en el período, que ameritan seguimiento individualizado.'):'No se identificaron trabajadores con consultas recurrentes (3 o más) en el período.');
+    // ---- Conclusiones ----
+    var conclu=[];
+    conclu.push('En '+obra+', durante '+periodo+', se atendieron '+mb.total+' consulta(s) por morbilidad general en '+mb.atendidos+' trabajador(es), con una tasa de morbilidad de '+mb.tasa+' por cada 100 trabajadores activos.');
+    if(mb.dxList.length) conclu.push('La principal causa de consulta fue "'+mb.dxList[0].dx+'" ('+mb.dxList[0].n+' caso(s); '+pctOf(mb.dxList[0].n)+'%), y las tres primeras causas explican el '+top3pct+'% de la morbilidad, lo que permite focalizar las intervenciones preventivas.');
+    if(mb.grupos.length) conclu.push('El sistema más afectado fue "'+mb.grupos[0].g+'" ('+pctOf(mb.grupos[0].n)+'% de las consultas).');
+    if(mb.pico&&mb.pico.n>0) conclu.push('La mayor demanda de atención se registró en '+this.mesLabel(mb.pico.m)+' ('+mb.pico.n+' consulta(s)), información útil para planificar recursos y campañas.');
+    if(porObraHas&&porObra.length>1) conclu.push('El centro de trabajo con mayor carga de morbilidad fue "'+porObra[0].obra+'" con '+porObra[0].n+' consulta(s).');
+    conclu.push('La morbilidad generó '+mb.reposoDias+' día(s) de reposo médico, un indicador directo de su impacto en el ausentismo.');
+    if(mb.recurrentes.length) conclu.push('Existen '+mb.recurrentes.length+' trabajador(es) con consultas recurrentes que requieren valoración integral para descartar patología de base o factores relacionados con el puesto de trabajo.');
+    conclu.push('Los accidentes de trabajo fueron excluidos de este análisis por gestionarse mediante su propio procedimiento; el perfil descrito corresponde a morbilidad general y controles de salud.');
+    // ---- Plan de acción según resultados ----
+    var plan=[]; var addPlan=function(h,a,r,p){ plan.push({hallazgo:h,accion:a,resp:r,plazo:p}); };
+    var reglas={
+      'Sistema respiratorio':['Campaña de prevención respiratoria: higiene de manos, ventilación de áreas comunes y vestidores, uso de mascarilla ante síntomas, control del polvo en frentes de obra y vacunación anual contra la influenza.','Servicio médico / SST','Inmediato y sostenido'],
+      'Enfermedades infecciosas y parasitarias':['Reforzar higiene y manipulación de alimentos, agua segura para consumo, limpieza y desinfección de comedores y baterías sanitarias, y campaña de lavado de manos.','Servicio médico / Administración de obra','30 días'],
+      'Sistema digestivo':['Educación en hábitos alimentarios e hidratación, horarios adecuados de comida y manejo de gastritis/acidez; verificar condiciones de los comedores.','Servicio médico','30 días'],
+      'Sistema osteomuscular y tejido conjuntivo':['Programa de pausas activas diarias, capacitación en manejo manual de cargas e higiene postural, y evaluación ergonómica de los puestos con mayor exigencia física.','Servicio médico / SST','60 días'],
+      'Síntomas y signos generales':['Asegurar hidratación, sombra y pausas en horas de mayor calor; evaluar carga y ritmo de trabajo, calidad del sueño y factores de estrés térmico asociados a cefaleas y malestar general.','Servicio médico / SST','30 días'],
+      'Sistema circulatorio':['Programa de riesgo cardiovascular: toma periódica de presión arterial, control de peso, consejería en alimentación y actividad física, y seguimiento de casos con cifras elevadas.','Servicio médico','Trimestral'],
+      'Piel y tejido subcutáneo':['Higiene personal y de EPP, calzado adecuado y secado de pies, duchas disponibles y tratamiento oportuno de micosis y lesiones de piel.','Servicio médico / SST','30 días'],
+      'Ojo y sus anexos':['Verificar el uso correcto de protección ocular en tareas con proyección de partículas y la disponibilidad de estaciones lavaojos.','SST','Inmediato'],
+      'Oído y apófisis mastoides':['Evaluar exposición a ruido y uso de protección auditiva en las áreas correspondientes.','SST','60 días'],
+      'Traumatismos y otras consecuencias de causas externas':['Reforzar orden y limpieza, señalización de áreas y reporte de condiciones inseguras; analizar los traumatismos no laborales para reforzar el autocuidado.','SST / Administración de obra','30 días'],
+      'Sistema genitourinario':['Garantizar hidratación y acceso adecuado a baterías sanitarias; educación sobre infecciones urinarias.','Servicio médico / Administración de obra','30 días'],
+      'Trastornos mentales y del comportamiento':['Activar apoyo psicosocial y tamizaje de salud mental conforme al enfoque del Reglamento SISAT y el Decreto 255.','Servicio médico','30 días']
+    };
+    mb.grupos.forEach(function(g,i){ if(g.n>=2||i===0){ var r=reglas[g.g]; if(r) addPlan('"'+g.g+'": '+g.n+' caso(s), '+pctOf(g.n)+'% de la morbilidad.',r[0],r[1],r[2]); } });
+    if(mb.recurrentes.length) addPlan('Trabajadores con 3 o más consultas en el período: '+mb.recurrentes.length+'.','Valoración médica integral e individualizada de cada caso recurrente, con revisión del puesto de trabajo y de posibles patologías de base.','Servicio médico','Inmediato');
+    if(mb.reposoDias>=5) addPlan('Días de reposo generados por morbilidad: '+mb.reposoDias+'.','Análisis de ausentismo por morbilidad: verificar reintegros, readecuaciones temporales y seguimiento de los descansos otorgados.','Servicio médico / Talento humano','30 días');
+    addPlan('Vigilancia continua del perfil de morbilidad.','Mantener el análisis mensual de morbilidad en el sistema y presentar los resultados al comité paritario / responsable de SST.','Servicio médico','Mensual');
+    addPlan('Educación sanitaria según el perfil encontrado.','Programar charlas de seguridad y salud (5 minutos) sobre las principales causas de consulta identificadas en este informe.','Servicio médico / SST','Continuo');
+    // ---- Recomendaciones ----
+    var recom=[
+      'Ejecutar el plan de acción propuesto y verificar su cumplimiento en el siguiente período de análisis.',
+      'Repetir este análisis con periodicidad mensual y comparar los resultados entre períodos para evaluar la efectividad de las intervenciones.',
+      'Registrar todas las atenciones con su código CIE-10 para mantener la calidad del perfil epidemiológico.',
+      (mb.recurrentes.length?'Agendar la valoración integral de los trabajadores con consultas recurrentes identificados en este informe.':'Mantener la vigilancia sobre la aparición de casos con consultas recurrentes.'),
+      'Coordinar con el área de SST las medidas preventivas derivadas de los sistemas más afectados (condiciones de obra, EPP, ergonomía, hidratación).',
+      'Utilizar este perfil de morbilidad como insumo de la vigilancia de la salud exigida por el Decreto Ejecutivo 255 y del servicio integral de salud en el trabajo (Reglamento SISAT).',
+      'Conservar la confidencialidad de la información médica individual: divulgar únicamente resultados agregados como los de este informe.'
+    ];
+    return { obra:obra, periodo:periodo, desde:this.mesLabel(mb.desde), hasta:this.mesLabel(mb.hasta), nMeses:nMeses,
+      medico:db.config.medicoNombre||'Médico Ocupacional', registro:db.config.medicoRegistro||'', empresa:db.config.empresa||'ETINAR', hoy:this.fmt(this.todayISO()),
+      kpis:{consultas:mb.total,atendidos:mb.atendidos,activos:mb.activos,tasa:mb.tasa,promedio:mb.promedio,dxDistintos:mb.dxDistintos,reposo:mb.reposoDias},
+      sinDatos:mb.total===0, hayDatos:mb.total>0,
+      tabla:tabla, tablaHas:tabla.length>0, otrosN:otrosN, otrosHas:otrosN>0,
+      grupos:grupos, gruposHas:grupos.length>0,
+      barsMes:barsMes, origList:mb.origList,
+      porObra:porObra, porObraHas:porObraHas, esObraUnica:!mb.esTodas,
+      donutSexo:donutSexo, donutSexoHas:donutSexo.length>0, sxTotal:sxTot,
+      etario:etario, etarioHas:etario.length>0,
+      rep:{dias:mb.reposoDias,conReposo:mb.conReposo,derivados:mb.derivados,conMed:mb.conMed},
+      recur:recur, recurHas:recur.length>0, recurEmpty:recur.length===0,
+      normas:normas, intro:intro, objetivoGeneral:objetivoGeneral, objetivosEspecificos:oe, metodologia:metodologia,
+      volAnalisis:volAnalisis, dxAnalisis:dxAnalisis, grpAnalisis:grpAnalisis, evoAnalisis:evoAnalisis, demoAnalisis:demoAnalisis, repAnalisis:repAnalisis,
+      conclusiones:conclu, plan:plan, recomendaciones:recom };
   }
   exportEspecialesCSV=()=>{
     const pr=this.computePrioritarios(); const L=[];
@@ -2882,7 +3330,27 @@ class Component extends DCLogic {
     R.allWorkersOpts=db.workers.slice().sort((a,b)=>(a.nombre||'').localeCompare(b.nombre||'')).map(w=>({cedula:w.cedula,label:w.nombre+' — '+w.cedula}));
     R.obrasOpts=db.config.obras;
 
-    if(R.isConsultas){ let all=db.consultas.slice().sort((a,b)=>(b.fecha||'').localeCompare(a.fecha||'')); if(s.consObraFilter!=='TODAS') all=all.filter(x=>this.workerObra(x.cedula)===s.consObraFilter); R.consultasAll=all.map(x=>({...x,nombre:this.workerName(x.cedula),obra:this.workerObra(x.cedula),fechaFmt:this.fmt(x.fecha),origenStyle:chip(this.origenTone(x.origen)),dx:x.dxCodigo?(x.dxCodigo+' — '+x.dxTexto):(x.motivo||'—'),open:this.openPerfil(x.cedula)})); R.consultasEmpty=all.length===0; R.consultasCount=all.length; R.consultasMes=all.filter(x=>this.monthOf(x.fecha)===this.todayISO().slice(0,7)).length; R.consObraFilter=s.consObraFilter; R.setConsObraFilter=this.setConsObraFilter; }
+    if(R.isConsultas){ let all=db.consultas.slice().sort((a,b)=>(b.fecha||'').localeCompare(a.fecha||'')); if(s.consObraFilter!=='TODAS') all=all.filter(x=>this.workerObra(x.cedula)===s.consObraFilter); R.consultasAll=all.map(x=>({...x,nombre:this.workerName(x.cedula),obra:this.workerObra(x.cedula),fechaFmt:this.fmt(x.fecha),origenStyle:chip(this.origenTone(x.origen)),dx:x.dxCodigo?(x.dxCodigo+' — '+x.dxTexto):(x.motivo||'—'),open:this.openPerfil(x.cedula)})); R.consultasEmpty=all.length===0; R.consultasCount=all.length; R.consultasMes=all.filter(x=>this.monthOf(x.fecha)===this.todayISO().slice(0,7)).length; R.consObraFilter=s.consObraFilter; R.setConsObraFilter=this.setConsObraFilter;
+      R.toggleMorbPanel=this.toggleMorbPanel; R.morbPanelOpen=!!s.morbPanel; R.morbBtnLabel=s.morbPanel?'Ocultar estadística de morbilidad':'Estadística de morbilidad';
+      if(s.morbPanel){
+        const mb=this.computeMorbilidad();
+        R.morbObra=(this.myObra()||s.morbObra||'TODAS'); R.setMorbObra=this.setMorbObra;
+        R.morbDesde=mb.desde; R.morbHasta=mb.hasta; R.setMorbDesde=this.setMorbDesde; R.setMorbHasta=this.setMorbHasta;
+        R.morbMesesOpts=mb.meses.map(m=>({v:m,label:this.mesLabel(m)}));
+        R.abrirInformeMorb=this.abrirInformeMorb;
+        R.morbPeriodoLabel=(mb.desde===mb.hasta)?this.mesLabel(mb.desde):(this.mesLabel(mb.desde)+' — '+this.mesLabel(mb.hasta));
+        R.morbObraLabel=mb.esTodas?'Todas las obras':mb.obraSel;
+        R.morbKpis={total:mb.total,atendidos:mb.atendidos,dx:mb.dxDistintos,tasa:mb.tasa,prom:mb.promedio,reposo:mb.reposoDias};
+        R.morbEmpty=mb.total===0; R.morbHay=mb.total>0;
+        const pct=(n)=>mb.total?Math.round(n/mb.total*100):0;
+        const maxTop=Math.max(1,...mb.dxList.slice(0,8).map(d=>d.n));
+        R.morbTop=mb.dxList.slice(0,8).map(d=>({dx:d.dx,n:d.n,pctTxt:' ('+pct(d.n)+'%)',barW:Math.round(d.n/maxTop*100)+'%'}));
+        R.morbBars=this.morbBarsSVG(mb.porMes);
+        const maxG=Math.max(1,...mb.grupos.map(g=>g.n));
+        R.morbGrupos=mb.grupos.slice(0,8).map(g=>({label:g.g,n:g.n,pctTxt:' ('+pct(g.n)+'%)',barW:Math.round(g.n/maxG*100)+'%'}));
+        R.morbGruposHas=mb.grupos.length>0;
+      }
+    }
     if(R.isDescansos){ const all=db.descansos.slice().sort((a,b)=>(b.inicio||'').localeCompare(a.inicio||'')); R.descansosAll=all.map(x=>({...x,nombre:this.workerName(x.cedula),obra:this.workerObra(x.cedula),inicioFmt:this.fmt(x.inicio),finFmt:this.fmt(this.addDays(x.inicio,(Number(x.dias)||0)-1)),tipoStyle:chip(this.tipoDescTone(x.tipo)),estadoStyle:chip(x.estado==='Vigente'?'amber':'gray'),dx:x.dxCodigo?(x.dxCodigo+' — '+x.dxTexto):'',open:this.openPerfil(x.cedula)})); R.descansosEmpty=all.length===0; R.descansosCount=all.length; R.descansosDias=all.reduce((a,x)=>a+(Number(x.dias)||0),0); R.descansosVig=all.filter(x=>x.estado==='Vigente').length; }
     if(R.isFichas){ let ws=db.workers; if(s.fichaObraFilter!=='TODAS') ws=ws.filter(w=>w.obra===s.fichaObraFilter); const arr=ws.map(w=>{ const f=this.latestFicha(w.cedula); const st=this.fichaStatus(w.cedula); return {cedula:w.cedula,nombre:w.nombre,obra:w.obra,tipo:f?f.tipo:'—',aptitud:f?f.aptitud:'Sin ficha',aptStyle:chip(f?this.aptTone(f.aptitud):'gray'),fechaFmt:f?this.fmt(f.fecha):'—',venceFmt:f&&f.vence?this.fmt(f.vence):'—',estLabel:st.label,estStyle:st.style,stOrder:({venc:0,porvencer:1,sin:2,vig:3})[st.state],open:this.openPerfil(w.cedula)}; }).sort((a,b)=>a.stOrder-b.stOrder||(a.nombre||'').localeCompare(b.nombre||'')); R.fichasAll=arr; R.fichaObraFilter=s.fichaObraFilter; R.setFichaObraFilter=this.setFichaObraFilter; R.fichasCount=arr.length; }
     if(R.isAccidentes){ const all=db.accidentes.slice().sort((a,b)=>(b.fecha||'').localeCompare(a.fecha||'')); R.accidentesAll=all.map(x=>this.accView(x)); R.accidentesEmpty=all.length===0; R.accidentesCount=all.length; R.accidentesDias=all.reduce((a,x)=>a+(Number(x.diasPerdidos)||0),0); R.accidentesAnio=all.filter(x=>String(x.fecha).slice(0,4)===this.todayISO().slice(0,4)).length; R.addAccidenteGlobal=this.openModal('accidente',null); }
@@ -2949,6 +3417,8 @@ class Component extends DCLogic {
     if(s.showInforme){ R.informe=this.informeData(); }
     R.showInformePr=s.showInformePr; R.cerrarInformePr=this.cerrarInformePr;
     if(s.showInformePr){ R.informePr=this.informePrData(); }
+    R.showInformeMorb=s.showInformeMorb; R.cerrarInformeMorb=this.cerrarInformeMorb;
+    if(s.showInformeMorb){ R.informeMorb=this.informeMorbData(); }
     return R;
   }
 }
