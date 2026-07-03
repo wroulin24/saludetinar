@@ -806,7 +806,7 @@ window.WORKERS_SEED = [{"cedula":"0926211590","nombre":"ABAD GUTIERREZ PAULINA",
                 <div style="border:1px solid #EDE9E4;border-radius:10px;padding:13px"><div style="font-size:11px;color:#8C857E;font-weight:600">Diagnósticos distintos</div><div style="font-family:Archivo;font-weight:800;font-size:26px">{{ morbKpis.dx }}</div></div>
                 <div style="border:1px solid #EDE9E4;border-radius:10px;padding:13px"><div style="font-size:11px;color:#8C857E;font-weight:600">Tasa de morbilidad ×100</div><div style="font-family:Archivo;font-weight:800;font-size:26px">{{ morbKpis.tasa }}</div></div>
                 <div style="border:1px solid #EDE9E4;border-radius:10px;padding:13px"><div style="font-size:11px;color:#8C857E;font-weight:600">Consultas por persona</div><div style="font-family:Archivo;font-weight:800;font-size:26px">{{ morbKpis.prom }}</div></div>
-                <div style="border:1px solid #EDE9E4;border-radius:10px;padding:13px"><div style="font-size:11px;color:#8C857E;font-weight:600">Días de reposo</div><div style="font-family:Archivo;font-weight:800;font-size:26px;color:#B8791A">{{ morbKpis.reposo }}</div></div>
+                
               </div>
 
               <sc-if value="{{ morbEmpty }}" hint-placeholder-val=""><div style="border:1px dashed #DAD4CC;border-radius:11px;padding:34px;text-align:center;color:#8C857E;font-size:13.5px;margin-top:14px">No hay consultas por morbilidad en el período y obra seleccionados. Los accidentes de trabajo no se incluyen en esta estadística.</div></sc-if>
@@ -1736,7 +1736,7 @@ window.WORKERS_SEED = [{"cedula":"0926211590","nombre":"ABAD GUTIERREZ PAULINA",
             <div>9. Evolución mensual y origen</div>
             <div>10. Morbilidad por centro de trabajo</div>
             <div>11. Caracterización demográfica</div>
-            <div>12. Reposo, derivaciones y recurrencia</div>
+            <div>12. Derivaciones, medicación y recurrencia</div>
             <div>13. Conclusiones</div>
             <div>14. Plan de acción</div>
             <div>15. Recomendaciones</div>
@@ -1770,7 +1770,7 @@ window.WORKERS_SEED = [{"cedula":"0926211590","nombre":"ABAD GUTIERREZ PAULINA",
             <div style="flex:1;min-width:104px;border:1px solid #E6E2DD;border-radius:9px;padding:12px;text-align:center"><div style="font-family:Archivo;font-weight:800;font-size:24px">{{ informeMorb.kpis.activos }}</div><div style="font-size:11px;color:#8C857E">Personal activo</div></div>
             <div style="flex:1;min-width:104px;border:1px solid #E6E2DD;border-radius:9px;padding:12px;text-align:center"><div style="font-family:Archivo;font-weight:800;font-size:24px">{{ informeMorb.kpis.tasa }}</div><div style="font-size:11px;color:#8C857E">Tasa de morbilidad ×100</div></div>
             <div style="flex:1;min-width:104px;border:1px solid #E6E2DD;border-radius:9px;padding:12px;text-align:center"><div style="font-family:Archivo;font-weight:800;font-size:24px">{{ informeMorb.kpis.promedio }}</div><div style="font-size:11px;color:#8C857E">Consultas por persona</div></div>
-            <div style="flex:1;min-width:104px;border:1px solid #E6E2DD;border-radius:9px;padding:12px;text-align:center"><div style="font-family:Archivo;font-weight:800;font-size:24px;color:#B8791A">{{ informeMorb.kpis.reposo }}</div><div style="font-size:11px;color:#8C857E">Días de reposo</div></div>
+            
           </div>
 
           <div style="font-family:Archivo;font-weight:800;font-size:18px;color:#423D3B;border-bottom:2px solid #F2B200;padding-bottom:7px;margin:26px 0 12px">7. Principales causas de morbilidad</div>
@@ -1837,11 +1837,11 @@ window.WORKERS_SEED = [{"cedula":"0926211590","nombre":"ABAD GUTIERREZ PAULINA",
             </div>
           </sc-if>
 
-          <div style="font-family:Archivo;font-weight:800;font-size:18px;color:#423D3B;border-bottom:2px solid #F2B200;padding-bottom:7px;margin:26px 0 12px">12. Reposo médico, derivaciones y recurrencia</div>
+          <div style="font-family:Archivo;font-weight:800;font-size:18px;color:#423D3B;border-bottom:2px solid #F2B200;padding-bottom:7px;margin:26px 0 12px">12. Derivaciones, medicación y recurrencia</div>
           <p style="font-size:13.5px;line-height:1.75;color:#444;margin:0 0 16px;text-align:justify">{{ informeMorb.repAnalisis }}</p>
           <div class="inf-avoid" style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px">
-            <div style="flex:1;min-width:120px;border:1px solid #E6E2DD;border-radius:9px;padding:12px;text-align:center"><div style="font-family:Archivo;font-weight:800;font-size:24px;color:#B8791A">{{ informeMorb.rep.dias }}</div><div style="font-size:11px;color:#8C857E">Días de reposo</div></div>
-            <div style="flex:1;min-width:120px;border:1px solid #E6E2DD;border-radius:9px;padding:12px;text-align:center"><div style="font-family:Archivo;font-weight:800;font-size:24px">{{ informeMorb.rep.conReposo }}</div><div style="font-size:11px;color:#8C857E">Consultas con reposo</div></div>
+            
+            
             <div style="flex:1;min-width:120px;border:1px solid #E6E2DD;border-radius:9px;padding:12px;text-align:center"><div style="font-family:Archivo;font-weight:800;font-size:24px">{{ informeMorb.rep.derivados }}</div><div style="font-size:11px;color:#8C857E">Derivaciones</div></div>
             <div style="flex:1;min-width:120px;border:1px solid #E6E2DD;border-radius:9px;padding:12px;text-align:center"><div style="font-family:Archivo;font-weight:800;font-size:24px">{{ informeMorb.rep.conMed }}</div><div style="font-size:11px;color:#8C857E">Con medicación</div></div>
           </div>
@@ -3000,12 +3000,12 @@ class Component extends DCLogic {
       var e=self.ageOf(w); if(e==null)et[5].n++; else if(e<30)et[0].n++; else if(e<40)et[1].n++; else if(e<50)et[2].n++; else if(e<60)et[3].n++; else et[4].n++;
     });
     // reposo, derivaciones, medicación
-    var reposoDias=0, conReposo=0, derivados=0, conMed=0;
-    cons.forEach(function(c){ var d=parseInt(c.reposoDias,10)||0; if(d>0){reposoDias+=d;conReposo++;} if(String(c.derivacion||'').trim())derivados++; if(String(c.medicacion||'').trim())conMed++; });
+    var derivados=0, conMed=0;
+    cons.forEach(function(c){ if(String(c.derivacion||'').trim())derivados++; if(String(c.medicacion||'').trim())conMed++; });
     // recurrentes (3+ consultas)
     var pc={}; cons.forEach(function(c){pc[c.cedula]=(pc[c.cedula]||0)+1;});
     var recurrentes=Object.keys(pc).filter(function(c){return pc[c]>=3;}).map(function(c){ var w=wmap[c]||{}; return {cedula:c,nombre:w.nombre||c,obra:w.obra||'—',n:pc[c]}; }).sort(function(a,b){return b.n-a.n;});
-    return {obraSel:obraSel,esTodas:esTodas,desde:desde,hasta:hasta,meses:rg.meses,total:total,atendidos:atendidos,activos:wkAct.length,tasa:tasa,promedio:promedio,dxList:dxList,dxDistintos:dxList.length,grupos:grupos,porMes:porMes,pico:pico,origList:origList,porObra:porObra,sx:sx,et:et,reposoDias:reposoDias,conReposo:conReposo,derivados:derivados,conMed:conMed,recurrentes:recurrentes};
+    return {obraSel:obraSel,esTodas:esTodas,desde:desde,hasta:hasta,meses:rg.meses,total:total,atendidos:atendidos,activos:wkAct.length,tasa:tasa,promedio:promedio,dxList:dxList,dxDistintos:dxList.length,grupos:grupos,porMes:porMes,pico:pico,origList:origList,porObra:porObra,sx:sx,et:et,derivados:derivados,conMed:conMed,recurrentes:recurrentes};
   }
   morbBarsSVG(porMes){
     var n=porMes.length||1; var maxN=1; porMes.forEach(function(p){ if(p.n>maxN)maxN=p.n; });
@@ -3058,7 +3058,7 @@ class Component extends DCLogic {
     // ---- Textos ----
     var intro='El presente informe describe el perfil de morbilidad del personal de '+obra+' atendido por el servicio médico durante el período '+periodo+' ('+nMeses+' mes(es)). La morbilidad —el conjunto de enfermedades y motivos de consulta registrados— se analiza a partir de las consultas médicas del sistema de gestión ocupacional de ETINAR, clasificadas con la CIE-10. Por decisión metodológica, se excluyen del análisis los accidentes de trabajo, que se gestionan y reportan por su propio canal (Resolución C.D. 513 del IESS); el informe se concentra en la enfermedad común, los controles de seguimiento y la eventual enfermedad profesional.';
     var objetivoGeneral='Caracterizar la morbilidad atendida por el servicio médico de '+obra+' durante el período '+periodo+', identificando las principales causas de consulta, los sistemas afectados, su evolución temporal y los grupos más afectados, para orientar el plan de acción preventivo del centro de trabajo.';
-    var oe=['Cuantificar el volumen de consultas por morbilidad y la población trabajadora atendida en el período.','Identificar y jerarquizar las principales causas de consulta según diagnóstico CIE-10.','Agrupar la morbilidad por sistemas o aparatos (capítulos CIE-10) para facilitar su interpretación.','Describir la evolución mensual de las atenciones y detectar los meses de mayor demanda.'].concat(mb.esTodas?['Comparar la carga de morbilidad entre los centros de trabajo.']:[]).concat(['Caracterizar la morbilidad según sexo y grupo etario.','Cuantificar los días de reposo médico generados, las derivaciones y los casos con consultas recurrentes.','Formular un plan de acción basado en los hallazgos.']);
+    var oe=['Cuantificar el volumen de consultas por morbilidad y la población trabajadora atendida en el período.','Identificar y jerarquizar las principales causas de consulta según diagnóstico CIE-10.','Agrupar la morbilidad por sistemas o aparatos (capítulos CIE-10) para facilitar su interpretación.','Describir la evolución mensual de las atenciones y detectar los meses de mayor demanda.'].concat(mb.esTodas?['Comparar la carga de morbilidad entre los centros de trabajo.']:[]).concat(['Caracterizar la morbilidad según sexo y grupo etario.','Cuantificar las derivaciones, la entrega de medicación y los casos con consultas recurrentes.','Formular un plan de acción basado en los hallazgos.']);
     var metodologia='Estudio descriptivo de corte transversal. La fuente es el registro de consultas médicas del sistema de gestión ocupacional de ETINAR correspondiente a '+obra+' entre '+this.mesLabel(mb.desde)+' y '+this.mesLabel(mb.hasta)+'. Se excluyeron las atenciones con origen "Accidente de trabajo". Cada consulta se clasificó con su código CIE-10 y se agrupó por capítulos (sistemas). Los resultados se presentan de forma agregada y anonimizada, en cumplimiento del principio de confidencialidad de la información médica del Reglamento SISAT; las frecuencias se expresan en números absolutos y porcentajes, y la tasa de morbilidad se calcula por cada 100 trabajadores activos del alcance seleccionado.';
     // ---- Análisis automáticos ----
     var volAnalisis='Durante el período se registraron '+mb.total+' consulta(s) por morbilidad, correspondientes a '+mb.atendidos+' trabajador(es) distintos de una población activa de '+mb.activos+' persona(s), lo que equivale a una tasa de morbilidad de '+mb.tasa+' trabajadores atendidos por cada 100 activos y un promedio de '+mb.promedio+' consulta(s) por persona atendida.';
@@ -3066,7 +3066,7 @@ class Component extends DCLogic {
     var grpAnalisis=mb.grupos.length?('Agrupada por sistemas (CIE-10), la morbilidad se concentra en "'+mb.grupos[0].g+'" con '+mb.grupos[0].n+' caso(s) ('+pctOf(mb.grupos[0].n)+'%)'+(mb.grupos[1]?(', seguida de "'+mb.grupos[1].g+'" con '+mb.grupos[1].n+' caso(s) ('+pctOf(mb.grupos[1].n)+'%)'):'')+'. Esta agrupación orienta el tipo de intervención preventiva prioritaria.'):'Sin datos para agrupar por sistemas.';
     var evoAnalisis=(mb.pico&&mb.pico.n>0)?('El mes de mayor demanda fue '+this.mesLabel(mb.pico.m)+' con '+mb.pico.n+' consulta(s). '+(mb.origList.length?('Según el origen, predominó "'+mb.origList[0].label+'" ('+mb.origList[0].pct+'%).'):'')):'Sin variación mensual relevante en el período.';
     var demoAnalisis=(sxTot?('Por sexo, '+mb.sx.M+' consulta(s) ('+Math.round(mb.sx.M/sxTot*100)+'%) corresponden a hombres y '+mb.sx.F+' ('+Math.round(mb.sx.F/sxTot*100)+'%) a mujeres'+(mb.sx.ND?(', con '+mb.sx.ND+' sin dato'):'')+'. '):'')+(etario.length?('El grupo etario con más consultas es el de '+etario.slice().sort(function(a,b){return b.n-a.n;})[0].label+'.'):'');
-    var repAnalisis='La morbilidad del período generó '+mb.reposoDias+' día(s) de reposo médico en '+mb.conReposo+' consulta(s). Se registraron '+mb.derivados+' derivación(es) a niveles de mayor complejidad (IESS/MSP u otros) y '+mb.conMed+' consulta(s) con entrega de medicación. '+(mb.recurrentes.length?('Se identificaron '+mb.recurrentes.length+' trabajador(es) con 3 o más consultas en el período, que ameritan seguimiento individualizado.'):'No se identificaron trabajadores con consultas recurrentes (3 o más) en el período.');
+    var repAnalisis='Se registraron '+mb.derivados+' derivación(es) a niveles de mayor complejidad (IESS/MSP u otros) y '+mb.conMed+' consulta(s) con entrega de medicación. '+(mb.recurrentes.length?('Se identificaron '+mb.recurrentes.length+' trabajador(es) con 3 o más consultas en el período, que ameritan seguimiento individualizado.'):'No se identificaron trabajadores con consultas recurrentes (3 o más) en el período.');
     // ---- Conclusiones ----
     var conclu=[];
     conclu.push('En '+obra+', durante '+periodo+', se atendieron '+mb.total+' consulta(s) por morbilidad general en '+mb.atendidos+' trabajador(es), con una tasa de morbilidad de '+mb.tasa+' por cada 100 trabajadores activos.');
@@ -3074,7 +3074,6 @@ class Component extends DCLogic {
     if(mb.grupos.length) conclu.push('El sistema más afectado fue "'+mb.grupos[0].g+'" ('+pctOf(mb.grupos[0].n)+'% de las consultas).');
     if(mb.pico&&mb.pico.n>0) conclu.push('La mayor demanda de atención se registró en '+this.mesLabel(mb.pico.m)+' ('+mb.pico.n+' consulta(s)), información útil para planificar recursos y campañas.');
     if(porObraHas&&porObra.length>1) conclu.push('El centro de trabajo con mayor carga de morbilidad fue "'+porObra[0].obra+'" con '+porObra[0].n+' consulta(s).');
-    conclu.push('La morbilidad generó '+mb.reposoDias+' día(s) de reposo médico, un indicador directo de su impacto en el ausentismo.');
     if(mb.recurrentes.length) conclu.push('Existen '+mb.recurrentes.length+' trabajador(es) con consultas recurrentes que requieren valoración integral para descartar patología de base o factores relacionados con el puesto de trabajo.');
     conclu.push('Los accidentes de trabajo fueron excluidos de este análisis por gestionarse mediante su propio procedimiento; el perfil descrito corresponde a morbilidad general y controles de salud.');
     // ---- Plan de acción según resultados ----
@@ -3095,7 +3094,6 @@ class Component extends DCLogic {
     };
     mb.grupos.forEach(function(g,i){ if(g.n>=2||i===0){ var r=reglas[g.g]; if(r) addPlan('"'+g.g+'": '+g.n+' caso(s), '+pctOf(g.n)+'% de la morbilidad.',r[0],r[1],r[2]); } });
     if(mb.recurrentes.length) addPlan('Trabajadores con 3 o más consultas en el período: '+mb.recurrentes.length+'.','Valoración médica integral e individualizada de cada caso recurrente, con revisión del puesto de trabajo y de posibles patologías de base.','Servicio médico','Inmediato');
-    if(mb.reposoDias>=5) addPlan('Días de reposo generados por morbilidad: '+mb.reposoDias+'.','Análisis de ausentismo por morbilidad: verificar reintegros, readecuaciones temporales y seguimiento de los descansos otorgados.','Servicio médico / Talento humano','30 días');
     addPlan('Vigilancia continua del perfil de morbilidad.','Mantener el análisis mensual de morbilidad en el sistema y presentar los resultados al comité paritario / responsable de SST.','Servicio médico','Mensual');
     addPlan('Educación sanitaria según el perfil encontrado.','Programar charlas de seguridad y salud (5 minutos) sobre las principales causas de consulta identificadas en este informe.','Servicio médico / SST','Continuo');
     // ---- Recomendaciones ----
@@ -3110,7 +3108,7 @@ class Component extends DCLogic {
     ];
     return { obra:obra, periodo:periodo, desde:this.mesLabel(mb.desde), hasta:this.mesLabel(mb.hasta), nMeses:nMeses,
       medico:db.config.medicoNombre||'Médico Ocupacional', registro:db.config.medicoRegistro||'', empresa:db.config.empresa||'ETINAR', hoy:this.fmt(this.todayISO()),
-      kpis:{consultas:mb.total,atendidos:mb.atendidos,activos:mb.activos,tasa:mb.tasa,promedio:mb.promedio,dxDistintos:mb.dxDistintos,reposo:mb.reposoDias},
+      kpis:{consultas:mb.total,atendidos:mb.atendidos,activos:mb.activos,tasa:mb.tasa,promedio:mb.promedio,dxDistintos:mb.dxDistintos},
       sinDatos:mb.total===0, hayDatos:mb.total>0,
       tabla:tabla, tablaHas:tabla.length>0, otrosN:otrosN, otrosHas:otrosN>0,
       grupos:grupos, gruposHas:grupos.length>0,
@@ -3118,7 +3116,7 @@ class Component extends DCLogic {
       porObra:porObra, porObraHas:porObraHas, esObraUnica:!mb.esTodas,
       donutSexo:donutSexo, donutSexoHas:donutSexo.length>0, sxTotal:sxTot,
       etario:etario, etarioHas:etario.length>0,
-      rep:{dias:mb.reposoDias,conReposo:mb.conReposo,derivados:mb.derivados,conMed:mb.conMed},
+      rep:{derivados:mb.derivados,conMed:mb.conMed},
       recur:recur, recurHas:recur.length>0, recurEmpty:recur.length===0,
       normas:normas, intro:intro, objetivoGeneral:objetivoGeneral, objetivosEspecificos:oe, metodologia:metodologia,
       volAnalisis:volAnalisis, dxAnalisis:dxAnalisis, grpAnalisis:grpAnalisis, evoAnalisis:evoAnalisis, demoAnalisis:demoAnalisis, repAnalisis:repAnalisis,
@@ -3340,7 +3338,7 @@ class Component extends DCLogic {
         R.abrirInformeMorb=this.abrirInformeMorb;
         R.morbPeriodoLabel=(mb.desde===mb.hasta)?this.mesLabel(mb.desde):(this.mesLabel(mb.desde)+' — '+this.mesLabel(mb.hasta));
         R.morbObraLabel=mb.esTodas?'Todas las obras':mb.obraSel;
-        R.morbKpis={total:mb.total,atendidos:mb.atendidos,dx:mb.dxDistintos,tasa:mb.tasa,prom:mb.promedio,reposo:mb.reposoDias};
+        R.morbKpis={total:mb.total,atendidos:mb.atendidos,dx:mb.dxDistintos,tasa:mb.tasa,prom:mb.promedio};
         R.morbEmpty=mb.total===0; R.morbHay=mb.total>0;
         const pct=(n)=>mb.total?Math.round(n/mb.total*100):0;
         const maxTop=Math.max(1,...mb.dxList.slice(0,8).map(d=>d.n));
