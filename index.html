@@ -2264,18 +2264,23 @@ class Component extends DCLogic {
       const { error } = await sb.from(CLOUD_TABLE).upsert({ id:'main', data:db, client_id:this.myToken, updated_at });
       if(error) throw error;
       this._remoteUpdatedAt=updated_at;
+      try{ if(this._chan&&this._chan.send) this._chan.send({type:'broadcast',event:'chg',payload:{t:this.myToken}}); }catch(e){}
       this.setState({cloudError:''});
     }catch(e){ this.setState({cloudError:'Sin conexión con el servidor. Sus cambios quedaron guardados en este equipo y se reintentará al volver la conexión.'}); }
     this.setState({syncing:false});
   }
   startSync(){
     const sb=getSB(); if(!sb) return; this.stopSync();
-    try{ this._chan=sb.channel('etinar_db_rt').on('postgres_changes',{event:'*',schema:'public',table:CLOUD_TABLE,filter:'id=eq.main'},(payload)=>{ const nw=payload&&payload.new; if(nw&&nw.client_id===this.myToken) return; this.cloudCheck(); }).subscribe(); }catch(e){}
-    this._poll=setInterval(()=>this.cloudCheck(),15000);
+    try{ this._chan=sb.channel('etinar_sync',{config:{broadcast:{self:false}}}).on('broadcast',{event:'chg'},(p)=>{ const t=p&&p.payload&&p.payload.t; if(t===this.myToken) return; this.scheduleCheck(1500+Math.floor(Math.random()*3500)); }).subscribe(); }catch(e){}
+    this._poll=setInterval(()=>this.cloudCheck(),240000);
+    this._vis=()=>{ if(!document.hidden && this._pendSync){ this._pendSync=false; this.scheduleCheck(600); } };
+    try{ document.addEventListener('visibilitychange',this._vis); }catch(e){}
   }
-  stopSync(){ try{ if(this._chan){ getSB().removeChannel(this._chan); this._chan=null; } }catch(e){} if(this._poll){ clearInterval(this._poll); this._poll=null; } }
+  scheduleCheck(ms){ clearTimeout(this._ckT); this._ckT=setTimeout(()=>this.cloudCheck(),ms||1200); }
+  stopSync(){ try{ if(this._chan){ getSB().removeChannel(this._chan); this._chan=null; } }catch(e){} if(this._poll){ clearInterval(this._poll); this._poll=null; } if(this._ckT){ clearTimeout(this._ckT); this._ckT=null; } try{ if(this._vis){ document.removeEventListener('visibilitychange',this._vis); this._vis=null; } }catch(e){} }
   async cloudCheck(){
     const sb=getSB(); if(!sb || !this.state.authed) return;
+    if(typeof document!=='undefined' && document.hidden){ this._pendSync=true; return; }
     try{
       const { data } = await sb.from(CLOUD_TABLE).select('client_id,updated_at').eq('id','main').maybeSingle();
       if(!data || data.client_id===this.myToken) return;
