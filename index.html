@@ -395,8 +395,13 @@ window.WORKERS_SEED = [{"cedula":"0926211590","nombre":"ABAD GUTIERREZ PAULINA",
   </sc-if>
 
   <sc-if value="{{ showApp }}" hint-placeholder-val="{{ false }}">
-  <div style="display:grid;grid-template-columns:250px 1fr;height:100vh">
+  <div style="{{ shellGrid }}">
 
+    <sc-if value="{{ navHidden }}" hint-placeholder-val="">
+      <button onClick="{{ toggleNav }}" data-noprint title="Mostrar panel" style="position:fixed;top:14px;left:14px;z-index:70;background:#3A3633;color:#E9E5E0;border:none;border-radius:10px;width:40px;height:40px;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 6px 18px rgba(0,0,0,.25)"><span class="ms" style="font-size:22px">menu</span></button>
+    </sc-if>
+
+    <sc-if value="{{ navShown }}" hint-placeholder-val="">
     <aside data-noprint style="background:#3A3633;color:#E9E5E0;display:flex;flex-direction:column;height:100vh;overflow:hidden">
       <div style="padding:22px 22px 18px;display:flex;align-items:center;gap:11px;border-bottom:1px solid rgba(255,255,255,.08)">
         <span style="width:30px;height:30px;background:#F2B200;border-radius:6px;display:inline-block;flex:none"></span>
@@ -404,6 +409,7 @@ window.WORKERS_SEED = [{"cedula":"0926211590","nombre":"ABAD GUTIERREZ PAULINA",
           <div style="font-family:Archivo;font-weight:800;font-size:19px;letter-spacing:.06em">ETINAR</div>
           <div style="font-size:10.5px;color:#a59e96;letter-spacing:.08em;text-transform:uppercase">Salud Ocupacional</div>
         </div>
+        <button onClick="{{ toggleNav }}" title="Ocultar panel" style="margin-left:auto;flex:none;background:rgba(255,255,255,.06);color:#E9E5E0;border:none;border-radius:8px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer"><span class="ms" style="font-size:20px">chevron_left</span></button>
       </div>
       <nav style="flex:1;overflow-y:auto;padding:12px 12px 6px">
         <sc-for list="{{ navItems }}" as="it" hint-placeholder-count="12">
@@ -427,6 +433,7 @@ window.WORKERS_SEED = [{"cedula":"0926211590","nombre":"ABAD GUTIERREZ PAULINA",
         </button>
       </div>
     </aside>
+    </sc-if>
 
     <main id="appmain" style="height:100vh;overflow-y:auto;padding:30px 36px 60px">
 
@@ -2367,7 +2374,7 @@ class Component extends DCLogic {
     this.state={
       authed:false, loginErr:'', db,
       bootLoading:true, signingIn:false, syncing:false, cloudError:'', userEmail:'',
-      view:'dashboard', search:'', obraFilter:'TODAS', estadoFilter:'A',
+      view:'dashboard', search:'', obraFilter:'TODAS', estadoFilter:'A', navHidden:false,
       ficha:{cedula:'',ap1:'',ap2:'',nom1:'',nom2:'',sexo:'Hombre',fechaNac:'',edad:'',lateralidad:'Derecho',puesto:'',tipoEval:'INGRESO',antPer:'',antFam:'',transf:'SI',fuma:'NO',cuantoFuma:'',alcohol:'NO',frecAlcohol:'',actividad:'NO',tipoAct:'',frecAct:'',temp:'',pa:'',fc:'',fr:'',sato2:'',peso:'',talla:'',imc:'',aptitud:'APTO'},
       selectedCedula:null, perfilTab:'datos',
       modalType:null, modalEditId:null, modalCedula:null, modalAdjunto:null, modalNotaAccId:null, savingAdj:false, migRunning:false, migEstado:'',
@@ -2461,6 +2468,7 @@ class Component extends DCLogic {
   persist(db){ this.persistLocal(db); if(this.state.authed){ clearTimeout(this._pushT); this._pushT=setTimeout(()=>this.cloudPush(this.state.db),700); } }
   save(mut){ this.setState(s=>{ const db=JSON.parse(JSON.stringify(s.db)); mut(db); this.persist(db); return {db}; }); }
   toast(m){ this.setState({toast:m}); clearTimeout(this._t); this._t=setTimeout(()=>this.setState({toast:''}),2400); }
+  toggleNav=()=>{ this.setState(s=>({navHidden:!s.navHidden})); };
   uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,7); }
 
   todayISO(){ return new Date().toISOString().slice(0,10); }
@@ -3379,6 +3387,8 @@ class Component extends DCLogic {
       loginErr:s.loginErr, login:this.login, logout:this.logout, toast:s.toast, signingIn:s.signingIn,
       cloudError:s.cloudError, hasCloudError:!!s.cloudError, syncing:s.syncing, userEmail:s.userEmail,
       syncLabel: s.syncing?'Sincronizando…':'En línea · sincronizado', syncDot: s.syncing?'#E6A817':'#5FAE7A',
+      navHidden:s.navHidden, navShown:!s.navHidden, toggleNav:this.toggleNav,
+      shellGrid: s.navHidden ? 'display:grid;grid-template-columns:1fr;height:100vh' : 'display:grid;grid-template-columns:250px 1fr;height:100vh',
       loginBtnLabel: s.signingIn?'Ingresando…':'Ingresar' };
     if(!db){ return {...base, navItems:[], isDash:false, modalOpen:false}; }
 
