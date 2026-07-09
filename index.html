@@ -2410,11 +2410,19 @@ class Component extends DCLogic {
     const sb=getSB(); if(!sb) return;
     this.setState({syncing:true});
     try{
-      const { data, error } = await sb.from(CLOUD_TABLE).select('data,client_id,updated_at').eq('id','main').maybeSingle();
+      let meta=null;
+      try{ const r=await sb.from(CLOUD_TABLE).select('client_id,updated_at').eq('id','main').maybeSingle(); meta=r.data; }catch(e){}
+      let localStr=null, localUA=null;
+      try{ localStr=localStorage.getItem(STORE_KEY); localUA=localStorage.getItem(STORE_KEY+'_ua'); }catch(e){}
+      if(meta && meta.updated_at && localStr && localUA && localUA===meta.updated_at){
+        try{ const dbLocal=JSON.parse(localStr); if(dbLocal && dbLocal.workers){ this._remoteUpdatedAt=meta.updated_at; this.setState({db:dbLocal, cloudError:''}); this.setState({syncing:false}); return; } }catch(e){}
+      }
+      const { data, error } = await sb.from(CLOUD_TABLE).select('data,updated_at').eq('id','main').maybeSingle();
       if(error) throw error;
       if(data && data.data){
         this._remoteUpdatedAt=data.updated_at;
         this.persistLocal(data.data);
+        try{ localStorage.setItem(STORE_KEY+'_ua', data.updated_at||''); }catch(e){}
         this.setState({db:data.data, cloudError:''});
       } else {
         const workers=window.WORKERS_SEED||await this.waitGlobal('WORKERS_SEED')||[];
@@ -2435,6 +2443,7 @@ class Component extends DCLogic {
       const { error } = await sb.from(CLOUD_TABLE).upsert({ id:'main', data:db, client_id:this.myToken, updated_at });
       if(error) throw error;
       this._remoteUpdatedAt=updated_at;
+      try{ localStorage.setItem(STORE_KEY+'_ua', updated_at); }catch(e){}
       try{ if(this._chan&&this._chan.send) this._chan.send({type:'broadcast',event:'chg',payload:{t:this.myToken}}); }catch(e){}
       this.setState({cloudError:''});
     }catch(e){ this.setState({cloudError:'Sin conexión con el servidor. Sus cambios quedaron guardados en este equipo y se reintentará al volver la conexión.'}); }
@@ -2442,9 +2451,9 @@ class Component extends DCLogic {
   }
   startSync(){
     const sb=getSB(); if(!sb) return; this.stopSync();
-    try{ this._chan=sb.channel('etinar_sync',{config:{broadcast:{self:false}}}).on('broadcast',{event:'chg'},(p)=>{ const t=p&&p.payload&&p.payload.t; if(t===this.myToken) return; this.scheduleCheck(1500+Math.floor(Math.random()*3500)); }).subscribe(); }catch(e){}
-    this._poll=setInterval(()=>this.cloudCheck(),240000);
-    this._impPoll=setInterval(()=>this.importarBuzonIESS(),120000);
+    try{ this._chan=sb.channel('etinar_sync',{config:{broadcast:{self:false}}}).on('broadcast',{event:'chg'},(p)=>{ const t=p&&p.payload&&p.payload.t; if(t===this.myToken) return; this.scheduleCheck(10000+Math.floor(Math.random()*8000)); }).subscribe(); }catch(e){}
+    this._poll=setInterval(()=>this.cloudCheck(),600000);
+    this._impPoll=setInterval(()=>this.importarBuzonIESS(),900000);
     this._vis=()=>{ if(!document.hidden){ if(this._pendSync){ this._pendSync=false; this.scheduleCheck(600); } this.importarBuzonIESS(); } };
     try{ document.addEventListener('visibilitychange',this._vis); }catch(e){}
     setTimeout(()=>this.importarBuzonIESS(),1500);
@@ -2459,7 +2468,7 @@ class Component extends DCLogic {
       if(!data || data.client_id===this.myToken) return;
       if(this._remoteUpdatedAt && data.updated_at<=this._remoteUpdatedAt) return;
       const full = await sb.from(CLOUD_TABLE).select('data,updated_at').eq('id','main').maybeSingle();
-      if(full.data && full.data.data){ this._remoteUpdatedAt=full.data.updated_at; this.persistLocal(full.data.data); this.setState({db:full.data.data}); this.toast('Datos actualizados desde otro equipo'); }
+      if(full.data && full.data.data){ this._remoteUpdatedAt=full.data.updated_at; this.persistLocal(full.data.data); try{ localStorage.setItem(STORE_KEY+'_ua', full.data.updated_at||''); }catch(e){} this.setState({db:full.data.data}); this.toast('Datos actualizados desde otro equipo'); }
     }catch(e){}
   }
   mapContingencia(c){ var t=String(c||'').toUpperCase(); if(t.indexOf('ACCIDENTE')>=0) return 'Accidente de trabajo'; if(t.indexOf('PROFESIONAL')>=0) return 'Enfermedad profesional'; if(t.indexOf('MATERN')>=0) return 'Maternidad'; return 'Enfermedad común'; }
@@ -2501,7 +2510,7 @@ class Component extends DCLogic {
       workers:workers||[], fichas:[],consultas:[],descansos:[],accidentes:[],vacunas:[],capacitaciones:[],botiquin:[], especiales:{}, notas:[], alertas:[] };
   }
   persistLocal(db){ try{ localStorage.setItem(STORE_KEY, JSON.stringify(db)); }catch(e){} }
-  persist(db){ this.persistLocal(db); if(this.state.authed){ clearTimeout(this._pushT); this._pushT=setTimeout(()=>this.cloudPush(this.state.db),700); } }
+  persist(db){ this.persistLocal(db); if(this.state.authed){ clearTimeout(this._pushT); this._pushT=setTimeout(()=>this.cloudPush(this.state.db),2500); } }
   save(mut){ this.setState(s=>{ const db=JSON.parse(JSON.stringify(s.db)); mut(db); this.persist(db); return {db}; }); }
   toast(m){ this.setState({toast:m}); clearTimeout(this._t); this._t=setTimeout(()=>this.setState({toast:''}),2400); }
   toggleNav=()=>{ this.setState(s=>({navHidden:!s.navHidden})); };
