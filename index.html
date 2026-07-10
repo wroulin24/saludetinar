@@ -3529,7 +3529,7 @@ class Component extends DCLogic {
         estadoLabel:this.estadoLabel(w.estado||'A'), estadoChip:chip(this.estadoTone(w.estado||'A')), editDatos:this.openModal('trabajador',c,'w'),
         addConsulta:this.openModal('consulta',c), addDescanso:this.openModal('descanso',c), addFicha:this.openModal('ficha',c),
         addVacuna:this.openModal('vacuna',c), addAccidente:this.openModal('accidente',c), editEspecial:this.openModal('especial',c,esp?'e':null),
-        datosPersonales:[ {k:'Cédula',v:w.cedula}, {k:'Sexo',v:w.sexo==='F'?'Femenino':(w.sexo==='M'?'Masculino':(w.sexo||'—'))}, {k:'Fecha nacimiento',v:this.fmt(w.fechaNac)}, {k:'Edad',v:(w.edad||'—')+(w.edad?' años':'')}, {k:'Estado civil',v:w.estadoCivil||'—'}, {k:'Dirección',v:w.direccion||'—'} ],
+        datosPersonales:[ {k:'Cédula',v:w.cedula}, {k:'Sexo',v:w.sexo==='F'?'Femenino':(w.sexo==='M'?'Masculino':(w.sexo||'—'))}, {k:'Fecha nacimiento',v:this.fmt(w.fechaNac)}, {k:'Edad',v:(w.edad||'—')+(w.edad?' años':'')}, {k:'Grupo sanguíneo',v:w.grupoSanguineo||'—'}, {k:'Estado civil',v:w.estadoCivil||'—'}, {k:'Dirección',v:w.direccion||'—'} ],
         datosLaborales:[ {k:'Obra / centro',v:w.obra||'—'}, {k:'Cargo',v:w.cargo||'—'}, {k:'Departamento',v:w.departamento||'—'}, {k:'Fecha de ingreso',v:this.fmt(w.fechaIngreso)}, {k:'Celular',v:w.celular||'—'}, {k:'Email',v:w.email||'—'}, {k:'Jefe inmediato',v:w.jefe||'—'} ],
         noFichas:fichas.length===0, noConsultas:consultas.length===0, noDescansos:descansos.length===0, noVacunas:vacunas.length===0, noAccidentes:accidentes.length===0, sinEspecial:(!esp && !am),
         addNota:this.openModal('nota',c), noNotas:notasW.length===0, notas:notasW.map(x=>({...x,fechaFmt:this.fmt(x.fecha),del:this.delRecord('notas',x.id)})),
