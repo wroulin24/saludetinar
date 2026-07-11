@@ -2671,6 +2671,16 @@ class Component extends DCLogic {
   }
   mapContingencia(c){ var t=String(c||'').toUpperCase(); if(t.indexOf('ACCIDENTE')>=0) return 'Accidente de trabajo'; if(t.indexOf('PROFESIONAL')>=0) return 'Enfermedad profesional'; if(t.indexOf('MATERN')>=0) return 'Maternidad'; return 'Enfermedad común'; }
   obsIESS(row, worker){ var p=[]; if(row.afiliado && !worker) p.push('Afiliado IESS: '+row.afiliado); if(row.fecha_fin) p.push('Hasta '+row.fecha_fin); if(row.unidad_emite) p.push('Emite: '+row.unidad_emite); if(row.medico_emisor) p.push('Médico: '+row.medico_emisor); p.push('Importado automáticamente del IESS'); if(!worker) p.push('Cédula no registrada, revisar'); return p.join(' · '); }
+  notificarDescansoWhatsApp=async(rec)=>{
+    try{
+      var sb=getSB(); if(!sb || !sb.functions) return;
+      var nombre=this.workerName(rec.cedula)||rec.afiliado||rec.cedula||'—';
+      await sb.functions.invoke('alerta-descanso', { body:{ nombre:nombre, dias:(Number(rec.dias)||0), inicio:rec.inicio||'', tipo:rec.tipo||'', entidad:rec.entidad||'' } });
+    }catch(e){ try{ console.log('Alerta WhatsApp fallo (silencioso):', e && e.message); }catch(_){} }
+  };
+  notificarDescansosLote=async(recs)=>{
+    for(var i=0;i<recs.length;i++){ var r=recs[i]; if((Number(r.dias)||0)>=4){ await this.notificarDescansoWhatsApp(r); await new Promise(function(res){ setTimeout(res,1200); }); } }
+  };
   importarBuzonIESS=async()=>{
     var sb=getSB(); if(!sb || !this.state.authed) return;
     if(this._impRunning) return; this._impRunning=true;
@@ -2696,7 +2706,7 @@ class Component extends DCLogic {
           obs:self.obsIESS(row, worker), origen:'IESS', revisar: worker?false:true, afiliado: row.afiliado||'' });
         if(!worker) flagged++;
       });
-      if(newRecs.length){ this.save(function(db){ if(!db.descansos) db.descansos=[]; for(var i=newRecs.length-1;i>=0;i--) db.descansos.unshift(newRecs[i]); }); }
+      if(newRecs.length){ this.save(function(db){ if(!db.descansos) db.descansos=[]; for(var i=newRecs.length-1;i>=0;i--) db.descansos.unshift(newRecs[i]); }); this.notificarDescansosLote(newRecs); }
       if(toMark.length){ try{ await sb.from('descansos_inbox').update({procesado:true}).in('id',toMark); }catch(e){} }
       if(newRecs.length){ this.toast(newRecs.length+' descanso(s) del IESS importado(s)'+(flagged?(' · '+flagged+' por revisar'):'')); }
     }catch(e){}
@@ -2865,6 +2875,7 @@ class Component extends DCLogic {
       let adjunto; try{ adjunto=await this.resolveAdjunto('descanso', rid); }catch(err){ this.setState({savingAdj:false}); alert('No se pudo subir el archivo adjunto. Verifique su conexión e intente de nuevo.'); return; }
       const rec={id:rid,cedula,inicio:g('inicio')||this.todayISO(),dias:num('dias')||0,tipo:g('tipo'),entidad:g('entidad'),estado:g('estado'),dxCodigo:dx?dx[0]:'',dxTexto:dx?dx[1]:'',obs:g('obs'),adjunto};
       this.save(db=>{const i=db.descansos.findIndex(x=>x.id===rec.id); if(i>=0)db.descansos[i]=rec; else db.descansos.unshift(rec);});
+      if(!id && (Number(rec.dias)||0)>=4){ this.notificarDescansoWhatsApp(rec); }
     } else if(t==='ficha'){
       if(!cedula) return;
       const rid=id||this.uid();
