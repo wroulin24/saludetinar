@@ -440,24 +440,24 @@ window.WORKERS_SEED = [{"cedula":"0926211590","nombre":"ABAD GUTIERREZ PAULINA",
   }
   ::-webkit-scrollbar-thumb:hover{background:#c2bbb2;}
 
-  /* 10 · Fondo animado del login: pulso cardíaco (línea ECG) */
+  /* 10 · Fondo animado del login: partículas médicas flotantes */
   .etinar-login-wrap{position:relative;overflow:hidden;}
-  .etinar-ecg{position:absolute;inset:0;z-index:0;pointer-events:none;overflow:hidden;opacity:.5;}
-  .etinar-ecg-line{
-    fill:none;
-    stroke:#F2B200;
-    stroke-width:2.6;
-    stroke-linecap:round;
-    stroke-linejoin:round;
-    stroke-dasharray:2600;
-    stroke-dashoffset:2600;
-    animation:etinarEcgDraw 5s linear infinite;
-    filter:drop-shadow(0 0 5px rgba(242,178,0,.55));
+  .etinar-particles{position:absolute;inset:0;z-index:0;pointer-events:none;overflow:hidden;}
+  .etinar-particle{
+    position:absolute;
+    bottom:-40px;
+    color:rgba(240,190,7,.45);
+    font-family:'Material Symbols Outlined','Hanken Grotesk',sans-serif;
+    user-select:none;
+    animation:etinarFloatUp linear infinite;
   }
-  @keyframes etinarEcgDraw{
-    to{stroke-dashoffset:-2600;}
+  @keyframes etinarFloatUp{
+    0%{transform:translateY(0) rotate(0deg);opacity:0;}
+    12%{opacity:1;}
+    88%{opacity:1;}
+    100%{transform:translateY(-108vh) rotate(200deg);opacity:0;}
   }
-  /* El formulario del login siempre por encima del fondo */
+  /* El formulario del login siempre por encima de las partículas */
   .etinar-login-wrap > form{position:relative;z-index:2;}
 
   /* 9 · Respeto por "reducir movimiento" (accesibilidad) */
@@ -467,10 +467,7 @@ window.WORKERS_SEED = [{"cedula":"0926211590","nombre":"ABAD GUTIERREZ PAULINA",
       animation:none !important;
       transition:none !important;
     }
-    .etinar-ecg-line{
-      animation:none !important;
-      stroke-dashoffset:0 !important;
-    }
+    .etinar-particle{display:none !important;}
   }
 </style>
 </helmet>
@@ -486,10 +483,22 @@ window.WORKERS_SEED = [{"cedula":"0926211590","nombre":"ABAD GUTIERREZ PAULINA",
 
   <sc-if value="{{ showLogin }}" hint-placeholder-val="{{ true }}">
     <div class="etinar-login-wrap" style="height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#423D3B,#2C2A28);padding:24px">
-      <div class="etinar-ecg" aria-hidden="true">
-        <svg viewBox="0 0 1200 300" preserveAspectRatio="xMidYMid slice" style="width:100%;height:100%">
-          <path class="etinar-ecg-line" d="M0,150 L180,150 L210,150 L232,80 L254,220 L276,150 L320,150 L355,150 L377,150 L399,40 L421,260 L443,150 L500,150 L680,150 L710,150 L732,80 L754,220 L776,150 L820,150 L855,150 L877,150 L899,40 L921,260 L943,150 L1000,150 L1200,150"/>
-        </svg>
+      <div class="etinar-particles" aria-hidden="true">
+        <span class="etinar-particle" style="left:6%;font-size:24px;animation-duration:11s;animation-delay:-2s">add</span>
+        <span class="etinar-particle" style="left:14%;font-size:16px;animation-duration:14s;animation-delay:-7s">favorite</span>
+        <span class="etinar-particle" style="left:22%;font-size:30px;animation-duration:9s;animation-delay:-1s">add</span>
+        <span class="etinar-particle" style="left:31%;font-size:18px;animation-duration:13s;animation-delay:-9s">vaccines</span>
+        <span class="etinar-particle" style="left:39%;font-size:22px;animation-duration:10s;animation-delay:-4s">add</span>
+        <span class="etinar-particle" style="left:47%;font-size:14px;animation-duration:15s;animation-delay:-11s">stethoscope</span>
+        <span class="etinar-particle" style="left:55%;font-size:28px;animation-duration:8.5s;animation-delay:-3s">add</span>
+        <span class="etinar-particle" style="left:63%;font-size:17px;animation-duration:12.5s;animation-delay:-6s">favorite</span>
+        <span class="etinar-particle" style="left:71%;font-size:20px;animation-duration:10.5s;animation-delay:-8s">add</span>
+        <span class="etinar-particle" style="left:79%;font-size:26px;animation-duration:9.5s;animation-delay:-2.5s">medical_services</span>
+        <span class="etinar-particle" style="left:86%;font-size:15px;animation-duration:13.5s;animation-delay:-10s">add</span>
+        <span class="etinar-particle" style="left:93%;font-size:23px;animation-duration:11.5s;animation-delay:-5s">add</span>
+        <span class="etinar-particle" style="left:18%;font-size:19px;animation-duration:16s;animation-delay:-13s">add</span>
+        <span class="etinar-particle" style="left:50%;font-size:21px;animation-duration:12s;animation-delay:-14s">favorite</span>
+        <span class="etinar-particle" style="left:75%;font-size:16px;animation-duration:14.5s;animation-delay:-6.5s">add</span>
       </div>
       <form onSubmit="{{ login }}" style="width:380px;max-width:92vw;background:#fff;border-radius:16px;padding:38px 34px;box-shadow:0 30px 70px rgba(0,0,0,.35);animation:slideUp .4s ease">
         <div style="display:flex;align-items:center;gap:12px;margin-bottom:6px">
