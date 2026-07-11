@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ETINAR · Portal de Contratistas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Rounded" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:Inter,system-ui,sans-serif;background:#EDEAE4;color:#2C2A28;min-height:100vh;display:flex;flex-direction:column}
+  .ms{font-family:'Material Symbols Rounded';font-weight:400;vertical-align:middle}
+  .wrap{flex:1;display:flex;align-items:flex-start;justify-content:center;padding:26px 16px 40px}
+  .card{width:100%;max-width:560px;background:#fff;border-radius:18px;box-shadow:0 10px 40px rgba(0,0,0,.10);overflow:hidden}
+  .head{background:#2C2A28;color:#fff;padding:22px 26px;display:flex;align-items:center;gap:13px}
+  .logo{width:42px;height:42px;border-radius:11px;background:#F2B200;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .logo .ms{color:#2C2A28;font-size:26px}
+  .head h1{font-family:Archivo;font-size:19px;font-weight:800;line-height:1.15}
+  .head p{font-size:12.5px;color:#c9c4bd;margin-top:1px}
+  .body{padding:26px}
+  label{display:block;font-size:12.5px;font-weight:600;color:#55504c;margin-bottom:5px}
+  input,select{width:100%;padding:12px 13px;border:1px solid #DAD4CC;border-radius:10px;font-size:14px;font-family:inherit;background:#fff;color:#2C2A28}
+  input:focus,select:focus{outline:none;border-color:#F2B200;box-shadow:0 0 0 3px rgba(242,178,0,.18)}
+  .field{margin-bottom:15px}
+  .btn{width:100%;padding:13px;border:none;border-radius:11px;background:#2C2A28;color:#fff;font-weight:700;font-size:14.5px;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;justify-content:center;gap:7px;transition:opacity .15s}
+  .btn:hover{opacity:.92}
+  .btn:disabled{opacity:.55;cursor:default}
+  .btn-y{background:#F2B200;color:#2C2A28}
+  .btn-ghost{background:#F1EEE9;color:#2C2A28}
+  .file{border:2px dashed #DAD4CC;border-radius:11px;padding:15px;text-align:center;cursor:pointer;color:#8C857E;font-size:13px;transition:border-color .15s}
+  .file:hover{border-color:#F2B200}
+  .file input{display:none}
+  .msg{padding:11px 13px;border-radius:10px;font-size:13px;margin-bottom:15px;display:flex;gap:8px;align-items:flex-start}
+  .msg.err{background:#FCE9E7;color:#9B2C1E}
+  .msg.ok{background:#E6F4EA;color:#1E6B34}
+  .chip{display:inline-flex;align-items:center;gap:6px;background:#F1EEE9;border-radius:9px;padding:8px 12px;font-size:13px;font-weight:600}
+  .row-cert{display:flex;align-items:center;gap:10px;padding:11px 13px;border:1px solid #EDE9E3;border-radius:11px;margin-bottom:8px;font-size:13px}
+  .row-cert .ms{color:#1E6B34;font-size:20px}
+  .empresa-box{background:#FBF7EC;border:1px solid #F0DFA8;border-radius:11px;padding:12px 14px;margin-bottom:18px;display:flex;align-items:center;gap:9px;font-size:13.5px}
+  .empresa-box .ms{color:#B8791A}
+  .aviso{max-width:560px;margin:16px auto 0;padding:0 8px;font-size:10.5px;line-height:1.55;color:#8C857E;text-align:justify}
+  .aviso b{color:#6b655f}
+  .foot{text-align:center;font-size:11px;color:#a49e97;padding:14px}
+  .hidden{display:none}
+  .spin{animation:sp 1s linear infinite;display:inline-block}
+  @keyframes sp{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div>
+  <div class="card">
+    <div class="head">
+      <div class="logo"><span class="ms">apartment</span></div>
+      <div><h1>Portal de Contratistas</h1><p>ETINAR S.A. · Carga de certificados de aptitud laboral</p></div>
+    </div>
+
+    <!-- LOGIN -->
+    <div class="body" id="loginView">
+      <div id="loginMsg"></div>
+      <div class="field"><label>Usuario</label><input id="usuario" type="text" autocomplete="username" placeholder="Usuario de su empresa"></div>
+      <div class="field"><label>Contraseña</label><input id="clave" type="password" autocomplete="current-password" placeholder="Contraseña"></div>
+      <button class="btn" id="btnLogin"><span class="ms">login</span> Ingresar</button>
+    </div>
+
+    <!-- SUBIDA -->
+    <div class="body hidden" id="uploadView">
+      <div class="empresa-box"><span class="ms">verified</span><div>Empresa: <b id="empresaLbl"></b></div></div>
+      <div id="upMsg"></div>
+      <div class="field"><label>Obra de ETINAR donde laborará</label><input id="obra" type="text" placeholder="Ej. Torre Maxximus, Edificio..."></div>
+      <div class="field"><label>Nombre del trabajador</label><input id="trabajador" type="text" placeholder="Nombres y apellidos"></div>
+      <div class="field"><label>Cédula del trabajador</label><input id="cedula" type="text" inputmode="numeric" placeholder="Número de cédula"></div>
+      <div class="field">
+        <label>Certificado de aptitud laboral (PDF o imagen)</label>
+        <label class="file" id="fileLabel"><span class="ms" style="font-size:22px;display:block;margin-bottom:4px">upload_file</span><span id="fileName">Toque para seleccionar el archivo</span><input id="archivo" type="file" accept=".pdf,image/*"></label>
+      </div>
+      <button class="btn btn-y" id="btnUpload"><span class="ms">cloud_upload</span> Subir certificado</button>
+
+      <div id="listaWrap" class="hidden" style="margin-top:22px">
+        <div style="font-weight:700;font-size:13.5px;margin-bottom:9px;color:#2C2A28">Certificados enviados en esta sesión</div>
+        <div id="lista"></div>
+      </div>
+
+      <button class="btn btn-ghost" id="btnSalir" style="margin-top:20px"><span class="ms">logout</span> Salir</button>
+    </div>
+  </div>
+
+  <!-- AVISO DE PROTECCIÓN DE DATOS -->
+  <div class="aviso">
+    <p>En Etinar S.A. estamos comprometidos con la protección, confidencialidad y uso responsable de la información proporcionada por nuestras empresas contratistas y subcontratistas.</p>
+    <p style="margin-top:6px">Los datos personales registrados en esta plataforma serán tratados de manera segura, utilizados exclusivamente para los fines relacionados con la gestión de contratistas, el cumplimiento de requisitos legales, contractuales y de seguridad y salud en el trabajo, y serán administrados conforme a lo establecido en la legislación vigente sobre protección de datos personales en el Ecuador.</p>
+    <p style="margin-top:6px">Etinar S.A. implementa medidas técnicas, administrativas y organizativas para salvaguardar la integridad, disponibilidad y confidencialidad de la información, evitando el acceso, uso, divulgación o modificación no autorizados.</p>
+    <p style="margin-top:6px">Al utilizar esta plataforma, el usuario declara conocer que la información suministrada será tratada conforme a estos principios y únicamente para los fines autorizados.</p>
+    <p style="margin-top:6px"><b>En Etinar S.A., la protección de la información es parte de nuestro compromiso con la transparencia, la seguridad y la confianza de nuestros aliados estratégicos.</b></p>
+  </div>
+  <div class="foot">© ETINAR S.A. · Sistema de Gestión Ocupacional</div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script>
+(function(){
+  var SUPABASE_URL='https://sogbuxyhhlldwbpgixkf.supabase.co';
+  var SUPABASE_ANON_KEY='sb_publishable_IlOqf6Q0sxiNyMUNEy_68A_28_bG5R-';
+  var BUCKET='certificados-subc';
+  var sb=null, empresaActual='', enviados=[];
+
+  function getSB(){ if(sb) return sb; if(window.supabase&&window.supabase.createClient){ sb=window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY); } return sb; }
+  function $(id){ return document.getElementById(id); }
+  function show(el){ el.classList.remove('hidden'); }
+  function hide(el){ el.classList.add('hidden'); }
+  function msg(box, type, text){ box.innerHTML='<div class="msg '+type+'"><span class="ms" style="font-size:18px">'+(type==='err'?'error':'check_circle')+'</span><div>'+text+'</div></div>'; }
+  function clearMsg(box){ box.innerHTML=''; }
+  function slug(s){ return String(s||'empresa').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,40)||'empresa'; }
+  function safeName(s){ return String(s||'archivo').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-zA-Z0-9._-]+/g,'_').slice(-80); }
+  function setBusy(btn, busy, label){ btn.disabled=busy; btn.innerHTML = busy? ('<span class="ms spin">progress_activity</span> '+label) : btn.getAttribute('data-label'); }
+
+  // ---- LOGIN ----
+  async function doLogin(){
+    var u=$('usuario').value.trim(), c=$('clave').value;
+    clearMsg($('loginMsg'));
+    if(!u||!c){ msg($('loginMsg'),'err','Ingrese usuario y contraseña.'); return; }
+    var s=getSB(); if(!s){ msg($('loginMsg'),'err','No se pudo conectar. Revise su internet e intente de nuevo.'); return; }
+    var b=$('btnLogin'); b.setAttribute('data-label', b.innerHTML); setBusy(b,true,'Verificando…');
+    try{
+      var res=await s.rpc('login_subc', { p_usuario:u, p_clave:c });
+      if(res.error) throw res.error;
+      var data=res.data||{};
+      if(!data.ok){ msg($('loginMsg'),'err','Usuario o contraseña incorrectos.'); setBusy(b,false); return; }
+      empresaActual=data.empresa||u;
+      $('empresaLbl').textContent=empresaActual;
+      hide($('loginView')); show($('uploadView'));
+    }catch(e){ msg($('loginMsg'),'err','No se pudo ingresar. '+((e&&e.message)||'')); setBusy(b,false); }
+  }
+
+  // ---- SUBIR CERTIFICADO ----
+  async function doUpload(){
+    clearMsg($('upMsg'));
+    var obra=$('obra').value.trim(), trab=$('trabajador').value.trim(), ced=$('cedula').value.trim();
+    var f=$('archivo').files&&$('archivo').files[0];
+    if(!trab||!ced){ msg($('upMsg'),'err','Ingrese el nombre y la cédula del trabajador.'); return; }
+    if(!f){ msg($('upMsg'),'err','Seleccione el archivo del certificado.'); return; }
+    if(f.size>15*1024*1024){ msg($('upMsg'),'err','El archivo supera los 15 MB. Use uno más liviano.'); return; }
+    var s=getSB(); if(!s){ msg($('upMsg'),'err','Sin conexión. Intente de nuevo.'); return; }
+    var b=$('btnUpload'); b.setAttribute('data-label', b.innerHTML); setBusy(b,true,'Subiendo…');
+    try{
+      var path=slug(empresaActual)+'/'+Date.now()+'_'+safeName(f.name);
+      var up=await s.storage.from(BUCKET).upload(path, f, { contentType:f.type||'application/octet-stream', upsert:false });
+      if(up.error) throw up.error;
+      var ins=await s.from('certificados_subc').insert({ empresa:empresaActual, obra:obra, trabajador:trab, cedula:ced, archivo_path:path, archivo_nombre:f.name });
+      if(ins.error) throw ins.error;
+      enviados.unshift({ trab:trab, ced:ced, obra:obra, name:f.name });
+      renderLista();
+      msg($('upMsg'),'ok','Certificado de '+trab+' enviado correctamente.');
+      $('trabajador').value=''; $('cedula').value=''; $('archivo').value=''; $('fileName').textContent='Toque para seleccionar el archivo';
+      setBusy(b,false);
+    }catch(e){ msg($('upMsg'),'err','No se pudo subir. '+((e&&e.message)||'')); setBusy(b,false); }
+  }
+
+  function renderLista(){
+    if(!enviados.length){ hide($('listaWrap')); return; }
+    show($('listaWrap'));
+    $('lista').innerHTML=enviados.map(function(x){
+      return '<div class="row-cert"><span class="ms">task_alt</span><div style="flex:1"><b>'+x.trab+'</b> · '+x.ced+(x.obra?(' · '+x.obra):'')+'<div style="color:#8C857E;font-size:12px">'+x.name+'</div></div></div>';
+    }).join('');
+  }
+
+  function salir(){ empresaActual=''; enviados=[]; $('usuario').value=''; $('clave').value=''; clearMsg($('loginMsg')); clearMsg($('upMsg')); $('lista').innerHTML=''; hide($('listaWrap')); hide($('uploadView')); show($('loginView')); }
+
+  // ---- eventos ----
+  document.addEventListener('DOMContentLoaded', function(){
+    $('btnLogin').addEventListener('click', doLogin);
+    $('clave').addEventListener('keydown', function(e){ if(e.key==='Enter') doLogin(); });
+    $('btnUpload').addEventListener('click', doUpload);
+    $('btnSalir').addEventListener('click', salir);
+    $('archivo').addEventListener('change', function(){ var f=this.files&&this.files[0]; $('fileName').textContent=f?f.name:'Toque para seleccionar el archivo'; });
+  });
+})();
+</script>
+</body>
+</html>
