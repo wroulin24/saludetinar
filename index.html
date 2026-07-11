@@ -383,6 +383,27 @@ window.WORKERS_SEED = [{"cedula":"0926211590","nombre":"ABAD GUTIERREZ PAULINA",
     border-color:#DAD4CC;
   }
 
+  /* 1b · TARJETAS CLICABLES: efecto más marcado en todo el sistema
+     Cualquier caja con cursor:pointer se resalta claramente al
+     pasar el mouse (elevación mayor + sombra + borde dorado),
+     para que se note que se puede hacer clic. Sin cambio de color
+     de fondo. Aplica en todos los módulos. */
+  div[style*="cursor:pointer"][style*="border-radius:13px"]:hover,
+  div[style*="cursor:pointer"][style*="border-radius:12px"]:hover,
+  div[style*="cursor:pointer"][style*="border-radius:11px"]:hover,
+  div[style*="cursor:pointer"][style*="border-radius:10px"]:hover,
+  div[style*="cursor:pointer"][style*="border-radius:9px"]:hover,
+  label[style*="cursor:pointer"][style*="border-radius"]:hover{
+    transform:translateY(-4px) scale(1.012);
+    box-shadow:0 14px 32px rgba(44,42,40,.16);
+    border-color:#F2B200 !important;
+    z-index:1;
+  }
+  /* La caja clicable indica de antemano que es interactiva */
+  div[style*="cursor:pointer"][style*="background:#fff"]{
+    position:relative;
+  }
+
   /* 2 · Botones amarillos: flotan y brillan; se hunden al hacer clic */
   button[style*="background:#F2B200"]:hover{
     transform:translateY(-2px);
@@ -422,6 +443,37 @@ window.WORKERS_SEED = [{"cedula":"0926211590","nombre":"ABAD GUTIERREZ PAULINA",
   @keyframes etinarFadeIn{
     from{opacity:0;transform:translateY(8px);}
     to{opacity:1;transform:translateY(0);}
+  }
+
+  /* 6b · Aparición en cascada de las tarjetas de contenido
+     Cada tarjeta blanca entra con un leve deslizamiento, una
+     tras otra, al abrir el módulo. Solo movimiento, sin color. */
+  #appmain [style*="background:#fff"][style*="border-radius:13px"],
+  #appmain [style*="background:#fff"][style*="border-radius:12px"],
+  #appmain [style*="background:#fff"][style*="border-radius:11px"]{
+    animation:etinarCardIn .5s ease both;
+  }
+  @keyframes etinarCardIn{
+    from{opacity:0;transform:translateY(14px);}
+    to{opacity:1;transform:translateY(0);}
+  }
+  /* Retraso escalonado: crea el efecto dominó suave */
+  #appmain [style*="background:#fff"]:nth-of-type(1){animation-delay:.02s}
+  #appmain [style*="background:#fff"]:nth-of-type(2){animation-delay:.07s}
+  #appmain [style*="background:#fff"]:nth-of-type(3){animation-delay:.12s}
+  #appmain [style*="background:#fff"]:nth-of-type(4){animation-delay:.17s}
+  #appmain [style*="background:#fff"]:nth-of-type(5){animation-delay:.22s}
+  #appmain [style*="background:#fff"]:nth-of-type(6){animation-delay:.27s}
+  #appmain [style*="background:#fff"]:nth-of-type(7){animation-delay:.32s}
+  #appmain [style*="background:#fff"]:nth-of-type(8){animation-delay:.37s}
+
+  /* 6c · Barras de progreso: se "llenan" suavemente al aparecer */
+  #appmain [style*="background:#F2B200"][style*="height:100%"]{
+    animation:etinarBarGrow .9s cubic-bezier(.22,.61,.36,1) both;
+    animation-delay:.25s;
+  }
+  @keyframes etinarBarGrow{
+    from{width:0 !important;}
   }
 
   /* 7 · Filas de tabla: resalte muy sutil */
