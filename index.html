@@ -440,12 +440,36 @@ window.WORKERS_SEED = [{"cedula":"0926211590","nombre":"ABAD GUTIERREZ PAULINA",
   }
   ::-webkit-scrollbar-thumb:hover{background:#c2bbb2;}
 
+  /* 10 · Fondo animado del login: pulso cardíaco (línea ECG) */
+  .etinar-login-wrap{position:relative;overflow:hidden;}
+  .etinar-ecg{position:absolute;inset:0;z-index:0;pointer-events:none;overflow:hidden;opacity:.5;}
+  .etinar-ecg-line{
+    fill:none;
+    stroke:#F2B200;
+    stroke-width:2.6;
+    stroke-linecap:round;
+    stroke-linejoin:round;
+    stroke-dasharray:2600;
+    stroke-dashoffset:2600;
+    animation:etinarEcgDraw 5s linear infinite;
+    filter:drop-shadow(0 0 5px rgba(242,178,0,.55));
+  }
+  @keyframes etinarEcgDraw{
+    to{stroke-dashoffset:-2600;}
+  }
+  /* El formulario del login siempre por encima del fondo */
+  .etinar-login-wrap > form{position:relative;z-index:2;}
+
   /* 9 · Respeto por "reducir movimiento" (accesibilidad) */
   @media (prefers-reduced-motion: reduce){
     *,
     #appmain > div{
       animation:none !important;
       transition:none !important;
+    }
+    .etinar-ecg-line{
+      animation:none !important;
+      stroke-dashoffset:0 !important;
     }
   }
 </style>
@@ -454,18 +478,23 @@ window.WORKERS_SEED = [{"cedula":"0926211590","nombre":"ABAD GUTIERREZ PAULINA",
 <template id="__bundler_thumbnail">
   <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
     <rect width="100" height="100" rx="18" fill="#423D3B"></rect>
-    <rect x="28" y="30" width="17" height="17" rx="3" fill="#F2B200"></rect>
+    <rect x="28" y="30" width="17" height="17" rx="3" fill="#F0BE07"></rect>
     <path d="M55 38 h8 v8 h8 v8 h-8 v8 h-8 v-8 h-8 v-8 h8 z" fill="#ffffff"></path>
   </svg>
 </template>
 <div id="approot" style="height:100vh;overflow:hidden;background:#F4F2EE">
 
   <sc-if value="{{ showLogin }}" hint-placeholder-val="{{ true }}">
-    <div style="height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#423D3B,#2C2A28);padding:24px">
+    <div class="etinar-login-wrap" style="height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#423D3B,#2C2A28);padding:24px">
+      <div class="etinar-ecg" aria-hidden="true">
+        <svg viewBox="0 0 1200 300" preserveAspectRatio="xMidYMid slice" style="width:100%;height:100%">
+          <path class="etinar-ecg-line" d="M0,150 L180,150 L210,150 L232,80 L254,220 L276,150 L320,150 L355,150 L377,150 L399,40 L421,260 L443,150 L500,150 L680,150 L710,150 L732,80 L754,220 L776,150 L820,150 L855,150 L877,150 L899,40 L921,260 L943,150 L1000,150 L1200,150"/>
+        </svg>
+      </div>
       <form onSubmit="{{ login }}" style="width:380px;max-width:92vw;background:#fff;border-radius:16px;padding:38px 34px;box-shadow:0 30px 70px rgba(0,0,0,.35);animation:slideUp .4s ease">
         <div style="display:flex;align-items:center;gap:12px;margin-bottom:6px">
-          <span style="width:34px;height:34px;background:#F2B200;border-radius:6px;display:inline-block"></span>
-          <span style="font-family:Archivo;font-weight:800;font-size:26px;letter-spacing:.06em;color:#423D3B">ETINAR</span>
+          <span style="width:36px;height:36px;flex:none;display:inline-flex"><svg width="36" height="36" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg"><rect width="40" height="40" rx="4" fill="#F0BE07"/></svg></span>
+          <span style="font-family:Archivo;font-weight:800;font-size:26px;letter-spacing:-.02em;color:#4A4443">ETINAR</span>
         </div>
         <div style="font-family:Archivo;font-weight:700;font-size:17px;margin:18px 0 2px">Salud Ocupacional</div>
         <div style="color:#8C857E;font-size:13.5px;margin-bottom:22px">Inicie sesión con su cuenta para continuar</div>
@@ -500,9 +529,9 @@ window.WORKERS_SEED = [{"cedula":"0926211590","nombre":"ABAD GUTIERREZ PAULINA",
     <sc-if value="{{ navShown }}" hint-placeholder-val="">
     <aside data-noprint style="background:#3A3633;color:#E9E5E0;display:flex;flex-direction:column;height:100vh;overflow:hidden">
       <div style="padding:22px 22px 18px;display:flex;align-items:center;gap:11px;border-bottom:1px solid rgba(255,255,255,.08)">
-        <span style="width:30px;height:30px;background:#F2B200;border-radius:6px;display:inline-block;flex:none"></span>
+        <span style="width:30px;height:30px;flex:none;display:inline-flex"><svg width="30" height="30" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg"><rect width="40" height="40" rx="4" fill="#F0BE07"/></svg></span>
         <div style="line-height:1.1">
-          <div style="font-family:Archivo;font-weight:800;font-size:19px;letter-spacing:.06em">ETINAR</div>
+          <div style="font-family:Archivo;font-weight:800;font-size:19px;letter-spacing:-.02em">ETINAR</div>
           <div style="font-size:10.5px;color:#a59e96;letter-spacing:.08em;text-transform:uppercase">Salud Ocupacional</div>
         </div>
         <button onClick="{{ toggleNav }}" title="Ocultar panel" style="margin-left:auto;flex:none;background:rgba(255,255,255,.06);color:#E9E5E0;border:none;border-radius:8px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer"><span class="ms" style="font-size:20px">chevron_left</span></button>
@@ -901,7 +930,7 @@ window.WORKERS_SEED = [{"cedula":"0926211590","nombre":"ABAD GUTIERREZ PAULINA",
 
             <div style="background:#fff;border:1px solid #E6E2DD;border-radius:14px;padding:28px 30px;margin-bottom:18px">
               <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px;border-bottom:2px solid #423D3B;padding-bottom:16px;margin-bottom:22px;flex-wrap:wrap">
-                <div style="display:flex;align-items:center;gap:12px"><span style="width:32px;height:32px;background:#F2B200;border-radius:5px;display:inline-block"></span><div><div style="font-family:Archivo;font-weight:800;font-size:20px;letter-spacing:.05em;color:#423D3B">ETINAR</div><div style="font-size:11px;color:#8C857E;letter-spacing:.05em;text-transform:uppercase">Morbilidad · Salud Ocupacional</div></div></div>
+                <div style="display:flex;align-items:center;gap:12px"><span style="width:32px;height:32px;flex:none;display:inline-flex"><svg width="32" height="32" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg"><rect width="40" height="40" rx="4" fill="#F0BE07"/></svg></span><div><div style="font-family:Archivo;font-weight:800;font-size:20px;letter-spacing:-.02em;color:#4A4443">ETINAR</div><div style="font-size:11px;color:#8C857E;letter-spacing:.05em;text-transform:uppercase">Morbilidad · Salud Ocupacional</div></div></div>
                 <div style="text-align:right;font-size:12.5px;color:#5b554f"><div style="font-weight:700;font-size:22px;color:#2C2A28;font-family:Archivo">{{ morbKpis.total }}</div><div>consultas por morbilidad</div><div style="color:#a59e96">{{ morbObraLabel }} · {{ morbPeriodoLabel }}</div></div>
               </div>
 
@@ -1168,7 +1197,7 @@ window.WORKERS_SEED = [{"cedula":"0926211590","nombre":"ABAD GUTIERREZ PAULINA",
 
           <div style="background:#fff;border:1px solid #E6E2DD;border-radius:14px;padding:28px 30px;margin-bottom:18px">
             <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px;border-bottom:2px solid #423D3B;padding-bottom:16px;margin-bottom:22px;flex-wrap:wrap">
-              <div style="display:flex;align-items:center;gap:12px"><span style="width:32px;height:32px;background:#F2B200;border-radius:5px;display:inline-block"></span><div><div style="font-family:Archivo;font-weight:800;font-size:20px;letter-spacing:.05em;color:#423D3B">ETINAR</div><div style="font-size:11px;color:#8C857E;letter-spacing:.05em;text-transform:uppercase">Atención prioritaria · Salud Ocupacional</div></div></div>
+              <div style="display:flex;align-items:center;gap:12px"><span style="width:32px;height:32px;flex:none;display:inline-flex"><svg width="32" height="32" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg"><rect width="40" height="40" rx="4" fill="#F0BE07"/></svg></span><div><div style="font-family:Archivo;font-weight:800;font-size:20px;letter-spacing:-.02em;color:#4A4443">ETINAR</div><div style="font-size:11px;color:#8C857E;letter-spacing:.05em;text-transform:uppercase">Atención prioritaria · Salud Ocupacional</div></div></div>
               <div style="text-align:right;font-size:12.5px;color:#5b554f"><div style="font-weight:700;font-size:22px;color:#2C2A28;font-family:Archivo">{{ prTotal }}</div><div>personas en atención prioritaria</div><div style="color:#a59e96">Emitido: {{ prHoy }}</div></div>
             </div>
 
@@ -1358,7 +1387,7 @@ window.WORKERS_SEED = [{"cedula":"0926211590","nombre":"ABAD GUTIERREZ PAULINA",
 
           <div style="background:#fff;border:1px solid #E6E2DD;border-radius:13px;padding:34px 38px">
             <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px;border-bottom:2px solid #423D3B;padding-bottom:16px;margin-bottom:22px;flex-wrap:wrap">
-              <div style="display:flex;align-items:center;gap:12px"><span style="width:32px;height:32px;background:#F2B200;border-radius:5px;display:inline-block"></span><div><div style="font-family:Archivo;font-weight:800;font-size:20px;letter-spacing:.05em;color:#423D3B">ETINAR</div><div style="font-size:11px;color:#8C857E;letter-spacing:.05em;text-transform:uppercase">Informe de Salud Ocupacional</div></div></div>
+              <div style="display:flex;align-items:center;gap:12px"><span style="width:32px;height:32px;flex:none;display:inline-flex"><svg width="32" height="32" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg"><rect width="40" height="40" rx="4" fill="#F0BE07"/></svg></span><div><div style="font-family:Archivo;font-weight:800;font-size:20px;letter-spacing:-.02em;color:#4A4443">ETINAR</div><div style="font-size:11px;color:#8C857E;letter-spacing:.05em;text-transform:uppercase">Informe de Salud Ocupacional</div></div></div>
               <div style="text-align:right;font-size:12.5px;color:#5b554f"><div style="font-weight:700;font-size:14px;color:#2C2A28">{{ repObraLabel }}</div><div>Periodo: {{ repMesLabel }}</div><div>Plantilla: {{ rep.plantilla }} trabajadores</div></div>
             </div>
             <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px">
@@ -1503,7 +1532,7 @@ window.WORKERS_SEED = [{"cedula":"0926211590","nombre":"ABAD GUTIERREZ PAULINA",
 
           <div style="background:#fff;border:1px solid #E6E2DD;border-radius:14px;padding:30px 32px">
             <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px;border-bottom:2px solid #423D3B;padding-bottom:16px;margin-bottom:24px;flex-wrap:wrap">
-              <div style="display:flex;align-items:center;gap:12px"><span style="width:32px;height:32px;background:#F2B200;border-radius:5px;display:inline-block"></span><div><div style="font-family:Archivo;font-weight:800;font-size:20px;letter-spacing:.05em;color:#423D3B">ETINAR</div><div style="font-size:11px;color:#8C857E;letter-spacing:.05em;text-transform:uppercase">Indicadores de gestión · Salud Ocupacional</div></div></div>
+              <div style="display:flex;align-items:center;gap:12px"><span style="width:32px;height:32px;flex:none;display:inline-flex"><svg width="32" height="32" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg"><rect width="40" height="40" rx="4" fill="#F0BE07"/></svg></span><div><div style="font-family:Archivo;font-weight:800;font-size:20px;letter-spacing:-.02em;color:#4A4443">ETINAR</div><div style="font-size:11px;color:#8C857E;letter-spacing:.05em;text-transform:uppercase">Indicadores de gestión · Salud Ocupacional</div></div></div>
               <div style="text-align:right;font-size:12.5px;color:#5b554f"><div style="font-weight:700;font-size:14px;color:#2C2A28">{{ indObraLabel }}</div><div>Año {{ indYear }}</div><div>Emitido: {{ indHoy }}</div></div>
             </div>
 
@@ -1578,8 +1607,8 @@ window.WORKERS_SEED = [{"cedula":"0926211590","nombre":"ABAD GUTIERREZ PAULINA",
 
         <div class="inf-pb" style="padding:70px 56px;min-height:920px;display:flex;flex-direction:column;background:linear-gradient(160deg,#423D3B,#2C2A28);color:#fff">
           <div style="display:flex;align-items:center;gap:12px">
-            <span style="width:42px;height:42px;background:#F2B200;border-radius:8px;display:inline-block"></span>
-            <span style="font-family:Archivo;font-weight:800;font-size:30px;letter-spacing:.08em">ETINAR</span>
+            <span style="width:42px;height:42px;flex:none;display:inline-flex"><svg width="42" height="42" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg"><rect width="40" height="40" rx="4" fill="#F0BE07"/></svg></span>
+            <span style="font-family:Archivo;font-weight:800;font-size:30px;letter-spacing:-.02em">ETINAR</span>
           </div>
           <div style="margin-top:84px">
             <div style="font-size:13px;letter-spacing:.28em;color:#F2B200;font-weight:700">INFORME TÉCNICO DE</div>
@@ -1757,8 +1786,8 @@ window.WORKERS_SEED = [{"cedula":"0926211590","nombre":"ABAD GUTIERREZ PAULINA",
 
         <div class="inf-pb" style="padding:70px 56px;min-height:920px;display:flex;flex-direction:column;background:linear-gradient(160deg,#423D3B,#2C2A28);color:#fff">
           <div style="display:flex;align-items:center;gap:12px">
-            <span style="width:42px;height:42px;background:#F2B200;border-radius:8px;display:inline-block"></span>
-            <span style="font-family:Archivo;font-weight:800;font-size:30px;letter-spacing:.08em">ETINAR</span>
+            <span style="width:42px;height:42px;flex:none;display:inline-flex"><svg width="42" height="42" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg"><rect width="40" height="40" rx="4" fill="#F0BE07"/></svg></span>
+            <span style="font-family:Archivo;font-weight:800;font-size:30px;letter-spacing:-.02em">ETINAR</span>
           </div>
           <div style="margin-top:84px">
             <div style="font-size:13px;letter-spacing:.28em;color:#F2B200;font-weight:700">INFORME TÉCNICO DE</div>
@@ -1917,8 +1946,8 @@ window.WORKERS_SEED = [{"cedula":"0926211590","nombre":"ABAD GUTIERREZ PAULINA",
 
         <div class="inf-pb" style="padding:70px 56px;min-height:920px;display:flex;flex-direction:column;background:linear-gradient(160deg,#423D3B,#2C2A28);color:#fff">
           <div style="display:flex;align-items:center;gap:12px">
-            <span style="width:42px;height:42px;background:#F2B200;border-radius:8px;display:inline-block"></span>
-            <span style="font-family:Archivo;font-weight:800;font-size:30px;letter-spacing:.08em">ETINAR</span>
+            <span style="width:42px;height:42px;flex:none;display:inline-flex"><svg width="42" height="42" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg"><rect width="40" height="40" rx="4" fill="#F0BE07"/></svg></span>
+            <span style="font-family:Archivo;font-weight:800;font-size:30px;letter-spacing:-.02em">ETINAR</span>
           </div>
           <div style="margin-top:84px">
             <div style="font-size:13px;letter-spacing:.28em;color:#F2B200;font-weight:700">INFORME TÉCNICO DE</div>
