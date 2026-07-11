@@ -352,6 +352,102 @@ window.WORKERS_SEED = [{"cedula":"0926211590","nombre":"ABAD GUTIERREZ PAULINA",
     body.print-informe .inf-avoid{page-break-inside:avoid}
     @page{margin:12mm}
   }
+
+  /* ============================================================
+     ETINAR · Animaciones y efectos suaves
+     (agregado sin modificar colores ni estructura)
+     ============================================================ */
+
+  /* 0 · Suavidad global de transiciones */
+  button,
+  a,
+  input,
+  select,
+  textarea,
+  [style*="border-radius:13px"],
+  [style*="border-radius:11px"],
+  [style*="border-radius:12px"],
+  [style*="border-radius:16px"]{
+    transition:transform .18s ease,
+               box-shadow .18s ease,
+               border-color .18s ease,
+               background-color .18s ease,
+               filter .18s ease;
+  }
+
+  /* 1 · Tarjetas blancas: se elevan al pasar el mouse */
+  [style*="background:#fff"][style*="border:1px solid #E6E2DD"]:hover,
+  [style*="background:#fff"][style*="border:1px solid #E0DBD4"]:hover{
+    transform:translateY(-3px);
+    box-shadow:0 12px 28px rgba(44,42,40,.12);
+    border-color:#DAD4CC;
+  }
+
+  /* 2 · Botones amarillos: flotan y brillan; se hunden al hacer clic */
+  button[style*="background:#F2B200"]:hover{
+    transform:translateY(-2px);
+    box-shadow:0 8px 18px rgba(242,178,0,.35);
+    filter:brightness(1.04);
+  }
+  button[style*="background:#F2B200"]:active{
+    transform:translateY(0);
+    box-shadow:0 3px 8px rgba(242,178,0,.30);
+  }
+
+  /* 3 · Botones del menú lateral: se deslizan y se iluminan */
+  aside nav button:hover{
+    background:rgba(255,255,255,.09) !important;
+    padding-left:16px !important;
+  }
+
+  /* 4 · Botones secundarios/oscuros: aclarado sutil */
+  button[style*="rgba(255,255,255,.06)"]:hover{
+    background:rgba(255,255,255,.12) !important;
+  }
+
+  /* 5 · Campos de texto: halo dorado suave al enfocar */
+  input:focus,
+  select:focus,
+  textarea:focus{
+    outline:none !important;
+    border-color:#F2B200 !important;
+    background:#fff !important;
+    box-shadow:0 0 0 3px rgba(242,178,0,.16) !important;
+  }
+
+  /* 6 · Aparición suave al cambiar de sección */
+  #appmain > div{
+    animation:etinarFadeIn .35s ease;
+  }
+  @keyframes etinarFadeIn{
+    from{opacity:0;transform:translateY(8px);}
+    to{opacity:1;transform:translateY(0);}
+  }
+
+  /* 7 · Filas de tabla: resalte muy sutil */
+  [style*="border-bottom:1px solid #F0EDE8"]:hover,
+  [style*="border-bottom:1px solid #F0EDE7"]:hover{
+    background:#FAF9F7;
+  }
+
+  /* 8 · Scrollbar más fina y discreta */
+  ::-webkit-scrollbar{width:9px;height:9px;}
+  ::-webkit-scrollbar-thumb{
+    background:#d3cec7;
+    border-radius:8px;
+    border:2px solid #F4F2EE;
+    transition:background .2s ease;
+  }
+  ::-webkit-scrollbar-thumb:hover{background:#c2bbb2;}
+
+  /* 9 · Respeto por "reducir movimiento" (accesibilidad) */
+  @media (prefers-reduced-motion: reduce){
+    *,
+    #appmain > div{
+      animation:none !important;
+      transition:none !important;
+    }
+  }
 </style>
 </helmet>
 
