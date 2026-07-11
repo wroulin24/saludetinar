@@ -742,7 +742,7 @@ window.WORKERS_SEED = [{"cedula":"0926211590","nombre":"ABAD GUTIERREZ PAULINA",
             </div>
             <div style="max-height:calc(100vh - 290px);overflow-y:auto">
               <sc-for list="{{ trabFiltrados }}" as="w" hint-placeholder-count="10">
-                <div onClick="{{ w.open }}" style="display:grid;grid-template-columns:130px 1fr 150px 120px 110px;gap:10px;padding:12px 18px;border-bottom:1px solid #F2EFEA;font-size:13.5px;cursor:pointer;align-items:center" style-hover="background:#FAF9F7">
+                <div onClick="{{ w.open }}" style="display:grid;grid-template-columns:130px 1fr 150px 120px 110px;gap:10px;padding:12px 18px;border-bottom:1px solid #F2EFEA;font-size:13.5px;cursor:pointer;align-items:center" style-hover="background:#FBF6E8;box-shadow:inset 3px 0 0 #F2B200">
                   <div style="font-weight:600;font-variant-numeric:tabular-nums">{{ w.cedula }}</div>
                   <div><div style="font-weight:600;display:flex;align-items:center;gap:7px"><span>{{ w.nombre }}</span><sc-if value="{{ w.estInactivo }}" hint-placeholder-val=""><span style="{{ w.estChip }}">{{ w.estLabel }}</span></sc-if></div><div style="font-size:11.5px;color:#a59e96">{{ w.obra }}</div></div>
                   <div style="color:#5b554f;font-size:12.5px">{{ w.cargo }}</div>
@@ -1039,7 +1039,7 @@ window.WORKERS_SEED = [{"cedula":"0926211590","nombre":"ABAD GUTIERREZ PAULINA",
           <sc-if value="{{ consultasEmpty }}" hint-placeholder-val=""><div style="background:#fff;border:1px dashed #DAD4CC;border-radius:13px;padding:48px;text-align:center;color:#8C857E;font-size:14px">No hay consultas para el filtro seleccionado.</div></sc-if>
           <div style="display:flex;flex-direction:column;gap:10px">
             <sc-for list="{{ consultasAll }}" as="c" hint-placeholder-count="6">
-              <div onClick="{{ c.open }}" style="background:#fff;border:1px solid #E6E2DD;border-radius:12px;padding:14px 18px;cursor:pointer" style-hover="border-color:#F2B200">
+              <div onClick="{{ c.open }}" style="background:#fff;border:1px solid #E6E2DD;border-radius:12px;padding:14px 18px;cursor:pointer" style-hover="border-color:#F2B200;background:#FFFDF7;box-shadow:0 10px 24px rgba(44,42,40,.13)">
                 <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
                   <div style="display:flex;align-items:center;gap:10px;min-width:0"><span style="font-family:Archivo;font-weight:700;font-size:13px;color:#2F6FB0;flex:none">{{ c.fechaFmt }}</span><span style="font-weight:700;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ c.nombre }}</span><span style="{{ c.origenStyle }}">{{ c.origen }}</span></div>
                   <span style="font-size:12px;color:#a59e96">{{ c.obra }}</span>
@@ -1061,7 +1061,7 @@ window.WORKERS_SEED = [{"cedula":"0926211590","nombre":"ABAD GUTIERREZ PAULINA",
           <sc-if value="{{ descansosEmpty }}" hint-placeholder-val=""><div style="background:#fff;border:1px dashed #DAD4CC;border-radius:13px;padding:48px;text-align:center;color:#8C857E;font-size:14px">Aún no hay descansos médicos registrados.</div></sc-if>
           <div style="background:#fff;border:1px solid #E6E2DD;border-radius:13px;overflow:hidden">
             <sc-for list="{{ descansosAll }}" as="d" hint-placeholder-count="6">
-              <div onClick="{{ d.open }}" style="display:grid;grid-template-columns:1.4fr 1fr 90px 1fr 110px;gap:12px;align-items:center;padding:13px 18px;border-bottom:1px solid #F2EFEA;cursor:pointer;font-size:13px" style-hover="background:#FAF9F7">
+              <div onClick="{{ d.open }}" style="display:grid;grid-template-columns:1.4fr 1fr 90px 1fr 110px;gap:12px;align-items:center;padding:13px 18px;border-bottom:1px solid #F2EFEA;cursor:pointer;font-size:13px" style-hover="background:#FBF6E8;box-shadow:inset 3px 0 0 #F2B200">
                 <div><div style="font-weight:600">{{ d.nombre }}</div><div style="font-size:11.5px;color:#a59e96">{{ d.obra }}</div><sc-if value="{{ d.revisar }}" hint-placeholder-val=""><span style="display:inline-block;margin-top:3px;background:#FBE9C7;color:#8A5A00;font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px">⚠ Revisar</span></sc-if></div>
                 <div><span style="{{ d.tipoStyle }}">{{ d.tipo }}</span></div>
                 <div style="font-weight:700">{{ d.dias }} días</div>
@@ -1084,7 +1084,7 @@ window.WORKERS_SEED = [{"cedula":"0926211590","nombre":"ABAD GUTIERREZ PAULINA",
             <div style="display:grid;grid-template-columns:1.4fr 1fr 1fr 110px 130px;gap:12px;padding:12px 18px;background:#FAF9F7;border-bottom:1px solid #EDE9E4;font-size:11.5px;font-weight:700;color:#8C857E;text-transform:uppercase;letter-spacing:.03em"><div>Trabajador</div><div>Tipo examen</div><div>Aptitud</div><div>Vence</div><div>Estado</div></div>
             <div style="max-height:calc(100vh - 250px);overflow-y:auto">
               <sc-for list="{{ fichasAll }}" as="f" hint-placeholder-count="10">
-                <div onClick="{{ f.open }}" style="display:grid;grid-template-columns:1.4fr 1fr 1fr 110px 130px;gap:12px;align-items:center;padding:12px 18px;border-bottom:1px solid #F2EFEA;cursor:pointer;font-size:13px" style-hover="background:#FAF9F7">
+                <div onClick="{{ f.open }}" style="display:grid;grid-template-columns:1.4fr 1fr 1fr 110px 130px;gap:12px;align-items:center;padding:12px 18px;border-bottom:1px solid #F2EFEA;cursor:pointer;font-size:13px" style-hover="background:#FBF6E8;box-shadow:inset 3px 0 0 #F2B200">
                   <div><div style="font-weight:600">{{ f.nombre }}</div><div style="font-size:11.5px;color:#a59e96">{{ f.obra }}</div></div>
                   <div style="color:#5b554f">{{ f.tipo }}</div>
                   <div><span style="{{ f.aptStyle }}">{{ f.aptitud }}</span></div>
@@ -1342,7 +1342,7 @@ window.WORKERS_SEED = [{"cedula":"0926211590","nombre":"ABAD GUTIERREZ PAULINA",
                   </div>
                   <div style="padding:6px 0">
                     <sc-for list="{{ o.personas }}" as="p" hint-placeholder-count="0">
-                      <div onClick="{{ p.open }}" style="display:flex;align-items:flex-start;gap:12px;padding:11px 16px;border-bottom:1px solid #F4F1EC;cursor:pointer" style-hover="background:#FAF9F7">
+                      <div onClick="{{ p.open }}" style="display:flex;align-items:flex-start;gap:12px;padding:11px 16px;border-bottom:1px solid #F4F1EC;cursor:pointer" style-hover="background:#FBF6E8;box-shadow:inset 3px 0 0 #F2B200">
                         <div style="width:22px;font-size:12px;color:#b3ada6;font-weight:700;text-align:right;flex:none;padding-top:1px">{{ p.idx }}</div>
                         <div style="flex:1;min-width:0">
                           <div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap"><span style="font-weight:700;font-size:13.5px;color:#2C2A28">{{ p.nombre }}</span><span style="font-size:11.5px;color:#a59e96">CI {{ p.cedula }}</span></div>
@@ -1400,7 +1400,7 @@ window.WORKERS_SEED = [{"cedula":"0926211590","nombre":"ABAD GUTIERREZ PAULINA",
           <sc-if value="{{ vacunasEmpty }}" hint-placeholder-val=""><div style="background:#fff;border:1px dashed #DAD4CC;border-radius:13px;padding:48px;text-align:center;color:#8C857E;font-size:14px">No hay vacunas para el filtro seleccionado.</div></sc-if>
           <div style="background:#fff;border:1px solid #E6E2DD;border-radius:13px;overflow:hidden">
             <sc-for list="{{ vacunasAll }}" as="v" hint-placeholder-count="6">
-              <div onClick="{{ v.open }}" style="display:grid;grid-template-columns:1.4fr 1fr 1fr 110px 40px;gap:12px;align-items:center;padding:13px 18px;border-bottom:1px solid #F2EFEA;cursor:pointer;font-size:13px" style-hover="background:#FAF9F7">
+              <div onClick="{{ v.open }}" style="display:grid;grid-template-columns:1.4fr 1fr 1fr 110px 40px;gap:12px;align-items:center;padding:13px 18px;border-bottom:1px solid #F2EFEA;cursor:pointer;font-size:13px" style-hover="background:#FBF6E8;box-shadow:inset 3px 0 0 #F2B200">
                 <div><div style="font-weight:600">{{ v.nombre }}</div><div style="font-size:11.5px;color:#a59e96">{{ v.obra }}</div></div>
                 <div style="font-weight:600">{{ v.vacuna }}</div>
                 <div style="color:#5b554f">{{ v.dosis }}</div>
@@ -2230,7 +2230,7 @@ window.WORKERS_SEED = [{"cedula":"0926211590","nombre":"ABAD GUTIERREZ PAULINA",
                 <sc-if value="{{ cieHasResults }}" hint-placeholder-val="">
                   <div style="position:absolute;left:0;right:0;top:100%;margin-top:4px;background:#fff;border:1px solid #E0DBD4;border-radius:9px;box-shadow:0 12px 30px rgba(0,0,0,.16);max-height:210px;overflow-y:auto;z-index:5">
                     <sc-for list="{{ cieResults }}" as="r" hint-placeholder-count="0">
-                      <div onClick="{{ r.pick }}" style="padding:9px 12px;border-bottom:1px solid #F2EFEA;cursor:pointer;font-size:13px" style-hover="background:#FAF7F0"><b style="color:#2F6FB0;font-family:Archivo">{{ r.codigo }}</b> — {{ r.texto }}</div>
+                      <div onClick="{{ r.pick }}" style="padding:9px 12px;border-bottom:1px solid #F2EFEA;cursor:pointer;font-size:13px" style-hover="background:#FBF6E8;box-shadow:inset 3px 0 0 #F2B200"><b style="color:#2F6FB0;font-family:Archivo">{{ r.codigo }}</b> — {{ r.texto }}</div>
                     </sc-for>
                   </div>
                 </sc-if>
@@ -2268,7 +2268,7 @@ window.WORKERS_SEED = [{"cedula":"0926211590","nombre":"ABAD GUTIERREZ PAULINA",
                 <sc-if value="{{ cieHasResults }}" hint-placeholder-val="">
                   <div style="position:absolute;left:0;right:0;top:100%;margin-top:4px;background:#fff;border:1px solid #E0DBD4;border-radius:9px;box-shadow:0 12px 30px rgba(0,0,0,.16);max-height:210px;overflow-y:auto;z-index:5">
                     <sc-for list="{{ cieResults }}" as="r" hint-placeholder-count="0">
-                      <div onClick="{{ r.pick }}" style="padding:9px 12px;border-bottom:1px solid #F2EFEA;cursor:pointer;font-size:13px" style-hover="background:#FAF7F0"><b style="color:#2F6FB0;font-family:Archivo">{{ r.codigo }}</b> — {{ r.texto }}</div>
+                      <div onClick="{{ r.pick }}" style="padding:9px 12px;border-bottom:1px solid #F2EFEA;cursor:pointer;font-size:13px" style-hover="background:#FBF6E8;box-shadow:inset 3px 0 0 #F2B200"><b style="color:#2F6FB0;font-family:Archivo">{{ r.codigo }}</b> — {{ r.texto }}</div>
                     </sc-for>
                   </div>
                 </sc-if>
