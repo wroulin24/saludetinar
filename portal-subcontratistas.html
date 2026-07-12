@@ -106,7 +106,7 @@
   var BUCKET='certificados-subc';
   var sb=null, empresaActual='', enviados=[];
 
-  function getSB(){ if(sb) return sb; if(window.supabase&&window.supabase.createClient){ sb=window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY); } return sb; }
+  function getSB(){ if(sb) return sb; if(window.supabase&&window.supabase.createClient){ sb=window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, { auth: { persistSession:false, autoRefreshToken:false, storageKey:'subc_portal_anon' } }); } return sb; }
   function $(id){ return document.getElementById(id); }
   function show(el){ el.classList.remove('hidden'); }
   function hide(el){ el.classList.add('hidden'); }
