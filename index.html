@@ -2,6 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='18' fill='%23423D3B'/><rect x='28' y='30' width='17' height='17' rx='3' fill='%23F0BE07'/><path d='M55 38 h8 v8 h8 v8 h-8 v8 h-8 v-8 h-8 v-8 h8 z' fill='%23ffffff'/></svg>">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Sistema de Gestion Ocupacional ETINAR</title>
 <script>(function(){function works(){try{var t='__t__';localStorage.setItem(t,'1');localStorage.removeItem(t);return true;}catch(e){return false;}}if(works())return;var _m={};var shim={getItem:function(k){return _m.hasOwnProperty(k)?_m[k]:null;},setItem:function(k,v){_m[k]=String(v);},removeItem:function(k){delete _m[k];},clear:function(){_m={};},key:function(i){return Object.keys(_m)[i]||null;}};Object.defineProperty(shim,'length',{get:function(){return Object.keys(_m).length;}});try{Object.defineProperty(window,'localStorage',{value:shim,configurable:true});}catch(e){}})();</script>
@@ -686,11 +687,20 @@ window.WORKERS_SEED = [{"cedula":"0926211590","nombre":"ABAD GUTIERREZ PAULINA",
             </div>
           </div>
           <div style="display:grid;grid-template-columns:1fr 1.3fr;gap:14px">
-            <div style="background:#fff;border:1px solid #E6E2DD;border-radius:13px;padding:18px 20px">
-              <div style="display:flex;align-items:center;gap:8px;font-family:Archivo;font-weight:700;font-size:15px;margin-bottom:12px"><span class="ms" style="font-size:19px;color:#2E7D52">assignment_ind</span> Fichas médicas</div>
-              <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-                <div style="background:#E7F3EC;border-radius:9px;padding:11px 13px"><div style="font-family:Archivo;font-weight:800;font-size:22px;color:#2E7D52">{{ kpis.fichasVig }}</div><div style="font-size:11.5px;color:#5b554f">Vigentes</div></div>
-                <div style="background:#F0EDE8;border-radius:9px;padding:11px 13px"><div style="font-family:Archivo;font-weight:800;font-size:22px;color:#6b655f">{{ kpis.sinFicha }}</div><div style="font-size:11.5px;color:#5b554f">Sin ficha</div></div>
+            <div style="display:flex;flex-direction:column;gap:14px">
+              <div style="background:#fff;border:1px solid #E6E2DD;border-radius:13px;padding:15px 18px">
+                <div style="display:flex;align-items:center;gap:8px;font-family:Archivo;font-weight:700;font-size:15px;margin-bottom:11px"><span class="ms" style="font-size:19px;color:#2E7D52">assignment_ind</span> Fichas médicas</div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+                  <div style="background:#E7F3EC;border-radius:9px;padding:10px 12px"><div style="font-family:Archivo;font-weight:800;font-size:21px;color:#2E7D52">{{ kpis.fichasVig }}</div><div style="font-size:11.5px;color:#5b554f">Vigentes</div></div>
+                  <div style="background:#F0EDE8;border-radius:9px;padding:10px 12px"><div style="font-family:Archivo;font-weight:800;font-size:21px;color:#6b655f">{{ kpis.sinFicha }}</div><div style="font-size:11.5px;color:#5b554f">Sin ficha</div></div>
+                </div>
+              </div>
+              <div style="background:#fff;border:1px solid #E6E2DD;border-radius:13px;padding:15px 18px">
+                <div style="display:flex;align-items:center;gap:8px;font-family:Archivo;font-weight:700;font-size:15px;margin-bottom:11px"><span class="ms" style="font-size:19px;color:#C0392B">health_and_safety</span> Accidentes de trabajo</div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+                  <div style="background:#FBEAE7;border-radius:9px;padding:10px 12px"><div style="font-family:Archivo;font-weight:800;font-size:21px;color:#C0392B">{{ accAbiertos }}</div><div style="font-size:11.5px;color:#5b554f">Casos abiertos</div></div>
+                  <div style="background:#F0EDE8;border-radius:9px;padding:10px 12px"><div style="font-family:Archivo;font-weight:800;font-size:21px;color:#6b655f">{{ accEsteAno }}</div><div style="font-size:11.5px;color:#5b554f">Este año</div></div>
+                </div>
               </div>
             </div>
             <div style="background:#fff;border:1px solid #E6E2DD;border-radius:13px;padding:18px 20px">
@@ -2708,6 +2718,7 @@ class Component extends DCLogic {
     this._vis=()=>{ if(!document.hidden){ if(this._pendSync){ this._pendSync=false; this.scheduleCheck(600); } this.importarBuzonIESS(); } };
     try{ document.addEventListener('visibilitychange',this._vis); }catch(e){}
     setTimeout(()=>this.importarBuzonIESS(),1500);
+    setTimeout(()=>this.checkStaleRecords(),3500);
   }
   scheduleCheck(ms){ clearTimeout(this._ckT); this._ckT=setTimeout(()=>this.cloudCheck(),ms||1200); }
   stopSync(){ try{ if(this._chan){ getSB().removeChannel(this._chan); this._chan=null; } }catch(e){} if(this._poll){ clearInterval(this._poll); this._poll=null; } if(this._impPoll){ clearInterval(this._impPoll); this._impPoll=null; } if(this._ckT){ clearTimeout(this._ckT); this._ckT=null; } try{ if(this._vis){ document.removeEventListener('visibilitychange',this._vis); this._vis=null; } }catch(e){} }
@@ -2733,6 +2744,50 @@ class Component extends DCLogic {
   };
   notificarDescansosLote=async(recs)=>{
     for(var i=0;i<recs.length;i++){ var r=recs[i]; if((Number(r.dias)||0)>=4){ await this.notificarDescansoWhatsApp(r); await new Promise(function(res){ setTimeout(res,1200); }); } }
+  };
+  notificarTelegram=async(texto)=>{
+    try{ var sb=getSB(); if(!sb || !sb.functions) return false; var r=await sb.functions.invoke('alerta-telegram',{ body:{ texto:texto } }); return !!(r && !r.error); }
+    catch(e){ try{ console.log('Telegram (silencioso):', e&&e.message); }catch(_){} return false; }
+  };
+  checkStaleRecords=async()=>{
+    try{
+      if(this.isRestricted && this.isRestricted()) return;
+      if(this._staleChecked) return; this._staleChecked=true;
+      var self=this; var db=this.state.db; if(!db) return;
+      var sb=getSB(); if(!sb || !sb.functions) return;
+      var hoy=new Date(); var DIAS=30;
+      var diasDesde=function(iso){ if(!iso) return 99999; var d=new Date(String(iso)+'T00:00:00'); if(isNaN(d.getTime())) return 99999; return Math.floor((hoy-d)/86400000); };
+      var maxISO=function(arr){ var f=(arr||[]).filter(Boolean).slice(); f.sort(); return f.length?f[f.length-1]:''; };
+      var accAlertar=[];
+      (db.accidentes||[]).forEach(function(a){
+        if(/cerrad/i.test(String(a.estadoCaso||''))) return;
+        var la=maxISO([a.updated, a.fecha].concat((a.notas||[]).map(function(n){ return n && n.fecha; })));
+        if(!la) return; var dd=diasDesde(la);
+        if(dd>DIAS && (!a.staleAlertAt || String(a.staleAlertAt)<la)){ accAlertar.push({ id:a.id, nombre:(self.workerName(a.cedula)||a.cedula||'—'), dias:dd }); }
+      });
+      var embAlertar=[];
+      Object.keys(db.especiales||{}).forEach(function(c){
+        var e=db.especiales[c]; if(!e || !e.embarazo) return;
+        var cons=(db.consultas||[]).filter(function(x){ return x.cedula===c; }).map(function(x){ return x.fecha; });
+        var la=maxISO([e.updated].concat(cons));
+        if(!la) return; var dd=diasDesde(la);
+        if(dd>DIAS && (!e.staleAlertAt || String(e.staleAlertAt)<la)){ embAlertar.push({ cedula:c, nombre:(self.workerName(c)||c||'—'), dias:dd }); }
+      });
+      if(!accAlertar.length && !embAlertar.length) return;
+      for(var i=0;i<accAlertar.length;i++){ var a=accAlertar[i];
+        await self.notificarTelegram('\u26A0\uFE0F ETINAR \u00b7 Accidente sin seguimiento\nTrabajador: '+a.nombre+'\nLleva '+a.dias+' d\u00edas sin ninguna actualizaci\u00f3n.\nRevisa y actualiza el caso en el sistema.');
+        await new Promise(function(res){ setTimeout(res,1200); });
+      }
+      for(var j=0;j<embAlertar.length;j++){ var b=embAlertar[j];
+        await self.notificarTelegram('\uD83E\uDD30 ETINAR \u00b7 Embarazada sin control\nTrabajadora: '+b.nombre+'\nLleva '+b.dias+' d\u00edas sin consulta ni actualizaci\u00f3n de seguimiento.\nProgramar control.');
+        await new Promise(function(res){ setTimeout(res,1200); });
+      }
+      var hoyISO=this.todayISO();
+      this.save(function(db){
+        accAlertar.forEach(function(a){ var r=(db.accidentes||[]).find(function(x){ return x.id===a.id; }); if(r) r.staleAlertAt=hoyISO; });
+        embAlertar.forEach(function(b){ if(db.especiales && db.especiales[b.cedula]) db.especiales[b.cedula].staleAlertAt=hoyISO; });
+      });
+    }catch(e){ try{ console.log('checkStaleRecords (silencioso):', e&&e.message); }catch(_){} }
   };
   importarBuzonIESS=async()=>{
     var sb=getSB(); if(!sb || !this.state.authed) return;
@@ -2999,7 +3054,7 @@ class Component extends DCLogic {
       const prev = id ? (this.state.db.accidentes.find(x=>x.id===id)||{}) : {};
       const rid=id||this.uid();
       let adjunto; try{ adjunto=await this.resolveAdjunto('accidente', rid); }catch(err){ this.setState({savingAdj:false}); alert('No se pudo subir el archivo adjunto. Verifique su conexión e intente de nuevo.'); return; }
-      const rec={id:rid,cedula:ced,obra:g('obra')||this.workerObra(ced),fecha:g('fecha')||this.todayISO(),hora:g('hora'),lugar:g('lugar'),parteCuerpo:g('parteCuerpo'),agente:g('agente'),gravedad:g('gravedad'),diasPerdidos:num('diasPerdidos')||0,descripcion:g('descripcion'),proxCitaRT:g('proxCitaRT'),proxCitaEsp:g('proxCitaEsp'),estadoCaso:g('estadoCaso'),adjunto,notas:(prev.notas||[])};
+      const rec={id:rid,cedula:ced,obra:g('obra')||this.workerObra(ced),fecha:g('fecha')||this.todayISO(),hora:g('hora'),lugar:g('lugar'),parteCuerpo:g('parteCuerpo'),agente:g('agente'),gravedad:g('gravedad'),diasPerdidos:num('diasPerdidos')||0,descripcion:g('descripcion'),proxCitaRT:g('proxCitaRT'),proxCitaEsp:g('proxCitaEsp'),estadoCaso:g('estadoCaso'),adjunto,updated:this.todayISO(),notas:(prev.notas||[]),staleAlertAt:(prev.staleAlertAt||'')};
       this.save(db=>{const i=db.accidentes.findIndex(x=>x.id===rec.id); if(i>=0)db.accidentes[i]=rec; else db.accidentes.unshift(rec);});
     } else if(t==='vacuna'){
       if(!cedula) return;
@@ -3923,6 +3978,7 @@ class Component extends DCLogic {
       const max=Math.max(1,...Object.values(cnt));
       R.obrasResumen=Object.keys(cnt).sort((a,b)=>cnt[b]-cnt[a]).map(o=>({nombre:o||'(sin obra)',count:cnt[o],pct:Math.round((cnt[o]/max)*100)+'%'}));
       R.verGrupoAM=this.openGrupoPrioritario('adultoMayor'); R.verGrupoDis=this.openGrupoPrioritario('discapacidad'); R.verGrupoCro=this.openGrupoPrioritario('cronica'); R.verGrupoCat=this.openGrupoPrioritario('catastrofica'); R.verGrupoEmb=this.openGrupoPrioritario('embarazo'); R.verGrupoLac=this.openGrupoPrioritario('lactancia');
+      const _acc=db.accidentes||[]; const _yr=String(new Date().getFullYear()); R.accTotal=_acc.length; R.accEsteAno=_acc.filter(a=>String(a.fecha||'').slice(0,4)===_yr).length; R.accAbiertos=_acc.filter(a=>!/cerrado/i.test(String(a.estadoCaso||''))).length;
     }
 
     R.grupoPriorActivo=!!s.grupoPrior;
