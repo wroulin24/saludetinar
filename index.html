@@ -663,7 +663,7 @@ window.WORKERS_SEED = [{"cedula":"0926211590","nombre":"ABAD GUTIERREZ PAULINA",
                 <div style="color:#8C857E;font-size:13.5px;padding:18px 0">Sin alertas por el momento.</div>
               </sc-if>
               <sc-for list="{{ alertas }}" as="a" hint-placeholder-count="4">
-                <div style="display:flex;align-items:center;gap:11px;padding:11px 0;border-bottom:1px solid #F0EDE8">
+                <div onClick="{{ a.open }}" style="display:flex;align-items:center;gap:11px;padding:11px 6px;margin:0 -6px;border-bottom:1px solid #F0EDE8;border-radius:8px;cursor:pointer" style-hover="background:#FBF6E8;box-shadow:inset 3px 0 0 #F2B200">
                   <span class="ms" style="font-size:20px;{{ a.iconColor }}">{{ a.icon }}</span>
                   <div style="flex:1;min-width:0">
                     <div style="font-size:13.5px;font-weight:600">{{ a.title }}</div>
@@ -690,8 +690,6 @@ window.WORKERS_SEED = [{"cedula":"0926211590","nombre":"ABAD GUTIERREZ PAULINA",
               <div style="display:flex;align-items:center;gap:8px;font-family:Archivo;font-weight:700;font-size:15px;margin-bottom:12px"><span class="ms" style="font-size:19px;color:#2E7D52">assignment_ind</span> Fichas médicas</div>
               <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
                 <div style="background:#E7F3EC;border-radius:9px;padding:11px 13px"><div style="font-family:Archivo;font-weight:800;font-size:22px;color:#2E7D52">{{ kpis.fichasVig }}</div><div style="font-size:11.5px;color:#5b554f">Vigentes</div></div>
-                <div style="background:#FBF1DF;border-radius:9px;padding:11px 13px"><div style="font-family:Archivo;font-weight:800;font-size:22px;color:#B8791A">{{ kpis.fichasPorVencer }}</div><div style="font-size:11.5px;color:#5b554f">Por vencer (30d)</div></div>
-                <div style="background:#FBEAE8;border-radius:9px;padding:11px 13px"><div style="font-family:Archivo;font-weight:800;font-size:22px;color:#C0392B">{{ kpis.fichasVencidas }}</div><div style="font-size:11.5px;color:#5b554f">Vencidas</div></div>
                 <div style="background:#F0EDE8;border-radius:9px;padding:11px 13px"><div style="font-family:Archivo;font-weight:800;font-size:22px;color:#6b655f">{{ kpis.sinFicha }}</div><div style="font-size:11.5px;color:#5b554f">Sin ficha</div></div>
               </div>
             </div>
@@ -1521,6 +1519,7 @@ window.WORKERS_SEED = [{"cedula":"0926211590","nombre":"ABAD GUTIERREZ PAULINA",
                 <label style="font-size:12.5px;font-weight:600;color:#6b655f">Nombre del médico<input name="nombre" defaultValue="{{ cfgNombre }}" placeholder="Dr./Dra. …" style="width:100%;margin-top:5px;padding:10px 11px;border:1px solid #E0DBD4;border-radius:8px;font-size:14px" /></label>
                 <label style="font-size:12.5px;font-weight:600;color:#6b655f">Registro / credencial<input name="registro" defaultValue="{{ cfgRegistro }}" placeholder="N° registro MSP / ACESS" style="width:100%;margin-top:5px;padding:10px 11px;border:1px solid #E0DBD4;border-radius:8px;font-size:14px" /></label>
               </div>
+              <label style="font-size:12.5px;font-weight:600;color:#6b655f;display:block;margin-top:13px">WhatsApp del médico <span style="font-weight:400;color:#a59e96">— para el asistente virtual · con código de país, solo números (ej. 593987654321)</span><input name="whatsapp" defaultValue="{{ cfgWhatsapp }}" placeholder="593…" style="width:100%;margin-top:5px;padding:10px 11px;border:1px solid #E0DBD4;border-radius:8px;font-size:14px" /></label>
               <button type="submit" style="margin-top:15px;padding:11px 20px;background:#F2B200;color:#2C2A28;border:none;border-radius:9px;font-weight:700;font-size:14px;cursor:pointer">Guardar cambios</button>
             </form>
             <div style="margin-top:16px;padding-top:15px;border-top:1px solid #F0EDE8;font-size:12.5px;color:#8C857E;line-height:1.55"><b style="color:#5b554f">Cuentas de acceso:</b> el inicio de sesión es por correo y contraseña. Las cuentas se administran desde el panel de Supabase (Authentication → Users): ahí puede agregar usuarios, cambiar contraseñas o quitar accesos.</div>
@@ -2517,6 +2516,30 @@ window.WORKERS_SEED = [{"cedula":"0926211590","nombre":"ABAD GUTIERREZ PAULINA",
     </div>
   </sc-if>
 
+  <sc-if value="{{ showApp }}" hint-placeholder-val="">
+    <div>
+      <sc-if value="{{ chatOpen }}" hint-placeholder-val="">
+        <div data-noprint style="position:fixed;bottom:94px;right:24px;width:344px;max-width:calc(100vw - 36px);height:466px;max-height:calc(100vh - 140px);background:#fff;border-radius:16px;box-shadow:0 18px 50px rgba(0,0,0,.32);z-index:85;display:flex;flex-direction:column;overflow:hidden;animation:slideUp .2s ease">
+          <div style="background:#2C2A28;color:#fff;padding:13px 15px;display:flex;align-items:center;gap:10px">
+            <span style="width:34px;height:34px;flex:none;display:inline-flex;align-items:center;justify-content:center;background:#F2B200;border-radius:9px"><span class="ms" style="font-size:20px;color:#2C2A28">smart_toy</span></span>
+            <div style="flex:1;min-width:0"><div style="font-weight:800;font-size:14px;font-family:Archivo">Asistente ETINAR</div><div style="font-size:11px;color:#B8B2AA">Resuelve tus dudas al instante</div></div>
+            <button onClick="{{ toggleChat }}" style="background:none;border:none;color:#B8B2AA;cursor:pointer;padding:2px"><span class="ms" style="font-size:22px">close</span></button>
+          </div>
+          <div style="flex:1;overflow-y:auto;padding:14px 14px 4px;background:#FBFAF8">
+            <sc-if value="{{ chatVacio }}" hint-placeholder-val=""><div style="text-align:center;color:#8C857E;font-size:12.5px;padding:14px 6px"><span class="ms" style="font-size:38px;color:#D9D3CA">smart_toy</span><div style="margin-top:8px;line-height:1.5">¡Hola! Soy el asistente virtual. Pregúntame sobre salud ocupacional o cómo usar el sistema. Si no puedo ayudarte, envía tu consulta al médico con el botón verde.</div></div></sc-if>
+            <sc-for list="{{ chatMsgs }}" as="m" hint-placeholder-count="3"><div style="{{ m.rowStyle }}"><div style="{{ m.bubbleStyle }}">{{ m.text }}</div></div></sc-for>
+            <sc-if value="{{ chatLoading }}" hint-placeholder-val=""><div style="display:flex;justify-content:flex-start;margin-bottom:8px"><div style="background:#F0EDE8;color:#8C857E;padding:9px 12px;border-radius:13px;font-size:13px">Escribiendo…</div></div></sc-if>
+          </div>
+          <div style="padding:10px 12px;border-top:1px solid #EDE9E4;background:#fff">
+            <button onClick="{{ escalarWhatsApp }}" style="width:100%;margin-bottom:8px;display:inline-flex;align-items:center;justify-content:center;gap:7px;background:#25D366;color:#fff;border:none;border-radius:9px;padding:9px;font-weight:700;font-size:12px;cursor:pointer" style-hover="filter:brightness(1.05)"><span class="ms" style="font-size:17px">chat</span> Enviar mi consulta al médico por WhatsApp</button>
+            <form onSubmit="{{ enviarChat }}" style="display:flex;gap:7px"><input name="pregunta" autocomplete="off" placeholder="Escribe tu pregunta…" style="flex:1;min-width:0;padding:10px 12px;border:1px solid #E0DBD4;border-radius:9px;font-size:13px;font-family:inherit" /><button type="submit" style="background:#2C2A28;color:#fff;border:none;border-radius:9px;width:42px;flex:none;cursor:pointer;display:inline-flex;align-items:center;justify-content:center"><span class="ms" style="font-size:20px;color:#F2B200">send</span></button></form>
+          </div>
+        </div>
+      </sc-if>
+      <button onClick="{{ toggleChat }}" data-noprint title="Asistente virtual" style="position:fixed;bottom:24px;right:24px;width:60px;height:60px;border-radius:50%;background:#2C2A28;border:none;box-shadow:0 8px 24px rgba(0,0,0,.32);cursor:pointer;z-index:84;display:flex;align-items:center;justify-content:center" style-hover="transform:scale(1.06)"><span class="ms" style="font-size:30px;color:#F2B200">smart_toy</span></button>
+    </div>
+  </sc-if>
+
 </div>
 </x-dc>
 <script type="text/x-dc" data-dc-script>
@@ -2604,7 +2627,7 @@ class Component extends DCLogic {
       view:'dashboard', search:'', obraFilter:'TODAS', estadoFilter:'A', navHidden:false,
       ficha:{cedula:'',ap1:'',ap2:'',nom1:'',nom2:'',sexo:'Hombre',fechaNac:'',edad:'',lateralidad:'Derecho',puesto:'',tipoEval:'INGRESO',antPer:'',antFam:'',transf:'SI',fuma:'NO',cuantoFuma:'',alcohol:'NO',frecAlcohol:'',actividad:'NO',tipoAct:'',frecAct:'',temp:'',pa:'',fc:'',fr:'',sato2:'',peso:'',talla:'',imc:'',aptitud:'APTO'},
       selectedCedula:null, perfilTab:'datos',
-      modalType:null, modalEditId:null, modalCedula:null, modalAdjunto:null, modalFotos:[], modalNotaAccId:null, savingAdj:false, migRunning:false, migEstado:'', grupoPrior:null, fotosView:null,
+      modalType:null, modalEditId:null, modalCedula:null, modalAdjunto:null, modalFotos:[], modalNotaAccId:null, savingAdj:false, migRunning:false, migEstado:'', grupoPrior:null, fotosView:null, chatOpen:false, chatMsgs:[], chatLoading:false,
       consObraFilter:'TODAS', fichaObraFilter:'TODAS', vacObraFilter:'TODAS', vacTipoFilter:'TODAS',
       cie10:[], cieQuery:'', ciePick:null,
       repObra:'TODAS', repMes:new Date().toISOString().slice(0,7), repHHT:'',
@@ -2865,6 +2888,36 @@ class Component extends DCLogic {
     this.setState({fotosView:{tema:(rec.tema||'Capacitacion'),loading:false,urls:urls}});
   };
   cerrarFotos=()=>this.setState({fotosView:null});
+  toggleChat=()=>this.setState({chatOpen:!this.state.chatOpen});
+  enviarChat=async(e)=>{
+    if(e && e.preventDefault) e.preventDefault();
+    const f=e.target; const inp=f.elements.pregunta; const val=((inp&&inp.value)||'').trim();
+    if(!val || this.state.chatLoading) return;
+    const base=(this.state.chatMsgs||[]).slice();
+    const hist=base.slice(-8).map(m=>({role:m.role==='user'?'user':'model',text:m.text}));
+    const msgs=base.concat([{role:'user',text:val}]);
+    this.setState({chatMsgs:msgs, chatLoading:true}); if(inp) inp.value='';
+    let respuesta='';
+    try{
+      const sb=getSB();
+      if(sb && sb.functions){
+        const r=await sb.functions.invoke('asistente-ia',{ body:{ pregunta:val, historial:hist } });
+        if(r && r.data && r.data.respuesta) respuesta=String(r.data.respuesta);
+      }
+    }catch(err){ respuesta=''; }
+    if(!respuesta) respuesta='No pude responder en este momento. Puedes enviar tu consulta directamente al medico con el boton verde de WhatsApp.';
+    const msgs2=(this.state.chatMsgs||[]).concat([{role:'ai',text:respuesta}]);
+    this.setState({chatMsgs:msgs2, chatLoading:false});
+  };
+  escalarWhatsApp=()=>{
+    const cfg=(this.state.db&&this.state.db.config)||{};
+    const num=String(cfg.whatsappMedico||'').replace(/[^0-9]/g,'');
+    if(!num){ alert('El medico aun no ha configurado su numero de WhatsApp. Puede hacerlo en Configuracion.'); return; }
+    const msgs=(this.state.chatMsgs||[]); let last='';
+    for(var i=msgs.length-1;i>=0;i--){ if(msgs[i].role==='user'){ last=msgs[i].text; break; } }
+    const texto='Hola Dr., tengo una consulta desde el Sistema ETINAR: '+(last||'');
+    try{ window.open('https://wa.me/'+num+'?text='+encodeURIComponent(texto),'_blank'); }catch(e){}
+  };
   migrarAdjuntos=async ()=>{
     const sb=getSB(); if(!sb){ this.setState({migEstado:'Sin conexión con el servidor.'}); return; }
     if(this.state.migRunning) return;
@@ -3789,7 +3842,7 @@ class Component extends DCLogic {
     };
     r.readAsText(file,'UTF-8'); e.target.value='';
   };
-  saveConfig=(e)=>{ e.preventDefault(); const f=e.target; const nombre=f.elements.nombre.value.trim(), registro=f.elements.registro.value.trim(); this.save(db=>{db.config.medicoNombre=nombre;db.config.medicoRegistro=registro;}); this.toast('Configuración guardada'); };
+  saveConfig=(e)=>{ e.preventDefault(); const f=e.target; const nombre=f.elements.nombre.value.trim(), registro=f.elements.registro.value.trim(); const wa=(f.elements.whatsapp?f.elements.whatsapp.value:'').replace(/[^0-9]/g,''); this.save(db=>{db.config.medicoNombre=nombre;db.config.medicoRegistro=registro;db.config.whatsappMedico=wa;}); this.toast('Configuración guardada'); };
   addAcceso=(e)=>{ e.preventDefault(); const f=e.target; const email=String(f.elements.email.value||'').trim().toLowerCase(); const obra=String(f.elements.obra.value||'').trim(); if(!email||!obra){ alert('Ingrese el correo y seleccione la obra.'); return; } this.save(db=>{ if(!db.config.accesos)db.config.accesos=[]; const i=db.config.accesos.findIndex(a=>String(a.email||'').trim().toLowerCase()===email); const rec={email:email,obra:obra}; if(i>=0)db.config.accesos[i]=rec; else db.config.accesos.push(rec); }); try{f.reset();}catch(_){} this.toast('Acceso asignado a '+obra); };
   delAcceso=(email)=>()=>{ this.save(db=>{ db.config.accesos=(db.config.accesos||[]).filter(a=>String(a.email||'').trim().toLowerCase()!==String(email).trim().toLowerCase()); }); this.toast('Acceso eliminado'); };
   addObra=(e)=>{ e.preventDefault(); const f=e.target; const v=f.elements.obra.value.trim().toUpperCase(); if(!v) return; this.save(db=>{ if(db.config.obras.indexOf(v)<0) db.config.obras.push(v); }); f.reset(); this.toast('Obra agregada'); };
@@ -3861,9 +3914,9 @@ class Component extends DCLogic {
       const esp=Object.values(db.especiales);
       R.kpis={ total:db.workers.length, activos, consultasMes, consultasTotal:db.consultas.length, descansosVig:descVig, diasPerdidosMes:diasPerdMes, accidentesAnio:accAnio, accidentesMes:accMes, fichasVig:fvig, fichasPorVencer:fpv, fichasVencidas:fven, sinFicha:fsin, discapacidad:esp.filter(e=>e.discapacidad).length, cronica:esp.filter(e=>e.cronica).length, catastrofica:esp.filter(e=>e.catastrofica).length, embarazo:esp.filter(e=>e.embarazo).length, lactancia:esp.filter(e=>e.lactancia).length, adultoMayor:db.workers.filter(w=>this.isAdultoMayor(w)).length };
       const al=[];
-      Object.keys(db.especiales).forEach(c=>{ if(db.especiales[c].embarazo){ al.push({icon:'pregnant_woman',iconColor:'color:#B0457C',title:this.workerName(c),sub:'Trabajadora embarazada · seguimiento',tag:'Prioritaria',tagStyle:chip('pink'),pr:3}); } if(db.especiales[c].lactancia){ al.push({icon:'water_drop',iconColor:'color:#B0457C',title:this.workerName(c),sub:'Trabajadora en lactancia · seguimiento',tag:'Prioritaria',tagStyle:chip('pink'),pr:3}); } });
-      db.botiquin.filter(b=>(Number(b.stock)||0)<=(Number(b.minimo)||0)).forEach(b=>{ al.push({icon:'inventory_2',iconColor:'color:#C0392B',title:b.item+' — '+b.obra,sub:'Stock bajo en botiquín',tag:b.stock+' '+(b.unidad||'u'),tagStyle:chip('red'),pr:2}); });
-      (db.alertas||[]).forEach(a=>{ const d=this.daysTo(a.fecha); let tg,ts,pr,ic,col; if(d===null){ tg='Sin fecha'; ts=chip('gray'); pr=2; ic='push_pin'; col='color:#6b655f'; } else if(d<0){ tg='Vencida '+(-d)+'d'; ts=chip('red'); pr=0; ic='error'; col='color:#C0392B'; } else if(d===0){ tg='Vence hoy'; ts=chip('red'); pr=0; ic='notification_important'; col='color:#C0392B'; } else if(d<=7){ tg='En '+d+'d'; ts=chip('amber'); pr=1; ic='upcoming'; col='color:#B8791A'; } else { tg='En '+d+'d'; ts=chip('blue'); pr=1; ic='push_pin'; col='color:#2F6FB0'; } al.push({icon:ic,iconColor:col,title:this.workerName(a.cedula),sub:(a.descripcion||'Pendiente')+(a.fecha?(' · vence '+this.fmt(a.fecha)):''),tag:tg,tagStyle:ts,pr:pr}); });
+      Object.keys(db.especiales).forEach(c=>{ if(db.especiales[c].embarazo){ al.push({icon:'pregnant_woman',iconColor:'color:#B0457C',title:this.workerName(c),sub:'Trabajadora embarazada · seguimiento',tag:'Prioritaria',tagStyle:chip('pink'),pr:3,open:this.openPerfil(c)}); } if(db.especiales[c].lactancia){ al.push({icon:'water_drop',iconColor:'color:#B0457C',title:this.workerName(c),sub:'Trabajadora en lactancia · seguimiento',tag:'Prioritaria',tagStyle:chip('pink'),pr:3,open:this.openPerfil(c)}); } });
+      db.botiquin.filter(b=>(Number(b.stock)||0)<=(Number(b.minimo)||0)).forEach(b=>{ al.push({icon:'inventory_2',iconColor:'color:#C0392B',title:b.item+' — '+b.obra,sub:'Stock bajo en botiquín',tag:b.stock+' '+(b.unidad||'u'),tagStyle:chip('red'),pr:2,open:this.setView('botiquin')}); });
+      (db.alertas||[]).forEach(a=>{ const d=this.daysTo(a.fecha); let tg,ts,pr,ic,col; if(d===null){ tg='Sin fecha'; ts=chip('gray'); pr=2; ic='push_pin'; col='color:#6b655f'; } else if(d<0){ tg='Vencida '+(-d)+'d'; ts=chip('red'); pr=0; ic='error'; col='color:#C0392B'; } else if(d===0){ tg='Vence hoy'; ts=chip('red'); pr=0; ic='notification_important'; col='color:#C0392B'; } else if(d<=7){ tg='En '+d+'d'; ts=chip('amber'); pr=1; ic='upcoming'; col='color:#B8791A'; } else { tg='En '+d+'d'; ts=chip('blue'); pr=1; ic='push_pin'; col='color:#2F6FB0'; } al.push({icon:ic,iconColor:col,title:this.workerName(a.cedula),sub:(a.descripcion||'Pendiente')+(a.fecha?(' · vence '+this.fmt(a.fecha)):''),tag:tg,tagStyle:ts,pr:pr,open:(a.cedula?this.openPerfil(a.cedula):this.setView('trabajadores'))}); });
       al.sort((a,b)=>a.pr-b.pr);
       R.alertas=al.slice(0,12); R.noAlertas=al.length===0;
       const cnt={}; db.workers.forEach(w=>{cnt[w.obra]=(cnt[w.obra]||0)+1;});
@@ -3885,6 +3938,9 @@ class Component extends DCLogic {
     }
     R.fotosViewActivo=!!s.fotosView;
     if(s.fotosView){ R.fotosViewTema=s.fotosView.tema; R.fotosViewLoading=!!s.fotosView.loading; R.fotosViewUrls=s.fotosView.urls||[]; R.fotosViewVacio=(!s.fotosView.loading && (!s.fotosView.urls||!s.fotosView.urls.length)); R.cerrarFotos=this.cerrarFotos; }
+    R.chatOpen=!!s.chatOpen; R.chatLoading=!!s.chatLoading; R.chatVacio=(s.chatMsgs||[]).length===0;
+    R.chatMsgs=(s.chatMsgs||[]).map(m=>({ text:m.text, rowStyle:'display:flex;margin-bottom:8px;justify-content:'+(m.role==='user'?'flex-end':'flex-start'), bubbleStyle:'max-width:82%;padding:9px 12px;border-radius:13px;font-size:13px;line-height:1.45;white-space:pre-wrap;word-break:break-word;'+(m.role==='user'?'background:#2C2A28;color:#fff;border-bottom-right-radius:3px':'background:#F0EDE8;color:#2C2A28;border-bottom-left-radius:3px') }));
+    R.toggleChat=this.toggleChat; R.enviarChat=this.enviarChat; R.escalarWhatsApp=this.escalarWhatsApp;
 
     if(R.isTrabList){
       const q=s.search.trim().toLowerCase();
@@ -4036,7 +4092,7 @@ class Component extends DCLogic {
     if(R.isFichaOcup){ const F=s.ficha; const fk=['cedula','ap1','ap2','nom1','nom2','sexo','fechaNac','edad','lateralidad','puesto','tipoEval','antPer','antFam','transf','fuma','cuantoFuma','alcohol','frecAlcohol','actividad','tipoAct','frecAct','temp','pa','fc','fr','sato2','peso','talla','imc','aptitud']; fk.forEach(k=>{ R['fo_'+k]=F[k]; R['setfo_'+k]=this.onFicha(k); }); R.lookupFicha=this.lookupFichaCedula; R.guardarFicha=this.guardarFichaOcup; R.descargarFicha=this.descargarFichaExcel; R.nuevaFicha=this.nuevaFichaOcup; const lst=(db.fichasOcup||[]); R.fichasOcupList=lst.map(x=>({ id:x.id, nombre:[x.ap1,x.ap2,x.nom1,x.nom2].filter(Boolean).join(' ')||'(sin nombre)', ced:x.cedula||'—', tipo:x.tipoEval||'—', apt:x.aptitud||'—', aptStyle:chip(x.aptitud==='APTO'?'green':(x.aptitud==='NO APTO'?'red':'amber')), fecha:this.fmt((x.savedAt||'').slice(0,10)), descargar:this.descargarGuardada(x.id), editar:this.editarFichaGuardada(x.id), eliminar:this.delFichaOcup(x.id) })); R.fichasOcupEmpty=lst.length===0; R.fichasOcupCount=lst.length; }
     if(R.isReportes){ R.repObra=s.repObra; R.repMes=s.repMes; R.repHHT=s.repHHT; R.setRepObra=this.setRepObra; R.setRepMes=this.setRepMes; R.setRepHHT=this.setRepHHT; R.printReporte=this.printReporte; R.exportReporteCSV=this.exportReporteCSV; const r=this.computeReporte(); R.rep=r; R.repObraLabel=r.obra==='TODAS'?'Todas las obras':r.obra; R.repMesLabel=this.mesLabel(r.mes); R.repMorb=r.morbList.map(m=>({...m,pct:Math.round((m.n/r.maxMorb)*100)+'%'})); R.repHasMorb=r.morbList.length>0; R.repHasIndices=r.IF!==null; R.repDescTipos=r.descTipos; R.repHasDesc=r.descTipos.length>0; R.repHoy=this.fmt(this.todayISO()); }
 
-    if(R.isConfig){ R.cfgNombre=db.config.medicoNombre; R.cfgRegistro=db.config.medicoRegistro; R.saveConfig=this.saveConfig; R.exportBackup=this.exportBackup; R.importBackup=this.importBackup; R.importWorkersCSV=this.importWorkersCSV; R.addObra=this.addObra; R.obrasConfig=db.config.obras.map(o=>({nombre:o,count:db.workers.filter(w=>w.obra===o).length,del:this.delObra(o)})); R.borrarTodo=this.borrarTodo; R.totalRegistros=db.consultas.length+db.descansos.length+db.fichas.length+db.accidentes.length+db.vacunas.length; R.totalTrab=db.workers.length; R.addAcceso=this.addAcceso; R.migrarAdjuntos=this.migrarAdjuntos; R.migEstado=s.migEstado; var _accs=(db.config.accesos||[]); R.accesosList=_accs.map(a=>({email:a.email,obra:a.obra,del:this.delAcceso(a.email)})); R.noAccesos=_accs.length===0; }
+    if(R.isConfig){ R.cfgNombre=db.config.medicoNombre; R.cfgRegistro=db.config.medicoRegistro; R.cfgWhatsapp=db.config.whatsappMedico||''; R.saveConfig=this.saveConfig; R.exportBackup=this.exportBackup; R.importBackup=this.importBackup; R.importWorkersCSV=this.importWorkersCSV; R.addObra=this.addObra; R.obrasConfig=db.config.obras.map(o=>({nombre:o,count:db.workers.filter(w=>w.obra===o).length,del:this.delObra(o)})); R.borrarTodo=this.borrarTodo; R.totalRegistros=db.consultas.length+db.descansos.length+db.fichas.length+db.accidentes.length+db.vacunas.length; R.totalTrab=db.workers.length; R.addAcceso=this.addAcceso; R.migrarAdjuntos=this.migrarAdjuntos; R.migEstado=s.migEstado; var _accs=(db.config.accesos||[]); R.accesosList=_accs.map(a=>({email:a.email,obra:a.obra,del:this.delAcceso(a.email)})); R.noAccesos=_accs.length===0; }
 
     R.showInforme=s.showInforme; R.cerrarInforme=this.cerrarInforme; R.imprimirInforme=this.imprimirInforme;
     if(s.showInforme){ R.informe=this.informeData(); }
