@@ -676,12 +676,12 @@ window.WORKERS_SEED = [{"cedula":"0926211590","nombre":"ABAD GUTIERREZ PAULINA",
             <div style="background:#fff;border:1px solid #E6E2DD;border-radius:13px;padding:18px 20px">
               <div style="display:flex;align-items:center;gap:8px;font-family:Archivo;font-weight:700;font-size:15px;margin-bottom:12px"><span class="ms" style="font-size:19px;color:#7A5AB0">favorite</span> Grupos de atención prioritaria</div>
               <div style="display:flex;flex-direction:column;gap:9px">
-                <div style="display:flex;justify-content:space-between;align-items:center;font-size:13.5px"><span style="color:#5b554f">Adulto mayor (65+)</span><span style="font-family:Archivo;font-weight:700;font-size:18px">{{ kpis.adultoMayor }}</span></div>
-                <div style="display:flex;justify-content:space-between;align-items:center;font-size:13.5px"><span style="color:#5b554f">Discapacidad</span><span style="font-family:Archivo;font-weight:700;font-size:18px">{{ kpis.discapacidad }}</span></div>
-                <div style="display:flex;justify-content:space-between;align-items:center;font-size:13.5px"><span style="color:#5b554f">Enfermedad crónica</span><span style="font-family:Archivo;font-weight:700;font-size:18px">{{ kpis.cronica }}</span></div>
-                <div style="display:flex;justify-content:space-between;align-items:center;font-size:13.5px"><span style="color:#5b554f">Enfermedad catastrófica</span><span style="font-family:Archivo;font-weight:700;font-size:18px">{{ kpis.catastrofica }}</span></div>
-                <div style="display:flex;justify-content:space-between;align-items:center;font-size:13.5px"><span style="color:#5b554f">Embarazo</span><span style="font-family:Archivo;font-weight:700;font-size:18px">{{ kpis.embarazo }}</span></div>
-                <div style="display:flex;justify-content:space-between;align-items:center;font-size:13.5px"><span style="color:#5b554f">Periodo de lactancia</span><span style="font-family:Archivo;font-weight:700;font-size:18px">{{ kpis.lactancia }}</span></div>
+                <div onClick="{{ verGrupoAM }}" style="display:flex;justify-content:space-between;align-items:center;font-size:13.5px;cursor:pointer;border-radius:8px;padding:6px 8px;margin:0 -8px" style-hover="background:#FBF6E8;box-shadow:inset 3px 0 0 #F2B200"><span style="color:#5b554f">Adulto mayor (65+)</span><span style="font-family:Archivo;font-weight:700;font-size:18px">{{ kpis.adultoMayor }}</span></div>
+                <div onClick="{{ verGrupoDis }}" style="display:flex;justify-content:space-between;align-items:center;font-size:13.5px;cursor:pointer;border-radius:8px;padding:6px 8px;margin:0 -8px" style-hover="background:#FBF6E8;box-shadow:inset 3px 0 0 #F2B200"><span style="color:#5b554f">Discapacidad</span><span style="font-family:Archivo;font-weight:700;font-size:18px">{{ kpis.discapacidad }}</span></div>
+                <div onClick="{{ verGrupoCro }}" style="display:flex;justify-content:space-between;align-items:center;font-size:13.5px;cursor:pointer;border-radius:8px;padding:6px 8px;margin:0 -8px" style-hover="background:#FBF6E8;box-shadow:inset 3px 0 0 #F2B200"><span style="color:#5b554f">Enfermedad crónica</span><span style="font-family:Archivo;font-weight:700;font-size:18px">{{ kpis.cronica }}</span></div>
+                <div onClick="{{ verGrupoCat }}" style="display:flex;justify-content:space-between;align-items:center;font-size:13.5px;cursor:pointer;border-radius:8px;padding:6px 8px;margin:0 -8px" style-hover="background:#FBF6E8;box-shadow:inset 3px 0 0 #F2B200"><span style="color:#5b554f">Enfermedad catastrófica</span><span style="font-family:Archivo;font-weight:700;font-size:18px">{{ kpis.catastrofica }}</span></div>
+                <div onClick="{{ verGrupoEmb }}" style="display:flex;justify-content:space-between;align-items:center;font-size:13.5px;cursor:pointer;border-radius:8px;padding:6px 8px;margin:0 -8px" style-hover="background:#FBF6E8;box-shadow:inset 3px 0 0 #F2B200"><span style="color:#5b554f">Embarazo</span><span style="font-family:Archivo;font-weight:700;font-size:18px">{{ kpis.embarazo }}</span></div>
+                <div onClick="{{ verGrupoLac }}" style="display:flex;justify-content:space-between;align-items:center;font-size:13.5px;cursor:pointer;border-radius:8px;padding:6px 8px;margin:0 -8px" style-hover="background:#FBF6E8;box-shadow:inset 3px 0 0 #F2B200"><span style="color:#5b554f">Periodo de lactancia</span><span style="font-family:Archivo;font-weight:700;font-size:18px">{{ kpis.lactancia }}</span></div>
               </div>
             </div>
           </div>
@@ -1379,7 +1379,7 @@ window.WORKERS_SEED = [{"cedula":"0926211590","nombre":"ABAD GUTIERREZ PAULINA",
                   <div style="display:flex;align-items:center;gap:10px"><span class="ms" style="font-size:20px;color:#7A5AB0">school</span><span style="font-weight:700;font-size:14px">{{ k.tema }}</span></div>
                   <div style="display:flex;align-items:center;gap:10px"><span style="font-family:Archivo;font-weight:700;font-size:13px;color:#7A5AB0">{{ k.fechaFmt }}</span><button onClick="{{ k.edit }}" style="background:none;border:none;color:#8C857E;cursor:pointer;padding:4px"><span class="ms" style="font-size:18px">edit</span></button><button onClick="{{ k.del }}" style="background:none;border:none;color:#C0392B;cursor:pointer;padding:4px"><span class="ms" style="font-size:18px">delete</span></button></div>
                 </div>
-                <div style="display:flex;gap:22px;margin-top:7px;font-size:12.5px;color:#8C857E;flex-wrap:wrap"><div>Obra: <b style="color:#5b554f">{{ k.obra }}</b></div><div>Facilitador: <b style="color:#5b554f">{{ k.facilitador }}</b></div><div>Duración: <b style="color:#5b554f">{{ k.duracion }}</b></div><div>Asistentes: <b style="color:#5b554f">{{ k.asistentes }}</b></div></div>
+                <div style="display:flex;gap:22px;margin-top:7px;font-size:12.5px;color:#8C857E;flex-wrap:wrap"><div>Obra: <b style="color:#5b554f">{{ k.obra }}</b></div><div>Facilitador: <b style="color:#5b554f">{{ k.facilitador }}</b></div><div>Duración: <b style="color:#5b554f">{{ k.duracion }}</b></div><div>Asistentes: <b style="color:#5b554f">{{ k.asistentes }}</b></div><sc-if value="{{ k.hasFotos }}" hint-placeholder-val="0"><div onClick="{{ k.verFotos }}" style="cursor:pointer;color:#7A5AB0;font-weight:600;display:inline-flex;align-items:center;gap:4px" style-hover="text-decoration:underline"><span class="ms" style="font-size:15px;vertical-align:-2px">photo_library</span> {{ k.fotosCount }} foto(s)</div></sc-if></div>
               </div>
             </sc-for>
           </div>
@@ -2415,6 +2415,11 @@ window.WORKERS_SEED = [{"cedula":"0926211590","nombre":"ABAD GUTIERREZ PAULINA",
               <label style="font-size:12.5px;font-weight:600;color:#6b655f">N° asistentes<input name="asistentes" type="number" min="0" defaultValue="{{ mf.asistentes }}" style="width:100%;margin-top:5px;padding:10px 11px;border:1px solid #E0DBD4;border-radius:8px;font-size:14px" /></label>
             </div>
             <label style="font-size:12.5px;font-weight:600;color:#6b655f;display:block;margin-top:13px">Observaciones<textarea name="obs" defaultValue="{{ mf.obs }}" rows="2" style="width:100%;margin-top:5px;padding:10px 11px;border:1px solid #E0DBD4;border-radius:8px;font-size:14px;resize:vertical"></textarea></label>
+            <div style="margin-top:14px">
+              <div style="font-size:12.5px;font-weight:600;color:#6b655f;margin-bottom:6px">Fotografías de la capacitación <span style="font-weight:400;color:#a59e96">(imágenes, máx. 3 MB c/u)</span></div>
+              <sc-if value="{{ fotosSelCount }}" hint-placeholder-val="0"><div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:9px"><sc-for list="{{ fotosSel }}" as="ph" hint-placeholder-count="2"><span style="display:inline-flex;align-items:center;gap:7px;background:#F7F4EF;border:1px solid #E6E2DD;border-radius:8px;padding:6px 10px;font-size:12.5px;color:#423D3B"><span class="ms" style="font-size:16px;color:#7A5AB0">image</span>{{ ph.name }}<span onClick="{{ ph.remove }}" style="cursor:pointer;color:#C0392B;font-weight:800;font-size:15px">×</span></span></sc-for></div></sc-if>
+              <label style="display:inline-flex;align-items:center;gap:7px;background:#fff;border:1px dashed #C9C2B8;border-radius:8px;padding:10px 14px;font-size:13px;font-weight:600;color:#6b655f;cursor:pointer"><span class="ms" style="font-size:18px">add_photo_alternate</span> Agregar fotos<input type="file" accept="image/*" multiple onChange="{{ onFotosChange }}" style="display:none" /></label>
+            </div>
           </sc-if>
 
           <sc-if value="{{ isMB }}" hint-placeholder-val="">
@@ -2485,6 +2490,31 @@ window.WORKERS_SEED = [{"cedula":"0926211590","nombre":"ABAD GUTIERREZ PAULINA",
 
   <sc-if value="{{ toast }}" hint-placeholder-val="">
     <div data-noprint style="position:fixed;bottom:26px;left:50%;transform:translateX(-50%);background:#2C2A28;color:#fff;padding:13px 22px;border-radius:11px;font-size:14px;font-weight:600;box-shadow:0 14px 36px rgba(0,0,0,.35);z-index:80;display:flex;align-items:center;gap:9px;animation:slideUp .25s ease"><span class="ms" style="font-size:19px;color:#7BD49A">check_circle</span>{{ toast }}</div>
+  </sc-if>
+
+  <sc-if value="{{ grupoPriorActivo }}" hint-placeholder-val="">
+    <div data-noprint style="position:fixed;inset:0;background:rgba(44,42,40,.5);display:flex;align-items:flex-start;justify-content:center;padding:40px 16px;z-index:75;overflow-y:auto;animation:fadeIn .15s ease">
+      <div style="background:#fff;border-radius:14px;max-width:560px;width:100%;box-shadow:0 20px 50px rgba(0,0,0,.28)">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:18px 22px;border-bottom:1px solid #EDE9E4"><div><div style="font-family:Archivo;font-weight:800;font-size:19px;color:#2C2A28">{{ grupoPriorTitulo }}</div><div style="font-size:13px;color:#8C857E">{{ grupoPriorCount }} persona(s) en toda la empresa</div></div><button onClick="{{ cerrarGrupoPrior }}" style="background:none;border:none;cursor:pointer;color:#8C857E"><span class="ms" style="font-size:24px">close</span></button></div>
+        <div style="max-height:62vh;overflow-y:auto;padding:6px 0">
+          <sc-if value="{{ grupoPriorVacio }}" hint-placeholder-val=""><div style="padding:26px;text-align:center;color:#8C857E;font-size:13.5px">No hay personas registradas en este grupo.</div></sc-if>
+          <sc-for list="{{ grupoPriorLista }}" as="p" hint-placeholder-count="4"><div onClick="{{ p.open }}" style="display:flex;align-items:center;gap:12px;padding:11px 22px;border-bottom:1px solid #F3F0EB;cursor:pointer" style-hover="background:#FBF6E8;box-shadow:inset 3px 0 0 #F2B200"><div style="flex:1"><div style="font-weight:700;font-size:14px;color:#2C2A28">{{ p.nombre }}</div><div style="font-size:12px;color:#8C857E">{{ p.obra }} · {{ p.cargo }}</div></div><span class="ms" style="font-size:18px;color:#B0A99F">chevron_right</span></div></sc-for>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ fotosViewActivo }}" hint-placeholder-val="">
+    <div data-noprint style="position:fixed;inset:0;background:rgba(44,42,40,.6);display:flex;align-items:flex-start;justify-content:center;padding:40px 16px;z-index:75;overflow-y:auto;animation:fadeIn .15s ease">
+      <div style="background:#fff;border-radius:14px;max-width:760px;width:100%;box-shadow:0 20px 50px rgba(0,0,0,.3)">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:18px 22px;border-bottom:1px solid #EDE9E4"><div style="font-family:Archivo;font-weight:800;font-size:18px;color:#2C2A28">Fotos · {{ fotosViewTema }}</div><button onClick="{{ cerrarFotos }}" style="background:none;border:none;cursor:pointer;color:#8C857E"><span class="ms" style="font-size:24px">close</span></button></div>
+        <div style="padding:16px 22px">
+          <sc-if value="{{ fotosViewLoading }}" hint-placeholder-val=""><div style="padding:22px;text-align:center;color:#8C857E;font-size:13.5px">Cargando fotos…</div></sc-if>
+          <sc-if value="{{ fotosViewVacio }}" hint-placeholder-val=""><div style="padding:22px;text-align:center;color:#8C857E;font-size:13.5px">No se pudieron cargar las fotos.</div></sc-if>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px"><sc-for list="{{ fotosViewUrls }}" as="im" hint-placeholder-count="2"><a href="{{ im.url }}" target="_blank" style="display:block"><img src="{{ im.url }}" style="width:100%;height:210px;object-fit:cover;border-radius:10px;border:1px solid #E6E2DD" /></a></sc-for></div>
+        </div>
+      </div>
+    </div>
   </sc-if>
 
 </div>
@@ -2574,7 +2604,7 @@ class Component extends DCLogic {
       view:'dashboard', search:'', obraFilter:'TODAS', estadoFilter:'A', navHidden:false,
       ficha:{cedula:'',ap1:'',ap2:'',nom1:'',nom2:'',sexo:'Hombre',fechaNac:'',edad:'',lateralidad:'Derecho',puesto:'',tipoEval:'INGRESO',antPer:'',antFam:'',transf:'SI',fuma:'NO',cuantoFuma:'',alcohol:'NO',frecAlcohol:'',actividad:'NO',tipoAct:'',frecAct:'',temp:'',pa:'',fc:'',fr:'',sato2:'',peso:'',talla:'',imc:'',aptitud:'APTO'},
       selectedCedula:null, perfilTab:'datos',
-      modalType:null, modalEditId:null, modalCedula:null, modalAdjunto:null, modalNotaAccId:null, savingAdj:false, migRunning:false, migEstado:'',
+      modalType:null, modalEditId:null, modalCedula:null, modalAdjunto:null, modalFotos:[], modalNotaAccId:null, savingAdj:false, migRunning:false, migEstado:'', grupoPrior:null, fotosView:null,
       consObraFilter:'TODAS', fichaObraFilter:'TODAS', vacObraFilter:'TODAS', vacTipoFilter:'TODAS',
       cie10:[], cieQuery:'', ciePick:null,
       repObra:'TODAS', repMes:new Date().toISOString().slice(0,7), repHHT:'',
@@ -2755,6 +2785,9 @@ class Component extends DCLogic {
   ageOf(w){ if(!w) return null; if(w.fechaNac){ const d=new Date(String(w.fechaNac).slice(0,10)+'T00:00:00'); if(!isNaN(d.getTime())) return Math.floor((Date.now()-d.getTime())/31557600000); } const n=parseInt(w.edad,10); return isNaN(n)?null:n; }
   isAdultoMayor(c){ const w=(typeof c==='string')?this.state.db.workers.find(x=>x.cedula===c):c; const a=this.ageOf(w); return a!=null && a>=65; }
   openPerfil=(cedula)=>()=>{ this.setState({view:'trabajadores',selectedCedula:cedula,perfilTab:'datos'}); };
+  openGrupoPrioritario=(key)=>()=>this.setState({grupoPrior:key});
+  cerrarGrupoPrior=()=>this.setState({grupoPrior:null});
+  abrirPerfilGrupo=(cedula)=>()=>{ this.setState({grupoPrior:null,view:'trabajadores',selectedCedula:cedula,perfilTab:'datos'}); };
   backToList=()=>this.setState({selectedCedula:null});
   setPerfilTab=(t)=>()=>this.setState({perfilTab:t});
 
@@ -2770,9 +2803,11 @@ class Component extends DCLogic {
       const rec2 = arr2.find(x=>x.id===id);
       if(rec2 && rec2.adjunto) adj=rec2.adjunto;
     }
-    this.setState({modalType:type,modalCedula:cedula||null,modalEditId:id||null,modalNotaAccId:null,cieQuery:'',ciePick:pick,modalAdjunto:adj});
+    let fotos=[];
+    if(id && type==='capacitacion'){ const arrK=this.state.db.capacitaciones||[]; const recK=arrK.find(x=>x.id===id); if(recK && recK.fotos) fotos=recK.fotos.slice(); }
+    this.setState({modalType:type,modalCedula:cedula||null,modalEditId:id||null,modalNotaAccId:null,cieQuery:'',ciePick:pick,modalAdjunto:adj,modalFotos:fotos});
   };
-  closeModal=()=>this.setState({modalType:null,modalEditId:null,modalCedula:null,cieQuery:'',ciePick:null,modalAdjunto:null,modalNotaAccId:null});
+  closeModal=()=>this.setState({modalType:null,modalEditId:null,modalCedula:null,cieQuery:'',ciePick:null,modalAdjunto:null,modalFotos:[],modalNotaAccId:null});
   openNotaAcc=(accId)=>()=>this.setState({modalType:'notaAcc',modalNotaAccId:accId,modalEditId:null,modalCedula:null,cieQuery:'',ciePick:null,modalAdjunto:null});
   delNotaAcc=(accId,notaId)=>()=>{ if(!confirm('¿Eliminar esta nota del caso?')) return; this.save(db=>{ const a=db.accidentes.find(x=>x.id===accId); if(a&&a.notas) a.notas=a.notas.filter(n=>n.id!==notaId); }); this.toast('Nota eliminada'); };
   setConsObraFilter=(e)=>this.setState({consObraFilter:e.target.value});
@@ -2806,6 +2841,30 @@ class Component extends DCLogic {
     if(error) throw error;
     return { name:a.name, type:a.type, size:a.size, path:path };
   };
+  onFotosChange=(e)=>{
+    const files=Array.prototype.slice.call(e.target.files||[]);
+    if(!files.length) return;
+    const MAX=3*1024*1024; const cur=(this.state.modalFotos||[]).slice();
+    for(var i=0;i<files.length;i++){ var f=files[i]; if(f.size>MAX){ alert('La foto "'+f.name+'" pesa '+(Math.round(f.size/1024/1024*10)/10)+' MB y supera el limite de 3 MB. Reduzcala e intente de nuevo.'); continue; } cur.push({name:f.name,type:f.type,size:f.size,file:f}); }
+    this.setState({modalFotos:cur}); try{ e.target.value=''; }catch(_){}
+  };
+  removeFoto=(idx)=>()=>{ const cur=(this.state.modalFotos||[]).slice(); cur.splice(idx,1); this.setState({modalFotos:cur}); };
+  resolveFotos=async (recId)=>{
+    const arr=(this.state.modalFotos||[]); const out=[]; const sb=getSB();
+    for(var i=0;i<arr.length;i++){ var a=arr[i];
+      if(a && a.path && !a.file){ out.push({name:a.name,type:a.type,size:a.size,path:a.path}); continue; }
+      if(a && a.file){ if(!sb) throw new Error('sin conexion'); var safe=String(a.name||'foto').replace(/[^a-zA-Z0-9._-]/g,'_'); var path='capacitacion/'+recId+'_'+Date.now()+'_'+i+'_'+safe; var up=await sb.storage.from(BUCKET).upload(path, a.file, { contentType:a.type||'image/jpeg', upsert:true }); if(up.error) throw up.error; out.push({name:a.name,type:a.type,size:a.size,path:path}); }
+    }
+    return out;
+  };
+  verFotosCapac=(rec)=>async ()=>{
+    const fotos=(rec&&rec.fotos)||[]; if(!fotos.length){ alert('Esta capacitacion no tiene fotos.'); return; }
+    this.setState({fotosView:{tema:(rec.tema||'Capacitacion'),loading:true,urls:[]}});
+    const sb=getSB(); const urls=[];
+    try{ for(var i=0;i<fotos.length;i++){ var f=fotos[i]; if(f && f.path && sb){ var r=await sb.storage.from(BUCKET).createSignedUrl(f.path,3600); if(!r.error && r.data && r.data.signedUrl) urls.push({url:r.data.signedUrl}); } } }catch(e){}
+    this.setState({fotosView:{tema:(rec.tema||'Capacitacion'),loading:false,urls:urls}});
+  };
+  cerrarFotos=()=>this.setState({fotosView:null});
   migrarAdjuntos=async ()=>{
     const sb=getSB(); if(!sb){ this.setState({migEstado:'Sin conexión con el servidor.'}); return; }
     if(this.state.migRunning) return;
@@ -2894,7 +2953,9 @@ class Component extends DCLogic {
       const rec={id:id||this.uid(),cedula,vacuna:g('vacuna'),dosis:g('dosis'),fecha:g('fecha')||this.todayISO(),lote:g('lote')};
       this.save(db=>{const i=db.vacunas.findIndex(x=>x.id===rec.id); if(i>=0)db.vacunas[i]=rec; else db.vacunas.unshift(rec);});
     } else if(t==='capacitacion'){
-      const rec={id:id||this.uid(),obra:(this.myObra()||g('obra')),tema:g('tema'),fecha:g('fecha')||this.todayISO(),facilitador:g('facilitador'),duracion:g('duracion'),asistentes:num('asistentes')||0,obs:g('obs')};
+      const rid=id||this.uid();
+      let fotos; try{ this.setState({savingAdj:true}); fotos=await this.resolveFotos(rid); this.setState({savingAdj:false}); }catch(err){ this.setState({savingAdj:false}); alert('No se pudieron subir las fotos. Verifique su conexion e intente de nuevo.'); return; }
+      const rec={id:rid,obra:(this.myObra()||g('obra')),tema:g('tema'),fecha:g('fecha')||this.todayISO(),facilitador:g('facilitador'),duracion:g('duracion'),asistentes:num('asistentes')||0,obs:g('obs'),fotos:fotos};
       this.save(db=>{const i=db.capacitaciones.findIndex(x=>x.id===rec.id); if(i>=0)db.capacitaciones[i]=rec; else db.capacitaciones.unshift(rec);});
     } else if(t==='botiquin'){
       const rec={id:id||this.uid(),obra:(this.myObra()||g('obra')),item:g('item'),categoria:g('categoria'),stock:num('stock')||0,minimo:num('minimo')||0,unidad:g('unidad'),vence:g('vence')};
@@ -3800,9 +3861,7 @@ class Component extends DCLogic {
       const esp=Object.values(db.especiales);
       R.kpis={ total:db.workers.length, activos, consultasMes, consultasTotal:db.consultas.length, descansosVig:descVig, diasPerdidosMes:diasPerdMes, accidentesAnio:accAnio, accidentesMes:accMes, fichasVig:fvig, fichasPorVencer:fpv, fichasVencidas:fven, sinFicha:fsin, discapacidad:esp.filter(e=>e.discapacidad).length, cronica:esp.filter(e=>e.cronica).length, catastrofica:esp.filter(e=>e.catastrofica).length, embarazo:esp.filter(e=>e.embarazo).length, lactancia:esp.filter(e=>e.lactancia).length, adultoMayor:db.workers.filter(w=>this.isAdultoMayor(w)).length };
       const al=[];
-      db.workers.forEach(w=>{ const st=this.fichaStatus(w.cedula); if(st.state==='venc'){ al.push({icon:'event_busy',iconColor:'color:#C0392B',title:w.nombre,sub:'Ficha médica vencida · '+w.obra,tag:'Vencida',tagStyle:chip('red'),pr:1}); } else if(st.state==='porvencer'){ const d=this.daysTo(this.latestFicha(w.cedula).vence); al.push({icon:'event',iconColor:'color:#B8791A',title:w.nombre,sub:'Ficha por vencer · '+w.obra,tag:'En '+d+'d',tagStyle:chip('amber'),pr:2}); } });
-      db.descansos.filter(x=>x.estado==='Vigente').forEach(x=>{ al.push({icon:'sick',iconColor:'color:#B8791A',title:this.workerName(x.cedula),sub:'Descanso vigente · '+x.tipo,tag:x.dias+' días',tagStyle:chip('amber'),pr:2}); });
-      Object.keys(db.especiales).forEach(c=>{ if(db.especiales[c].embarazo){ al.push({icon:'pregnant_woman',iconColor:'color:#B0457C',title:this.workerName(c),sub:'Trabajadora embarazada · seguimiento',tag:'Prioritaria',tagStyle:chip('pink'),pr:3}); } });
+      Object.keys(db.especiales).forEach(c=>{ if(db.especiales[c].embarazo){ al.push({icon:'pregnant_woman',iconColor:'color:#B0457C',title:this.workerName(c),sub:'Trabajadora embarazada · seguimiento',tag:'Prioritaria',tagStyle:chip('pink'),pr:3}); } if(db.especiales[c].lactancia){ al.push({icon:'water_drop',iconColor:'color:#B0457C',title:this.workerName(c),sub:'Trabajadora en lactancia · seguimiento',tag:'Prioritaria',tagStyle:chip('pink'),pr:3}); } });
       db.botiquin.filter(b=>(Number(b.stock)||0)<=(Number(b.minimo)||0)).forEach(b=>{ al.push({icon:'inventory_2',iconColor:'color:#C0392B',title:b.item+' — '+b.obra,sub:'Stock bajo en botiquín',tag:b.stock+' '+(b.unidad||'u'),tagStyle:chip('red'),pr:2}); });
       (db.alertas||[]).forEach(a=>{ const d=this.daysTo(a.fecha); let tg,ts,pr,ic,col; if(d===null){ tg='Sin fecha'; ts=chip('gray'); pr=2; ic='push_pin'; col='color:#6b655f'; } else if(d<0){ tg='Vencida '+(-d)+'d'; ts=chip('red'); pr=0; ic='error'; col='color:#C0392B'; } else if(d===0){ tg='Vence hoy'; ts=chip('red'); pr=0; ic='notification_important'; col='color:#C0392B'; } else if(d<=7){ tg='En '+d+'d'; ts=chip('amber'); pr=1; ic='upcoming'; col='color:#B8791A'; } else { tg='En '+d+'d'; ts=chip('blue'); pr=1; ic='push_pin'; col='color:#2F6FB0'; } al.push({icon:ic,iconColor:col,title:this.workerName(a.cedula),sub:(a.descripcion||'Pendiente')+(a.fecha?(' · vence '+this.fmt(a.fecha)):''),tag:tg,tagStyle:ts,pr:pr}); });
       al.sort((a,b)=>a.pr-b.pr);
@@ -3810,7 +3869,22 @@ class Component extends DCLogic {
       const cnt={}; db.workers.forEach(w=>{cnt[w.obra]=(cnt[w.obra]||0)+1;});
       const max=Math.max(1,...Object.values(cnt));
       R.obrasResumen=Object.keys(cnt).sort((a,b)=>cnt[b]-cnt[a]).map(o=>({nombre:o||'(sin obra)',count:cnt[o],pct:Math.round((cnt[o]/max)*100)+'%'}));
+      R.verGrupoAM=this.openGrupoPrioritario('adultoMayor'); R.verGrupoDis=this.openGrupoPrioritario('discapacidad'); R.verGrupoCro=this.openGrupoPrioritario('cronica'); R.verGrupoCat=this.openGrupoPrioritario('catastrofica'); R.verGrupoEmb=this.openGrupoPrioritario('embarazo'); R.verGrupoLac=this.openGrupoPrioritario('lactancia');
     }
+
+    R.grupoPriorActivo=!!s.grupoPrior;
+    if(s.grupoPrior){
+      const gk=s.grupoPrior; const gdb=this.scopedDb();
+      const glabels={adultoMayor:'Adultos mayores (65+)',discapacidad:'Discapacidad',cronica:'Enfermedad cronica',catastrofica:'Enfermedad catastrofica',embarazo:'Embarazo',lactancia:'Periodo de lactancia'};
+      const inG=(w)=>{ if(gk==='adultoMayor') return this.isAdultoMayor(w); const e=(gdb.especiales||{})[w.cedula]; return !!(e&&e[gk]); };
+      const glist=(gdb.workers||[]).filter(inG).slice().sort((a,b)=>(a.nombre||'').localeCompare(b.nombre||''));
+      R.grupoPriorTitulo=glabels[gk]||'Grupo prioritario';
+      R.grupoPriorCount=glist.length; R.grupoPriorVacio=glist.length===0;
+      R.grupoPriorLista=glist.map(w=>({cedula:w.cedula,nombre:w.nombre||w.cedula,obra:w.obra||'—',cargo:w.cargo||'—',open:this.abrirPerfilGrupo(w.cedula)}));
+      R.cerrarGrupoPrior=this.cerrarGrupoPrior;
+    }
+    R.fotosViewActivo=!!s.fotosView;
+    if(s.fotosView){ R.fotosViewTema=s.fotosView.tema; R.fotosViewLoading=!!s.fotosView.loading; R.fotosViewUrls=s.fotosView.urls||[]; R.fotosViewVacio=(!s.fotosView.loading && (!s.fotosView.urls||!s.fotosView.urls.length)); R.cerrarFotos=this.cerrarFotos; }
 
     if(R.isTrabList){
       const q=s.search.trim().toLowerCase();
@@ -3864,6 +3938,7 @@ class Component extends DCLogic {
     R.isMA=s.modalType==='accidente'; R.isMV=s.modalType==='vacuna'; R.isMK=s.modalType==='capacitacion'; R.isMB=s.modalType==='botiquin'; R.isMW=s.modalType==='trabajador'; R.mwEditing=!!s.modalCedula; R.isMN=s.modalType==='nota'; R.isMNA=s.modalType==='notaAcc'; R.isMAL=s.modalType==='alerta';
     R.maGlobal = R.isMA && !s.modalCedula;
     R.closeModal=this.closeModal; R.closeModalBg=this.closeModalBg; R.stop=this.stop; R.submitModal=this.submitModal;
+    R.fotosSel=(s.modalFotos||[]).map((f,idx)=>({name:f.name||'foto',remove:this.removeFoto(idx)})); R.fotosSelCount=(s.modalFotos||[]).length;
     const titles={consulta:'Registrar consulta médica',descanso:'Registrar descanso médico',ficha:'Ficha médica / aptitud',especial:'Condición especial',accidente:'Registrar accidente de trabajo',vacuna:'Registrar vacuna',capacitacion:'Registrar capacitación',botiquin:'Ítem de botiquín',nota:'Nota evolutiva / seguimiento',notaAcc:'Nota de seguimiento del caso',alerta:'Alerta / pendiente'};
     R.modalTitle = s.modalType==='trabajador' ? (s.modalCedula?'Editar trabajador':'Nuevo trabajador') : ((s.modalEditId?'Editar — ':'')+(titles[s.modalType]||''));
     R.modalSubtitle = s.modalType==='trabajador' ? (s.modalCedula?('CI '+s.modalCedula):'Ingrese los datos del nuevo colaborador') : (s.modalCedula?this.workerName(s.modalCedula):((s.modalType==='capacitacion'||s.modalType==='botiquin'||s.modalType==='accidente'||s.modalType==='notaAcc')?'':'Seleccione trabajador'));
@@ -3902,7 +3977,7 @@ class Component extends DCLogic {
     if(R.isDescansos){ const all=db.descansos.slice().sort((a,b)=>{ const ra=a.revisar?1:0, rb=b.revisar?1:0; if(rb!==ra) return rb-ra; return (b.inicio||'').localeCompare(a.inicio||''); }); R.descansosAll=all.map(x=>{ const wn=this.workerName(x.cedula); const nombre=(x.revisar&&x.afiliado)?(x.afiliado+' · cédula '+(x.cedula||'—')):wn; return {...x,nombre:nombre,obra:this.workerObra(x.cedula),inicioFmt:this.fmt(x.inicio),finFmt:this.fmt(this.addDays(x.inicio,(Number(x.dias)||0)-1)),tipoStyle:chip(this.tipoDescTone(x.tipo)),estadoStyle:chip(x.estado==='Vigente'?'amber':'gray'),dx:x.dxCodigo?(x.dxCodigo+' — '+x.dxTexto):'',revisar:!!x.revisar,open:this.openPerfil(x.cedula)}; }); R.descansosEmpty=all.length===0; R.descansosCount=all.length; R.descansosDias=all.reduce((a,x)=>a+(Number(x.dias)||0),0); R.descansosVig=all.filter(x=>x.estado==='Vigente').length; R.descRevisarCount=all.filter(x=>x.revisar).length; R.descHasRevisar=all.some(x=>x.revisar); R.descStats=this.descansosStats(db); R.descPanelOpen=!!s.descPanel; R.toggleDescPanel=this.toggleDescPanel; R.abrirInformeDesc=this.abrirInformeDesc; R.descBtnLabel=s.descPanel?'Ocultar gráficos':'Ver gráficos'; }
     if(R.isFichas){ let ws=db.workers; if(s.fichaObraFilter!=='TODAS') ws=ws.filter(w=>w.obra===s.fichaObraFilter); const arr=ws.map(w=>{ const f=this.latestFicha(w.cedula); const st=this.fichaStatus(w.cedula); return {cedula:w.cedula,nombre:w.nombre,obra:w.obra,tipo:f?f.tipo:'—',aptitud:f?f.aptitud:'Sin ficha',aptStyle:chip(f?this.aptTone(f.aptitud):'gray'),fechaFmt:f?this.fmt(f.fecha):'—',venceFmt:f&&f.vence?this.fmt(f.vence):'—',estLabel:st.label,estStyle:st.style,stOrder:({venc:0,porvencer:1,sin:2,vig:3})[st.state],open:this.openPerfil(w.cedula)}; }).sort((a,b)=>a.stOrder-b.stOrder||(a.nombre||'').localeCompare(b.nombre||'')); R.fichasAll=arr; R.fichaObraFilter=s.fichaObraFilter; R.setFichaObraFilter=this.setFichaObraFilter; R.fichasCount=arr.length; }
     if(R.isAccidentes){ const all=db.accidentes.slice().sort((a,b)=>(b.fecha||'').localeCompare(a.fecha||'')); R.accidentesAll=all.map(x=>this.accView(x)); R.accidentesEmpty=all.length===0; R.accidentesCount=all.length; R.accidentesDias=all.reduce((a,x)=>a+(Number(x.diasPerdidos)||0),0); R.accidentesAnio=all.filter(x=>String(x.fecha).slice(0,4)===this.todayISO().slice(0,4)).length; R.addAccidenteGlobal=this.openModal('accidente',null); }
-    if(R.isCapac){ const all=db.capacitaciones.slice().sort((a,b)=>(b.fecha||'').localeCompare(a.fecha||'')); R.capacAll=all.map(x=>({...x,fechaFmt:this.fmt(x.fecha),edit:this.openModal('capacitacion',null,x.id),del:this.delRecord('capacitaciones',x.id)})); R.capacEmpty=all.length===0; R.addCapac=this.openModal('capacitacion',null); R.capacTotal=all.length; R.capacAsist=all.reduce((a,x)=>a+(Number(x.asistentes)||0),0); }
+    if(R.isCapac){ const all=db.capacitaciones.slice().sort((a,b)=>(b.fecha||'').localeCompare(a.fecha||'')); R.capacAll=all.map(x=>({...x,fechaFmt:this.fmt(x.fecha),fotosCount:(x.fotos||[]).length,hasFotos:!!(x.fotos&&x.fotos.length),verFotos:this.verFotosCapac(x),edit:this.openModal('capacitacion',null,x.id),del:this.delRecord('capacitaciones',x.id)})); R.capacEmpty=all.length===0; R.addCapac=this.openModal('capacitacion',null); R.capacTotal=all.length; R.capacAsist=all.reduce((a,x)=>a+(Number(x.asistentes)||0),0); }
     if(R.isVacunas){ let all=db.vacunas.slice().sort((a,b)=>(b.fecha||'').localeCompare(a.fecha||'')); const tipos=[...new Set(db.vacunas.map(v=>(v.vacuna||'').trim()).filter(Boolean))].sort(); if(s.vacObraFilter!=='TODAS') all=all.filter(x=>this.workerObra(x.cedula)===s.vacObraFilter); if(s.vacTipoFilter!=='TODAS') all=all.filter(x=>(x.vacuna||'').trim()===s.vacTipoFilter); R.vacunasAll=all.map(x=>({...x,nombre:this.workerName(x.cedula),obra:this.workerObra(x.cedula),fechaFmt:this.fmt(x.fecha),open:this.openPerfil(x.cedula),del:this.delRecord('vacunas',x.id)})); R.vacunasEmpty=all.length===0; R.vacunasCount=all.length; R.vacObraFilter=s.vacObraFilter; R.setVacObraFilter=this.setVacObraFilter; R.vacTipoFilter=s.vacTipoFilter; R.setVacTipoFilter=this.setVacTipoFilter; R.vacTipos=tipos; }
     if(R.isCertSubc){ var clist=(s.certSubc||[]).slice(); var cemp=[...new Set(clist.map(x=>x.empresa).filter(Boolean))].sort(); if(s.certSubcEmpresa!=='TODAS') clist=clist.filter(x=>x.empresa===s.certSubcEmpresa); R.certSubcList=clist.map(x=>({ id:x.id, empresa:x.empresa||'—', obra:x.obra||'—', trabajador:x.trabajador||'—', cedula:x.cedula||'—', fechaFmt:this.fmt((x.created_at||'').slice(0,10)), nombre:x.archivo_nombre||'certificado', descargar:this.descargarCertSubc(x.archivo_path) })); R.certSubcEmpresas=cemp; R.certSubcEmpresa=s.certSubcEmpresa; R.setCertSubcEmpresa=this.setCertSubcEmpresa; R.certSubcLoading=!!s.certSubcLoading; R.certSubcErr=s.certSubcErr||''; R.reloadCertSubc=this.loadCertSubc; R.certSubcCount=clist.length; R.certSubcEmpty=(s.certSubc!==null && !s.certSubcLoading && clist.length===0 && !s.certSubcErr); R.canManageSubc=!this.isRestricted(); R.crearSubcCuenta=this.crearSubcCuenta; R.subcMsg=s.subcMsg||''; R.subcCuentasLoading=!!s.subcCuentasLoading; R.subcCuentasEmpty=(s.subcCuentas!==null && (s.subcCuentas||[]).length===0 && !s.subcCuentasLoading); R.subcCuentasList=(s.subcCuentas||[]).map(x=>({ id:x.id, empresa:x.empresa, usuario:x.usuario, clave:x.clave, activo:!!x.activo, estadoTxt:x.activo?'Activa':'Inactiva', toggleTxt:x.activo?'Desactivar':'Activar', toggle:this.toggleSubcActivo(x), del:this.deleteSubcCuenta(x) })); }
     if(R.isBotiquin){ const all=db.botiquin.slice().sort((a,b)=>(a.obra||'').localeCompare(b.obra||'')||(a.item||'').localeCompare(b.item||'')); R.botiquinAll=all.map(x=>{ const low=(Number(x.stock)||0)<=(Number(x.minimo)||0); return {...x,low,stockStyle:chip(low?'red':'green'),venceFmt:x.vence?this.fmt(x.vence):'—',edit:this.openModal('botiquin',null,x.id),del:this.delRecord('botiquin',x.id)}; }); R.botiquinEmpty=all.length===0; R.addBotiquin=this.openModal('botiquin',null); R.botiquinLow=all.filter(x=>(Number(x.stock)||0)<=(Number(x.minimo)||0)).length; }
