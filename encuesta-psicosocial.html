@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Encuesta de Riesgos Psicosociales — ETINAR</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='18' fill='%23423D3B'/><rect x='28' y='30' width='17' height='17' rx='3' fill='%23F0BE07'/><path d='M55 38 h8 v8 h8 v8 h-8 v8 h-8 v-8 h-8 v-8 h8 z' fill='%23ffffff'/></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;font-family:'Hanken Grotesk',system-ui,sans-serif;background:#F1EEE9;color:#2C2A28;-webkit-font-smoothing:antialiased;padding-bottom:96px}
+  .wrap{max-width:800px;margin:0 auto;padding:20px 16px}
+  .serif{font-family:'Fraunces','Source Serif 4',Georgia,serif;font-weight:500}
+  .head{display:flex;align-items:center;gap:12px;margin-bottom:18px}
+  .logo{width:44px;height:44px;border-radius:11px;background:#2C2A28;display:flex;align-items:center;justify-content:center;flex:none}
+  .card{background:#fff;border:1px solid #E7E2DB;border-radius:16px;padding:20px 22px;margin-bottom:16px}
+  .badge{display:inline-flex;align-items:center;gap:7px;background:#EAF5EF;color:#0F6E56;font-size:13px;font-weight:600;padding:7px 13px;border-radius:20px}
+  h1{font-size:24px;margin:0}
+  h2{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:#8C857E;margin:0 0 14px;font-weight:700}
+  .sub{color:#8C857E;font-size:13.5px;margin-top:3px}
+  ul.instr{margin:12px 0 0;padding-left:20px;color:#55504c;font-size:13.5px;line-height:1.7}
+  .field{margin-bottom:14px}
+  .field label.lbl{display:block;font-size:13px;font-weight:600;color:#55504c;margin-bottom:6px}
+  .req{color:#C0392B}
+  select,input[type=text],textarea{width:100%;padding:11px 13px;border:1px solid #D8D2CA;border-radius:10px;font-size:15px;font-family:inherit;background:#fff;color:#2C2A28}
+  select:focus,input:focus,textarea:focus{outline:none;border-color:#C79A00;box-shadow:0 0 0 3px rgba(199,154,0,.15)}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  @media(max-width:560px){.grid2{grid-template-columns:1fr}}
+  .dimtitle{font-family:'Fraunces','Source Serif 4',Georgia,serif;font-weight:600;font-size:19px;margin:0 0 4px;color:#2C2A28}
+  .dimbar{height:4px;width:44px;background:#F0BE07;border-radius:3px;margin-bottom:14px}
+  .q{padding:15px 0;border-top:1px solid #F0ECE6}
+  .q:first-of-type{border-top:none;padding-top:4px}
+  .qtxt{font-size:14.5px;line-height:1.5;margin-bottom:11px}
+  .qnum{display:inline-block;min-width:22px;font-weight:700;color:#B8791A}
+  .opts{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .opt{position:relative;border:1.5px solid #E2DCD4;border-radius:11px;padding:11px 12px;cursor:pointer;font-size:13px;font-weight:600;color:#55504c;display:flex;align-items:center;gap:9px;transition:all .12s;user-select:none}
+  .opt input{position:absolute;opacity:0;pointer-events:none}
+  .dot{width:17px;height:17px;border-radius:50%;border:2px solid #C9C2B8;flex:none}
+  .opt.sel{border-color:#C79A00;background:#FCF7E8;color:#2C2A28}
+  .opt.sel .dot{border-color:#C79A00;background:#C79A00;box-shadow:inset 0 0 0 3px #fff}
+  .qmiss{border-left:3px solid #C0392B;padding-left:12px;margin-left:-15px}
+  .barwrap{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid #E2DCD4;padding:12px 16px;box-shadow:0 -4px 18px rgba(0,0,0,.06);z-index:20}
+  .barin{max-width:800px;margin:0 auto;display:flex;align-items:center;gap:14px}
+  .prog{flex:1}
+  .progbar{height:8px;background:#EDE8E1;border-radius:5px;overflow:hidden;margin-top:5px}
+  .progfill{height:100%;background:#C79A00;width:0%;transition:width .2s}
+  .progtxt{font-size:12.5px;color:#8C857E;font-weight:600}
+  .btn{background:#2C2A28;color:#fff;border:none;border-radius:11px;padding:13px 22px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;flex:none}
+  .btn:disabled{opacity:.5;cursor:not-allowed}
+  .btn .ic{color:#F0BE07;font-weight:800}
+  .scale-help{background:#F7F4EF;border-radius:10px;padding:10px 13px;font-size:12.5px;color:#6b655f;margin-bottom:14px;line-height:1.6}
+  .center{min-height:60vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:30px}
+  .msg{background:#FCE9E7;border:1px solid #f3c4bd;color:#9B2C1E;border-radius:11px;padding:12px 15px;font-size:13.5px;margin-top:12px}
+  a.link{color:#8a6a08}
+</style>
+</head>
+<body>
+<div id="app"><div class="center"><div class="serif" style="font-size:20px">Cargando encuesta…</div></div></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+var PSICO = {"escala": [{"v": 4, "txt": "Completamente de acuerdo"}, {"v": 3, "txt": "Parcialmente de acuerdo"}, {"v": 2, "txt": "Poco de acuerdo"}, {"v": 1, "txt": "En desacuerdo"}], "preguntas": {"1": "Considero que son aceptables las solicitudes y requerimientos que me piden otras personas (compañeros de trabajo, usuarios, clientes)", "2": "Decido el ritmo de trabajo en mis actividades", "3": "Las actividades y/o responsabilidades que me fueron asignadas no me causan estrés", "4": "Tengo suficiente tiempo para realizar todas las actividades que me han sido encomendadas dentro de mi jornada laboral", "5": "Considero que tengo los suficientes conocimientos, habilidades y destrezas para desarrollar el trabajo para el cual fui contratado", "6": "En mi trabajo aprendo y adquiero nuevos conocimientos, habilidades y destrezas de mis compañeros de trabajo", "7": "En mi trabajo se cuenta con un plan de carrera, capacitación y/o entrenamiento para el desarrollo de mis conocimientos, habilidades y destrezas", "8": "En mi trabajo se evalúa objetiva y periódicamente las actividades que realizo", "9": "En mi trabajo se reconoce y se da crédito a la persona que realiza un buen trabajo o logran sus objetivos.", "10": "Mi jefe inmediato está dispuesto a escuchar propuestas de cambio e iniciativas de trabajo", "11": "Mi jefe inmediato establece metas, plazos claros y factibles para el cumplimiento de mis funciones o actividades", "12": "Mi jefe inmediato interviene, brinda apoyo, soporte y se preocupa cuando tengo demasiado trabajo que realizar", "13": "Mi jefe inmediato me brinda suficientes lineamientos y retroalimentación para el desempeño de mi trabajo", "14": "Mi jefe inmediato pone en consideración del equipo de trabajo, las decisiones que pueden afectar a todos.", "15": "En mi trabajo existen espacios de discusión para debatir abiertamente los problemas comunes y diferencias de opinión", "16": "Me es permitido realizar el trabajo con colaboración de mis compañeros de trabajo y/u otras áreas", "17": "Mi opinión es tomada en cuenta con respecto a fechas límites en el cumplimiento de mis actividades o cuando exista cambio en mis funciones", "18": "Se me permite aportar con ideas para mejorar las actividades y la organización del trabajo", "19": "Considero que las formas de comunicación en mi trabajo son adecuados, accesibles y de fácil comprensión", "20": "En mi trabajo se informa regularmente de la gestión y logros de la empresa o institución a todos los trabajadores y servidores", "21": "En mi trabajo se respeta y se toma en consideración las limitaciones de las personas con discapacidad para la asignación de roles y tareas", "22": "En mi trabajo tenemos reuniones suficientes y significantes para el cumplimiento de los objetivos", "23": "Las metas y objetivos en mi trabajo son claros y alcanzables", "24": "Siempre dispongo de tareas y actividades a realizar en mi jornada y lugar de trabajo", "25": "Después del trabajo tengo la suficiente energía como para realizar otras actividades", "26": "En mi trabajo se me permite realizar pausas de periodo corto para renovar y recuperar la energía.", "27": "En mi trabajo tengo tiempo para dedicarme a reflexionar sobre mi desempeño en el trabajo", "28": "Tengo un horario y jornada de trabajo que se ajusta a mis expectativas y exigencias laborales", "29": "Todos los días siento que he descansado lo suficiente y que tengo la energía para iniciar mi trabajo", "30": "El trabajo está organizado de tal manera que fomenta la colaboración de equipo y el diálogo con otras personas", "31": "En mi trabajo percibo un sentimiento de compañerismo y bienestar con mis colegas", "32": "En mi trabajo se brinda el apoyo necesario a los trabajadores sustitutos o trabajadores con algún grado de discapacidad y enfermedad", "33": "En mi trabajo se me brinda ayuda técnica y administrativa cuando lo requiero", "34": "En mi trabajo tengo acceso a la atención de un médico, psicólogo, trabajadora social, consejero, etc. en situaciones de crisis y/o rehabilitación", "35": "En mi trabajo tratan por igual a todos, indistintamente la edad que tengan", "36": "Las directrices y metas que me autoimpongo, las cumplo dentro de mi jornada y horario de trabajo", "37": "En mi trabajo existe un buen ambiente laboral", "38": "Tengo un trabajo donde los hombres y mujeres tienen las mismas oportunidades", "39": "En mi trabajo me siento aceptado y valorado", "40": "Los espacios y ambientes físicos en mi trabajo brindan las facilidades para el acceso de las personas con discapacidad", "41": "Considero que mi trabajo está libre de amenazas, humillaciones, ridiculizaciones, burlas, calumnias o difamaciones reiteradas con el fin de causarme daño.", "42": "Me siento estable a pesar de cambios que se presentan en mi trabajo.", "43": "En mi trabajo estoy libre de conductas sexuales que afecten mi integridad física, psicológica y moral", "44": "Considero que el trabajo que realizo no me causa efectos negativos a mi salud física y mental", "45": "Me resulta fácil relajarme cuando no estoy trabajando", "46": "Siento que mis problemas familiares o personales no influyen en el desempeño de las actividades en el trabajo", "47": "Las instalaciones, ambientes, equipos, maquinaria y herramientas que utilizo para realizar el trabajo son las adecuadas para no sufrir accidentes de trabajo y enfermedades profesionales", "48": "Mi trabajo está libre de acoso sexual", "49": "En mi trabajo se me permite solucionar mis problemas familiares y personales", "50": "Tengo un trabajo libre de conflictos estresantes, rumores maliciosos o calumniosos sobre mi persona.", "51": "Tengo un equilibrio y separo bien el trabajo de mi vida personal.", "52": "Estoy orgulloso de trabajar en mi empresa o institución", "53": "En mi trabajo se respeta mi ideología, opinión política, religiosa, nacionalidad y orientación sexual.", "54": "Mi trabajo y los aportes que realizo son valorados y me generan motivación.", "55": "Me siento libre de culpa cuando no estoy trabajando en algo", "56": "En mi trabajo no existen espacios de uso exclusivo de un grupo determinado de personas ligados a un privilegio, por ejemplo, cafetería exclusiva, baños exclusivos, etc., mismo que causa malestar y perjudica mi ambiente laboral", "57": "Puedo dejar de pensar en el trabajo durante mi tiempo libre (pasatiempos, actividades de recreación, otros)", "58": "Considero que me encuentro física y mentalmente saludable"}, "dimensiones": [{"key": "carga", "nombre": "Carga y ritmo de trabajo", "items": [1, 2, 3, 4], "bajo": [13, 16], "medio": [8, 12], "alto": [4, 7]}, {"key": "competencias", "nombre": "Desarrollo de competencias", "items": [5, 6, 7, 8], "bajo": [13, 16], "medio": [8, 12], "alto": [4, 7]}, {"key": "liderazgo", "nombre": "Liderazgo", "items": [9, 10, 11, 12, 13, 14], "bajo": [18, 24], "medio": [12, 17], "alto": [6, 11]}, {"key": "margen", "nombre": "Margen de acción y control", "items": [15, 16, 17, 18], "bajo": [13, 16], "medio": [8, 12], "alto": [4, 7]}, {"key": "organizacion", "nombre": "Organización del trabajo", "items": [19, 20, 21, 22, 23, 24], "bajo": [18, 24], "medio": [12, 17], "alto": [6, 11]}, {"key": "recuperacion", "nombre": "Recuperación", "items": [25, 26, 27, 28, 29], "bajo": [16, 20], "medio": [10, 15], "alto": [5, 9]}, {"key": "soporte", "nombre": "Soporte y apoyo", "items": [30, 31, 32, 33, 34], "bajo": [16, 20], "medio": [10, 15], "alto": [5, 9]}, {"key": "otros", "nombre": "Otros puntos importantes", "items": [35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58], "bajo": [73, 96], "medio": [49, 72], "alto": [24, 48]}], "global": {"bajo": [175, 232], "medio": [117, 174], "alto": [58, 116]}, "datos": {"areas": ["Administrativa", "Operativa"], "generos": ["Masculino", "Femenino"], "instruccion": ["Ninguno", "Educación básica", "Educación media", "Bachillerato", "Técnico / Tecnológico", "Tercer nivel", "Cuarto nivel", "Otro"], "antiguedad": ["0-2 años", "3-10 años", "11-20 años", "Igual o superior a 21 años"], "edad": ["16-24 años", "25-34 años", "35-43 años", "44-52 años", "Igual o superior a 53 años"], "etnia": ["Indígena", "Mestizo/a", "Montubio/a", "Afro-ecuatoriano/a", "Blanco/a", "Otro"]}, "instrucciones": ["El cuestionario es anónimo, es decir no se solicita información personal sobre el participante.", "La información obtenida es confidencial, se guarda y emplea con estricta cautela.", "Completar todo el cuestionario requiere entre 15 a 20 minutos.", "Antes de responder, lea detenidamente cada pregunta y opción de respuesta.", "Es obligatorio contestar todos los ítems del cuestionario.", "No existen respuestas correctas o incorrectas.", "Evite distracciones mientras completa el cuestionario.", "Puede usar el apartado “observaciones y comentarios” para sugerencias u opiniones.", "Los resultados finales serán socializados oportunamente a los participantes."]};
+(function(){
+  var SB_URL='https://sogbuxyhhlldwbpgixkf.supabase.co';
+  var SB_KEY='sb_publishable_IlOqf6Q0sxiNyMUNEy_68A_28_bG5R-';
+  var supa=null;
+  try{ supa=window.supabase.createClient(SB_URL,SB_KEY,{auth:{persistSession:false,autoRefreshToken:false,storageKey:'psico_anon'}}); }catch(e){}
+
+  var app=document.getElementById('app');
+  function esc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+  var LOGO='<span class="logo"><svg width="24" height="24" viewBox="0 0 100 100"><rect x="26" y="30" width="18" height="18" rx="3" fill="#F0BE07"/><path d="M55 38 h8 v8 h8 v8 h-8 v8 h-8 v-8 h-8 v-8 h8 z" fill="#fff"/></svg></span>';
+
+  function optionsHTML(arr){ return arr.map(function(o){return '<option value="'+esc(o)+'">'+esc(o)+'</option>';}).join(''); }
+
+  function buildForm(obras){
+    var h='';
+    h+='<div class="wrap">';
+    // header
+    h+='<div class="head">'+LOGO+'<div><h1 class="serif">Evaluación de Riesgos Psicosociales</h1><div class="sub">ETINAR S.A. · Cuestionario del Ministerio del Trabajo</div></div></div>';
+    // intro
+    h+='<div class="card"><span class="badge">🔒 Cuestionario anónimo y confidencial</span>';
+    h+='<ul class="instr">';
+    PSICO.instrucciones.forEach(function(t){ h+='<li>'+esc(t)+'</li>'; });
+    h+='</ul></div>';
+    // datos generales
+    var d=PSICO.datos;
+    h+='<div class="card"><h2>Datos generales</h2>';
+    // obra
+    if(obras && obras.length){
+      h+='<div class="field"><label class="lbl">Centro de trabajo / Obra <span class="req">*</span></label><select id="f_obra"><option value="">Seleccione…</option>'+optionsHTML(obras)+'</select></div>';
+    }else{
+      h+='<div class="field"><label class="lbl">Centro de trabajo / Obra <span class="req">*</span></label><input type="text" id="f_obra" placeholder="Escriba su obra o centro de trabajo"></div>';
+    }
+    h+='<div class="field"><label class="lbl">Área de trabajo <span class="req">*</span></label><select id="f_area"><option value="">Seleccione…</option>'+optionsHTML(d.areas)+'</select></div>';
+    h+='<div class="grid2">';
+    h+='<div class="field"><label class="lbl">Género <span class="req">*</span></label><select id="f_genero"><option value="">Seleccione…</option>'+optionsHTML(d.generos)+'</select></div>';
+    h+='<div class="field"><label class="lbl">Edad <span class="req">*</span></label><select id="f_edad"><option value="">Seleccione…</option>'+optionsHTML(d.edad)+'</select></div>';
+    h+='<div class="field"><label class="lbl">Antigüedad en la empresa <span class="req">*</span></label><select id="f_antiguedad"><option value="">Seleccione…</option>'+optionsHTML(d.antiguedad)+'</select></div>';
+    h+='<div class="field"><label class="lbl">Nivel de instrucción <span class="req">*</span></label><select id="f_instruccion"><option value="">Seleccione…</option>'+optionsHTML(d.instruccion)+'</select></div>';
+    h+='<div class="field"><label class="lbl">Auto-identificación étnica <span class="req">*</span></label><select id="f_etnia"><option value="">Seleccione…</option>'+optionsHTML(d.etnia)+'</select></div>';
+    h+='<div class="field"><label class="lbl">Provincia</label><input type="text" id="f_provincia" placeholder="Opcional"></div>';
+    h+='<div class="field"><label class="lbl">Ciudad</label><input type="text" id="f_ciudad" placeholder="Opcional"></div>';
+    h+='</div></div>';
+    // escala help
+    var esc4=PSICO.escala.map(function(o){return o.txt+' ('+o.v+')';}).join(' · ');
+    // dimensions + questions
+    PSICO.dimensiones.forEach(function(dim){
+      h+='<div class="card"><div class="dimtitle">'+esc(dim.nombre)+'</div><div class="dimbar"></div>';
+      h+='<div class="scale-help">Marque la opción que mejor describa su situación: <b>'+esc(esc4)+'</b></div>';
+      dim.items.forEach(function(n){
+        h+='<div class="q" id="qbox'+n+'"><div class="qtxt"><span class="qnum">'+n+'.</span> '+esc(PSICO.preguntas[String(n)])+'</div><div class="opts">';
+        PSICO.escala.forEach(function(o){
+          h+='<label class="opt" data-q="'+n+'"><input type="radio" name="q'+n+'" value="'+o.v+'"><span class="dot"></span><span>'+esc(o.txt)+'</span></label>';
+        });
+        h+='</div></div>';
+      });
+      h+='</div>';
+    });
+    // observaciones
+    h+='<div class="card"><h2>Observaciones y comentarios</h2><textarea id="f_obs" rows="3" placeholder="Opcional: sugerencias u opiniones"></textarea></div>';
+    h+='</div>'; // wrap
+    // sticky bar
+    h+='<div class="barwrap"><div class="barin"><div class="prog"><div class="progtxt" id="progtxt">0 de 58 preguntas respondidas</div><div class="progbar"><div class="progfill" id="progfill"></div></div></div><button class="btn" id="enviar"><span class="ic">✓</span> Enviar</button></div></div>';
+    app.innerHTML=h;
+    wire();
+  }
+
+  var TOTAL=58;
+  function answered(){ var c=0; for(var i=1;i<=TOTAL;i++){ if(document.querySelector('input[name="q'+i+'"]:checked')) c++; } return c; }
+  function updateProg(){ var c=answered(); document.getElementById('progtxt').textContent=c+' de '+TOTAL+' preguntas respondidas'; document.getElementById('progfill').style.width=Math.round(c/TOTAL*100)+'%'; }
+
+  function wire(){
+    // toggle selection styling + progress (delegated)
+    app.addEventListener('change', function(e){
+      var inp=e.target; if(inp && inp.type==='radio' && inp.name && inp.name.charAt(0)==='q'){
+        var q=inp.name.slice(1);
+        var labels=app.querySelectorAll('label.opt[data-q="'+q+'"]');
+        labels.forEach(function(l){ l.classList.toggle('sel', l.querySelector('input').checked); });
+        var box=document.getElementById('qbox'+q); if(box) box.classList.remove('qmiss');
+        updateProg();
+      }
+    });
+    document.getElementById('enviar').addEventListener('click', enviar);
+  }
+
+  function val(id){ var el=document.getElementById(id); return el?String(el.value||'').trim():''; }
+
+  function enviar(){
+    // required datos
+    var req=[['f_obra','Centro de trabajo / Obra'],['f_area','Área de trabajo'],['f_genero','Género'],['f_edad','Edad'],['f_antiguedad','Antigüedad'],['f_instruccion','Nivel de instrucción'],['f_etnia','Auto-identificación étnica']];
+    for(var i=0;i<req.length;i++){ if(!val(req[i][0])){ var el=document.getElementById(req[i][0]); el.focus(); el.scrollIntoView({behavior:'smooth',block:'center'}); alert('Por favor complete: '+req[i][1]); return; } }
+    // all questions
+    var faltan=[];
+    for(var n=1;n<=TOTAL;n++){ if(!document.querySelector('input[name="q'+n+'"]:checked')){ faltan.push(n); var box=document.getElementById('qbox'+n); if(box) box.classList.add('qmiss'); } }
+    if(faltan.length){ var b=document.getElementById('qbox'+faltan[0]); if(b) b.scrollIntoView({behavior:'smooth',block:'center'}); alert('Faltan '+faltan.length+' pregunta(s) por responder. La primera está resaltada en rojo.'); return; }
+    var respuestas={}; for(var m=1;m<=TOTAL;m++){ respuestas[m]=Number(document.querySelector('input[name="q'+m+'"]:checked').value); }
+    var payload={ obra:val('f_obra'), area:val('f_area'), genero:val('f_genero'), edad:val('f_edad'), antiguedad:val('f_antiguedad'), instruccion:val('f_instruccion'), etnia:val('f_etnia'), provincia:val('f_provincia'), ciudad:val('f_ciudad'), respuestas:respuestas, observaciones:val('f_obs') };
+    var btn=document.getElementById('enviar'); btn.disabled=true; btn.innerHTML='Enviando…';
+    if(!supa){ done(false,'No hay conexión con el servidor.'); return; }
+    supa.from('psicosocial_respuestas').insert(payload).then(function(res){
+      if(res.error){ btn.disabled=false; btn.innerHTML='<span class="ic">✓</span> Enviar'; done(false, res.error.message||'Error al enviar.'); }
+      else{ done(true); }
+    }).catch(function(err){ btn.disabled=false; btn.innerHTML='<span class="ic">✓</span> Enviar'; done(false,(err&&err.message)||'Error al enviar.'); });
+  }
+
+  function done(ok,msg){
+    if(ok){
+      app.innerHTML='<div class="center">'+LOGO+'<h1 class="serif" style="margin-top:16px">¡Gracias por participar!</h1><p style="color:#55504c;max-width:440px;font-size:15px;line-height:1.6">Tu respuesta fue enviada de forma <b>anónima</b>. Tu colaboración ayuda a mejorar las condiciones de trabajo y salud en ETINAR.</p><div class="badge" style="margin-top:8px">🔒 Respuesta registrada</div></div>';
+      window.scrollTo(0,0);
+    }else{
+      var bar=document.querySelector('.barin'); 
+      var m=document.getElementById('errmsg'); if(m) m.remove();
+      var div=document.createElement('div'); div.className='msg'; div.id='errmsg'; div.style.margin='0'; div.textContent='No se pudo enviar: '+msg+' Intente nuevamente.';
+      bar.parentNode.insertBefore(div, bar);
+    }
+  }
+
+  // ---- init: load obras then build ----
+  function start(obras){ buildForm(obras); }
+  if(supa){
+    supa.rpc('psico_obras').then(function(r){
+      var obras=[]; try{ obras=Array.isArray(r.data)?r.data:(r.data?JSON.parse(r.data):[]); }catch(e){ obras=[]; }
+      if(!Array.isArray(obras)) obras=[];
+      start(obras);
+    }).catch(function(){ start([]); });
+  }else{ start([]); }
+})();
+</script>
+</body>
+</html>
