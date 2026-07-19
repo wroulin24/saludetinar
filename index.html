@@ -1530,7 +1530,7 @@ window.WORKERS_SEED = [{"cedula":"0926211590","nombre":"ABAD GUTIERREZ PAULINA",
         <sc-if value="{{ psicoNoData }}" hint-placeholder-val=""><div style="background:#fff;border:1px dashed #DAD4CC;border-radius:13px;padding:40px;text-align:center;color:#8C857E;font-size:14px">No hay respuestas para esta obra todavía.</div></sc-if>
         <sc-if value="{{ psicoHasData }}" hint-placeholder-val="">
           <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:13px;margin-bottom:16px"><div style="background:#fff;border:1px solid #E6E2DD;border-radius:13px;padding:14px 16px"><div style="font-size:13px;color:#6B655F;margin-bottom:8px">Respuestas</div><div style="font-family:'Fraunces','Source Serif 4',Georgia,serif;font-weight:500;font-size:26px">{{ psicoCount }}</div></div><div style="background:#fff;border:1px solid #E6E2DD;border-radius:13px;padding:14px 16px"><div style="font-size:13px;color:#6B655F;margin-bottom:8px">Nivel de riesgo global</div><div><span style="display:inline-block;font-weight:800;font-size:15px;padding:4px 12px;border-radius:20px;background:{{ psicoGlobal.bg }};color:{{ psicoGlobal.color }}">{{ psicoGlobal.nivel }}</span></div></div><div style="background:#fff;border:1px solid #E6E2DD;border-radius:13px;padding:14px 16px"><div style="font-size:13px;color:#6B655F;margin-bottom:8px">Riesgo Alto</div><div style="font-family:'Fraunces','Source Serif 4',Georgia,serif;font-weight:500;font-size:26px;color:#C0392B">{{ psicoGlobal.pAlto }}%</div></div><div style="background:#fff;border:1px solid #E6E2DD;border-radius:13px;padding:14px 16px"><div style="font-size:13px;color:#6B655F;margin-bottom:8px">Riesgo Bajo</div><div style="font-family:'Fraunces','Source Serif 4',Georgia,serif;font-weight:500;font-size:26px;color:#2E7D52">{{ psicoGlobal.pBajo }}%</div></div></div>
-          <div style="margin-bottom:16px"><button onClick="{{ abrirInformePsico }}" style="display:inline-flex;align-items:center;gap:8px;background:#2C2A28;color:#fff;border:none;border-radius:10px;padding:12px 20px;font-weight:700;font-size:14px;cursor:pointer"><span class="ms" style="font-size:19px;color:#F2B200">description</span> Descargar informe ejecutivo — {{ psicoObraLabel }}</button><div style="color:#8C857E;font-size:12px;margin-top:6px">Informe completo con análisis, principales riesgos y plan de acción. Cambia la obra en el filtro de arriba para el informe de otra obra.</div></div>
+          <div style="margin-bottom:16px"><button onClick="{{ abrirInformePsico }}" style="display:inline-flex;align-items:center;gap:8px;background:#2C2A28;color:#fff;border:none;border-radius:10px;padding:12px 20px;font-weight:700;font-size:14px;cursor:pointer"><span class="ms" style="font-size:19px;color:#F2B200">description</span> Descargar informe ejecutivo — {{ psicoObraLabel }}</button><button onClick="{{ exportPsicoExcel }}" style="display:inline-flex;align-items:center;gap:8px;background:#146C43;color:#fff;border:none;border-radius:10px;padding:12px 20px;font-weight:700;font-size:14px;cursor:pointer;margin-left:10px"><span class="ms" style="font-size:19px;color:#B7F0CE">table_view</span> Exportar a Excel</button><button onClick="{{ recargarTodoPsico }}" style="background:none;border:none;color:#8C857E;font-size:12px;cursor:pointer;text-decoration:underline;margin-left:12px" title="Descarga todas las respuestas desde cero (ignora la caché local del navegador)">Recargar todo</button><div style="color:#8C857E;font-size:12px;margin-top:6px">Informe completo con análisis, principales riesgos y plan de acción. Cambia la obra en el filtro de arriba para el informe de otra obra.</div></div>
           <div style="display:flex;gap:16px;flex-wrap:wrap;font-size:12px;color:#6B655F;margin-bottom:12px"><span><span style="display:inline-block;width:10px;height:10px;border-radius:3px;background:#2E7D52;vertical-align:-1px;margin-right:5px"></span>Bajo</span><span><span style="display:inline-block;width:10px;height:10px;border-radius:3px;background:#B8791A;vertical-align:-1px;margin-right:5px"></span>Medio</span><span><span style="display:inline-block;width:10px;height:10px;border-radius:3px;background:#C0392B;vertical-align:-1px;margin-right:5px"></span>Alto</span><span style="color:#a49e97">· menor puntaje = mayor riesgo</span></div>
           <div style="background:#fff;border:1px solid #EDE9E3;border-radius:14px;padding:18px 20px;margin-bottom:16px"><div style="font-weight:800;font-size:16px;margin-bottom:8px">Resultados por dimensión</div><sc-for list="{{ psicoDims }}" as="d" hint-placeholder-count="8"><div style="padding:10px 0;border-top:1px solid #F1EEE9"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:6px"><span style="font-size:14px;font-weight:600">{{ d.nombre }}</span><span style="font-size:12px;font-weight:700;padding:3px 10px;border-radius:20px;background:{{ d.bg }};color:{{ d.color }};white-space:nowrap">{{ d.nivel }} · {{ d.avg }}</span></div><div style="height:9px;background:#EFEBE5;border-radius:6px;overflow:hidden"><div style="height:100%;width:{{ d.avgPct }}%;background:{{ d.color }}"></div></div><div style="display:flex;height:7px;border-radius:5px;overflow:hidden;margin-top:5px;background:#EFEBE5"><div style="width:{{ d.pBajo }}%;background:#2E7D52"></div><div style="width:{{ d.pMedio }}%;background:#B8791A"></div><div style="width:{{ d.pAlto }}%;background:#C0392B"></div></div><div style="font-size:11px;color:#8C857E;margin-top:3px">Bajo {{ d.pBajo }}% · Medio {{ d.pMedio }}% · Alto {{ d.pAlto }}%</div></div></sc-for></div>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px"><div style="background:#fff;border:1px solid #EDE9E3;border-radius:14px;padding:18px 20px"><div style="font-weight:800;font-size:16px;margin-bottom:8px">Por género</div><sc-if value="{{ psicoGeneroEmpty }}" hint-placeholder-val=""><div style="color:#8C857E;font-size:13px">Sin datos.</div></sc-if><sc-for list="{{ psicoGenero }}" as="g" hint-placeholder-count="2"><div style="padding:9px 0;border-top:1px solid #F1EEE9"><div style="display:flex;justify-content:space-between;font-size:13.5px;margin-bottom:5px"><b>{{ g.label }}</b><span style="color:#8C857E">n = {{ g.n }}</span></div><div style="display:flex;height:12px;border-radius:6px;overflow:hidden;background:#EFEBE5"><div style="width:{{ g.pBajo }}%;background:#2E7D52"></div><div style="width:{{ g.pMedio }}%;background:#B8791A"></div><div style="width:{{ g.pAlto }}%;background:#C0392B"></div></div><div style="font-size:11px;color:#8C857E;margin-top:3px">Bajo {{ g.pBajo }}% · Medio {{ g.pMedio }}% · Alto {{ g.pAlto }}%</div></div></sc-for></div><div style="background:#fff;border:1px solid #EDE9E3;border-radius:14px;padding:18px 20px"><div style="font-weight:800;font-size:16px;margin-bottom:8px">Por área de trabajo</div><sc-if value="{{ psicoAreaEmpty }}" hint-placeholder-val=""><div style="color:#8C857E;font-size:13px">Sin datos.</div></sc-if><sc-for list="{{ psicoArea }}" as="a" hint-placeholder-count="2"><div style="padding:9px 0;border-top:1px solid #F1EEE9"><div style="display:flex;justify-content:space-between;font-size:13.5px;margin-bottom:5px"><b>{{ a.label }}</b><span style="color:#8C857E">n = {{ a.n }}</span></div><div style="display:flex;height:12px;border-radius:6px;overflow:hidden;background:#EFEBE5"><div style="width:{{ a.pBajo }}%;background:#2E7D52"></div><div style="width:{{ a.pMedio }}%;background:#B8791A"></div><div style="width:{{ a.pAlto }}%;background:#C0392B"></div></div><div style="font-size:11px;color:#8C857E;margin-top:3px">Bajo {{ a.pBajo }}% · Medio {{ a.pMedio }}% · Alto {{ a.pAlto }}%</div></div></sc-for></div></div>
@@ -3428,11 +3428,55 @@ class Component extends DCLogic {
   toggleDescPanel=()=>{ this.setState({descPanel:!this.state.descPanel}); };
   abrirInformeDesc=()=>{ this.setState({showInformeDesc:true, showInforme:false, showInformePr:false, showInformeMorb:false}); };
   cerrarInformeDesc=()=>{ this.setState({showInformeDesc:false}); };
-  loadPsico=async()=>{
-    var sb=getSB(); if(!sb){ this.setState({psicoErr:'Sin conexión.', psicoLoading:false}); return; }
+  loadPsico=async(opts)=>{
+    opts=opts||{};
+    var sb=getSB(); if(!sb){ this.setState({psicoErr:'Sin conexi\u00f3n.', psicoLoading:false}); return; }
+    var CK='psico_cache_v1'; var cached=[]; var lastMax='';
+    if(!opts.full){ try{ var raw=localStorage.getItem(CK); if(raw){ var o=JSON.parse(raw); if(o&&Array.isArray(o.rows)){ cached=o.rows; lastMax=o.max||''; } } }catch(e){} }
+    if(cached.length){ this.setState({psico:cached, psicoErr:''}); }
+    if(!opts.full && !opts.force && cached.length && this._psicoLastFetch && (Date.now()-this._psicoLastFetch<45000)){ this.setState({psicoLoading:false}); return; }
     this.setState({psicoLoading:true, psicoErr:''});
-    try{ var res=await sb.from('psicosocial_respuestas').select('*').order('created_at',{ascending:false}).limit(5000); if(res.error) throw res.error; this.setState({psico:res.data||[], psicoLoading:false}); }
-    catch(e){ this.setState({psicoErr:((e&&e.message)||'No se pudo cargar.'), psicoLoading:false}); }
+    try{
+      var cols='id,created_at,obra,area,genero,respuestas,observaciones,provincia,ciudad,instruccion,antiguedad,edad,etnia';
+      var q;
+      if(!opts.full && lastMax){ q=sb.from('psicosocial_respuestas').select(cols).gte('created_at',lastMax).order('created_at',{ascending:false}).limit(5000); }
+      else { q=sb.from('psicosocial_respuestas').select(cols).order('created_at',{ascending:false}).limit(5000); }
+      var res=await q; if(res.error) throw res.error;
+      var fresh=res.data||[];
+      var map={}; cached.forEach(function(r){ if(r&&r.id!=null) map[r.id]=r; }); fresh.forEach(function(r){ if(r&&r.id!=null) map[r.id]=r; });
+      var all=Object.keys(map).map(function(k){ return map[k]; });
+      all.sort(function(a,b){ return (b.created_at||'').localeCompare(a.created_at||''); });
+      this._psicoLastFetch=Date.now();
+      try{ localStorage.setItem(CK, JSON.stringify({max:(all.length?all[0].created_at:''), rows:all})); }catch(e){}
+      this.setState({psico:all, psicoLoading:false});
+    }catch(e){ if(cached.length){ this.setState({psicoLoading:false, psicoErr:''}); } else { this.setState({psicoErr:((e&&e.message)||'No se pudo cargar.'), psicoLoading:false}); } }
+  };
+  reloadPsico=()=>{ this.loadPsico({force:true}); };
+  recargarTodoPsico=()=>{ try{ localStorage.removeItem('psico_cache_v1'); }catch(e){} this._psicoLastFetch=0; this.loadPsico({full:true, force:true}); };
+  exportPsicoExcel=async()=>{
+    if(!window.ExcelJS){ this.toast('No se pudo cargar el generador de Excel. Revise su conexi\u00f3n.'); return; }
+    var s=this.state; var obra=s.psicoObra||'TODAS'; var rows=Array.isArray(s.psico)?s.psico:[];
+    var fr=(obra==='TODAS')?rows.slice():rows.filter(function(r){ return r.obra===obra; });
+    if(fr.length===0){ this.toast('No hay respuestas para exportar.'); return; }
+    try{
+      this.toast('Generando Excel\u2026');
+      var DIMS=PSICO.dimensiones, G=PSICO.global;
+      var nd=function(v,d){ return v>=d.bajo[0]?'Bajo':(v>=d.medio[0]?'Medio':'Alto'); };
+      var ng=function(v){ return v>=G.bajo[0]?'Bajo':(v>=G.medio[0]?'Medio':'Alto'); };
+      var wb=new window.ExcelJS.Workbook(); var ws=wb.addWorksheet('Respuestas');
+      var head=['Fecha','Obra','\u00c1rea','G\u00e9nero','Edad','Antig\u00fcedad','Instrucci\u00f3n','Etnia','Provincia','Ciudad'];
+      DIMS.forEach(function(d){ head.push(d.nombre+' (punt)'); head.push(d.nombre+' (nivel)'); });
+      head.push('Global (punt)'); head.push('Global (nivel)'); head.push('Observaciones');
+      var qi; for(qi=1; qi<=58; qi++){ head.push('P'+qi); }
+      ws.addRow(head); ws.getRow(1).font={bold:true};
+      var self=this;
+      fr.forEach(function(r){ var a=r.respuestas||{}; var g=0; var row=[ self.fmt((r.created_at||'').slice(0,10)), r.obra||'', r.area||'', r.genero||'', r.edad||'', r.antiguedad||'', r.instruccion||'', r.etnia||'', r.provincia||'', r.ciudad||'' ]; DIMS.forEach(function(d){ var su=0; for(var k=0;k<d.items.length;k++){ su+=(Number(a[d.items[k]])||0); } g+=su; row.push(su); row.push(nd(su,d)); }); row.push(g); row.push(ng(g)); row.push(r.observaciones||''); var j; for(j=1;j<=58;j++){ var v=Number(a[j]); row.push(isNaN(v)?'':v); } ws.addRow(row); });
+      try{ ws.columns.forEach(function(c,i){ c.width = i<10?15:(i<26?12:6); }); ws.views=[{state:'frozen', ySplit:1, xSplit:1}]; }catch(e){}
+      var out=await wb.xlsx.writeBuffer();
+      var label=(obra==='TODAS'?'Todas':obra).replace(/[^a-zA-Z0-9]+/g,'_');
+      this.download('Respuestas_Psicosociales_'+label+'_'+this.todayISO()+'.xlsx', out, 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+      this.toast('Excel descargado');
+    }catch(err){ this.toast('Error al generar el Excel: '+((err&&err.message)||err)); }
   };
   setPsicoObra=(e)=>{ this.setState({psicoObra:e&&e.target?e.target.value:e}); };
   copyPsicoLink=()=>{ try{ var _pb=location.href.split('#')[0].split('?')[0].replace(/[^/]*$/,''); var link=_pb+'encuesta-psicosocial.html'; if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(link); } else { var t=document.createElement('textarea'); t.value=link; document.body.appendChild(t); t.select(); try{document.execCommand('copy');}catch(e){} document.body.removeChild(t); } this.setState({psicoLinkCopied:true}); var self=this; setTimeout(function(){ self.setState({psicoLinkCopied:false}); },2500); }catch(e){} };
@@ -4298,7 +4342,7 @@ class Component extends DCLogic {
       var pObra=s.psicoObra||'TODAS';
       var pbase=location.href.split('#')[0].split('?')[0].replace(/[^/]*$/,'');
       R.psicoLink=pbase+'encuesta-psicosocial.html'; R.copyPsicoLink=this.copyPsicoLink; R.psicoLinkCopied=!!s.psicoLinkCopied;
-      R.psicoLoading=!!s.psicoLoading; R.psicoErr=s.psicoErr||''; R.reloadPsico=this.loadPsico;
+      R.psicoLoading=!!s.psicoLoading; R.psicoErr=s.psicoErr||''; R.reloadPsico=this.reloadPsico; R.recargarTodoPsico=this.recargarTodoPsico; R.exportPsicoExcel=this.exportPsicoExcel;
       var oset={}; (db.config.obras||[]).forEach(function(o){ oset[o]=1; }); rows.forEach(function(r){ if(r.obra) oset[r.obra]=1; });
       R.psicoObras=Object.keys(oset).sort(); R.psicoObra=pObra; R.setPsicoObra=this.setPsicoObra;
       R.psicoTotal=rows.length;
