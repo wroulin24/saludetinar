@@ -1577,7 +1577,7 @@ window.WORKERS_SEED = [{"cedula":"0926211590","nombre":"ABAD GUTIERREZ PAULINA",
             <div style="font-family:Archivo;font-weight:700;font-size:15px;margin-bottom:6px;color:#423D3B">Respaldo de datos</div>
             <div style="font-size:13px;color:#8C857E;margin-bottom:14px;line-height:1.5">La información se guarda en la nube (Supabase) y se sincroniza entre todos los equipos autorizados en tiempo real. Aun así, es recomendable descargar un respaldo periódicamente como copia de seguridad adicional. Actualmente hay <b style="color:#2C2A28">{{ totalTrab }}</b> trabajadores y <b style="color:#2C2A28">{{ totalRegistros }}</b> registros médicos.</div>
             <div style="display:flex;gap:10px;flex-wrap:wrap">
-              <button onClick="{{ exportBackup }}" style="display:inline-flex;align-items:center;gap:7px;background:#423D3B;color:#fff;border:none;border-radius:9px;padding:11px 16px;font-weight:700;font-size:13.5px;cursor:pointer"><span class="ms" style="font-size:18px">download</span> Descargar respaldo (.json)</button>
+              <button onClick="{{ downloadSnaps }}" style="display:inline-flex;align-items:center;gap:7px;background:#6B4FA0;color:#fff;border:none;border-radius:9px;padding:11px 16px;font-weight:700;font-size:13.5px;cursor:pointer" title="Descarga los respaldos automáticos guardados en este equipo"><span class="ms" style="font-size:18px">history</span> Respaldos automáticos</button><button onClick="{{ exportBackup }}" style="display:inline-flex;align-items:center;gap:7px;background:#423D3B;color:#fff;border:none;border-radius:9px;padding:11px 16px;font-weight:700;font-size:13.5px;cursor:pointer"><span class="ms" style="font-size:18px">download</span> Descargar respaldo (.json)</button>
               <label style="display:inline-flex;align-items:center;gap:7px;background:#fff;border:1px solid #E0DBD4;border-radius:9px;padding:11px 16px;font-weight:700;font-size:13.5px;cursor:pointer;color:#423D3B"><span class="ms" style="font-size:18px">upload</span> Restaurar respaldo<input type="file" accept="application/json,.json" onChange="{{ importBackup }}" style="display:none" /></label>
             </div>
           </div>
@@ -2548,7 +2548,7 @@ window.WORKERS_SEED = [{"cedula":"0926211590","nombre":"ABAD GUTIERREZ PAULINA",
     </div>
   </sc-if>
 
-  <sc-if value="{{ showApp }}" hint-placeholder-val="">
+  <sc-if value="{{ showApp }}" hint-placeholder-val=""><sc-if value="{{ syncFail }}" hint-placeholder-val=""><div data-noprint style="position:fixed;top:0;left:0;right:0;z-index:90;background:#C0392B;color:#fff;padding:9px 16px;font-size:13px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;box-shadow:0 2px 10px rgba(0,0,0,.25)"><span>⚠ Tus cambios aún no se han guardado en la nube. No cierres la página; se está reintentando automáticamente.</span><button onClick="{{ retrySync }}" style="background:#fff;color:#C0392B;border:none;border-radius:7px;padding:6px 14px;font-weight:800;font-size:12.5px;cursor:pointer">Reintentar ahora</button></div></sc-if>
     <div>
       <sc-if value="{{ chatOpen }}" hint-placeholder-val="">
         <div data-noprint style="position:fixed;bottom:94px;right:24px;width:344px;max-width:calc(100vw - 36px);height:466px;max-height:calc(100vh - 140px);background:#fff;border-radius:16px;box-shadow:0 18px 50px rgba(0,0,0,.32);z-index:85;display:flex;flex-direction:column;overflow:hidden;animation:slideUp .2s ease">
@@ -2658,7 +2658,7 @@ class Component extends DCLogic {
     try{ const raw=localStorage.getItem(STORE_KEY); if(raw) db=JSON.parse(raw); }catch(e){}
     this.state={
       authed:false, loginErr:'', db,
-      bootLoading:true, signingIn:false, syncing:false, cloudError:'', userEmail:'',
+      bootLoading:true, signingIn:false, syncing:false, syncFail:false, lastSync:'', lastSnap:'', cloudError:'', userEmail:'',
       view:'dashboard', search:'', obraFilter:'TODAS', estadoFilter:'A', navHidden:false,
       ficha:{cedula:'',ap1:'',ap2:'',nom1:'',nom2:'',sexo:'Hombre',fechaNac:'',edad:'',lateralidad:'Derecho',puesto:'',tipoEval:'INGRESO',antPer:'',antFam:'',transf:'SI',fuma:'NO',cuantoFuma:'',alcohol:'NO',frecAlcohol:'',actividad:'NO',tipoAct:'',frecAct:'',temp:'',pa:'',fc:'',fr:'',sato2:'',peso:'',talla:'',imc:'',aptitud:'APTO'},
       selectedCedula:null, perfilTab:'datos',
@@ -2681,6 +2681,7 @@ class Component extends DCLogic {
     const sb=getSB();
     if(!sb){ this.setState({bootLoading:false, cloudError:'No se pudo cargar el servicio en línea. Verifique su conexión a internet y recargue la página.'}); return; }
     this.myToken='c'+Math.random().toString(36).slice(2,10);
+    try{ window.addEventListener('beforeunload',(e)=>{ if((this._dirtySeq||0)>(this._syncedSeq||0)){ try{ this.cloudPush(this.state.db); }catch(_){}; e.preventDefault(); e.returnValue=''; return ''; } }); }catch(e){}
     try{
       const { data:{ session } } = await sb.auth.getSession();
       if(session){ this.setState({authed:true, userEmail:session.user.email}); await this.cloudLoad(); this.startSync(); }
@@ -2700,6 +2701,17 @@ class Component extends DCLogic {
       try{ const r=await sb.from(CLOUD_TABLE).select('client_id,updated_at').eq('id','main').maybeSingle(); meta=r.data; }catch(e){}
       let localStr=null, localUA=null;
       try{ localStr=localStorage.getItem(STORE_KEY); localUA=localStorage.getItem(STORE_KEY+'_ua'); }catch(e){}
+      let __pending=false; try{ __pending=localStorage.getItem(STORE_KEY+'_pending')==='1'; }catch(e){}
+      if(__pending && localStr){
+        try{ const dbLocal=JSON.parse(localStr); if(dbLocal && dbLocal.workers){
+          const remoteNewer=(meta && meta.updated_at && localUA && meta.updated_at>localUA);
+          if(remoteNewer){ try{ const rem=await sb.from(CLOUD_TABLE).select('data,updated_at').eq('id','main').maybeSingle(); if(rem.data&&rem.data.data) this._snapshot(rem.data.data,'nube_'+(rem.data.updated_at||'')); }catch(e){} this.toast('Se recuperaron cambios sin sincronizar (hab\u00eda una versi\u00f3n m\u00e1s reciente en la nube; se respald\u00f3).'); }
+          else { this.toast('Recuperando cambios no sincronizados de la sesi\u00f3n anterior\u2026'); }
+          this._remoteUpdatedAt=localUA||''; this._dirtySeq=(this._dirtySeq||0)+1; this._syncedSeq=0;
+          this.setState({db:dbLocal, cloudError:''}); this.setState({syncing:false});
+          this.cloudPush(dbLocal); return;
+        } }catch(e){}
+      }
       if(meta && meta.updated_at && localStr && localUA && localUA===meta.updated_at){
         try{ const dbLocal=JSON.parse(localStr); if(dbLocal && dbLocal.workers){ this._remoteUpdatedAt=meta.updated_at; this.setState({db:dbLocal, cloudError:''}); this.setState({syncing:false}); return; } }catch(e){}
       }
@@ -2722,19 +2734,27 @@ class Component extends DCLogic {
     this.setState({syncing:false});
   }
   async cloudPush(db){
-    const sb=getSB(); if(!sb || !this.state.authed) return;
+    const sb=getSB(); if(!sb || !this.state.authed){ if(this.state.authed) this._scheduleRetry(); return; }
+    if(this._flushing){ this._reflush=true; return; }
+    const seq=this._dirtySeq||0;
+    this._flushing=true; this.setState({syncing:true});
+    try{ localStorage.setItem(STORE_KEY+'_pending','1'); }catch(e){}
     const updated_at=new Date().toISOString();
-    this.setState({syncing:true});
     try{
       const { error } = await sb.from(CLOUD_TABLE).upsert({ id:'main', data:db, client_id:this.myToken, updated_at });
       if(error) throw error;
-      this._remoteUpdatedAt=updated_at;
+      this._flushing=false; this._remoteUpdatedAt=updated_at; this._syncedSeq=seq; this._retryN=0;
       try{ localStorage.setItem(STORE_KEY+'_ua', updated_at); }catch(e){}
       try{ if(this._chan&&this._chan.send) this._chan.send({type:'broadcast',event:'chg',payload:{t:this.myToken}}); }catch(e){}
-      this.setState({cloudError:''});
-    }catch(e){ this.setState({cloudError:'Sin conexión con el servidor. Sus cambios quedaron guardados en este equipo y se reintentará al volver la conexión.'}); }
-    this.setState({syncing:false});
+      if((this._dirtySeq||0)>this._syncedSeq || this._reflush){ this._reflush=false; this.setState({cloudError:'', syncFail:false}); clearTimeout(this._pushT); this._pushT=setTimeout(()=>this.cloudPush(this.state.db),500); }
+      else { try{ localStorage.removeItem(STORE_KEY+'_pending'); }catch(e){} this._maybeSnapshot(db); this.setState({cloudError:'', syncFail:false, syncing:false, lastSync:updated_at}); }
+    }catch(e){ this._flushing=false; this.setState({syncFail:true, syncing:false}); this._scheduleRetry(); }
   }
+  _scheduleRetry(){ clearTimeout(this._retryT); this._retryN=(this._retryN||0)+1; const d=Math.min(4000*this._retryN,30000); this._retryT=setTimeout(()=>{ if((this._dirtySeq||0)>(this._syncedSeq||0)) this.cloudPush(this.state.db); }, d); }
+  retrySyncNow=()=>{ this._retryN=0; clearTimeout(this._retryT); this.setState({syncFail:false,syncing:true}); this.cloudPush(this.state.db); };
+  _maybeSnapshot(db){ try{ const k=STORE_KEY+'_snapdate'; const today=new Date().toISOString().slice(0,10); if(localStorage.getItem(k)===today) return; this._snapshot(db,today); localStorage.setItem(k,today); }catch(e){} }
+  _snapshot(db,label){ const IK=STORE_KEY+'_snaps'; let arr=[]; try{ arr=JSON.parse(localStorage.getItem(IK)||'[]'); }catch(e){} arr.unshift({t:new Date().toISOString(),label:String(label||''),data:db}); let keep=5; while(keep>0){ try{ localStorage.setItem(IK, JSON.stringify(arr.slice(0,keep))); break; }catch(e){ keep--; } } try{ const cur=JSON.parse(localStorage.getItem(IK)||'[]'); this.setState({lastSnap:(cur[0]||{}).t||''}); }catch(e){} }
+  downloadSnaps=()=>{ let arr=[]; try{ arr=JSON.parse(localStorage.getItem(STORE_KEY+'_snaps')||'[]'); }catch(e){} if(!arr.length){ this.toast('A\u00fan no hay respaldos autom\u00e1ticos guardados.'); return; } this.download('Respaldos_Auto_Etinar_'+this.todayISO()+'.json', JSON.stringify({respaldos:arr},null,2), 'application/json'); this.toast('Historial de respaldos descargado'); };
   startSync(){
     const sb=getSB(); if(!sb) return; this.stopSync();
     try{ this._chan=sb.channel('etinar_sync',{config:{broadcast:{self:false}}}).on('broadcast',{event:'chg'},(p)=>{ const t=p&&p.payload&&p.payload.t; if(t===this.myToken) return; this.scheduleCheck(10000+Math.floor(Math.random()*8000)); }).subscribe(); }catch(e){}
@@ -2851,7 +2871,7 @@ class Component extends DCLogic {
       workers:workers||[], fichas:[],consultas:[],descansos:[],accidentes:[],vacunas:[],capacitaciones:[],botiquin:[], especiales:{}, notas:[], alertas:[] };
   }
   persistLocal(db){ try{ localStorage.setItem(STORE_KEY, JSON.stringify(db)); }catch(e){} }
-  persist(db){ this.persistLocal(db); if(this.state.authed){ clearTimeout(this._pushT); this._pushT=setTimeout(()=>this.cloudPush(this.state.db),2500); } }
+  persist(db){ this.persistLocal(db); this._dirtySeq=(this._dirtySeq||0)+1; try{ localStorage.setItem(STORE_KEY+'_pending','1'); }catch(e){} if(this.state.authed){ this.setState({syncing:true}); clearTimeout(this._pushT); this._pushT=setTimeout(()=>this.cloudPush(this.state.db),900); } }
   save(mut){ this.setState(s=>{ const db=JSON.parse(JSON.stringify(s.db)); mut(db); this.persist(db); return {db}; }); }
   toast(m){ this.setState({toast:m}); clearTimeout(this._t); this._t=setTimeout(()=>this.setState({toast:''}),2400); }
   toggleNav=()=>{ this.setState(s=>({navHidden:!s.navHidden})); };
@@ -4098,7 +4118,8 @@ class Component extends DCLogic {
     const base={ showLogin: !s.authed && !s.bootLoading, showApp: s.authed && !!db, appBusy: s.bootLoading || (s.authed && !db), busyMsg,
       loginErr:s.loginErr, login:this.login, logout:this.logout, toast:s.toast, signingIn:s.signingIn,
       cloudError:s.cloudError, hasCloudError:!!s.cloudError, syncing:s.syncing, userEmail:s.userEmail,
-      syncLabel: s.syncing?'Sincronizando…':'En línea · sincronizado', syncDot: s.syncing?'#E6A817':'#5FAE7A',
+      syncFail:!!s.syncFail, retrySync:this.retrySyncNow, downloadSnaps:this.downloadSnaps, lastSnap:s.lastSnap||'',
+      syncLabel: s.syncFail?'Sin guardar · reintentando':(s.syncing?'Guardando…':'En línea · guardado'), syncDot: s.syncFail?'#C0392B':(s.syncing?'#E6A817':'#5FAE7A'),
       navHidden:s.navHidden, navShown:!s.navHidden, toggleNav:this.toggleNav,
       shellGrid: s.navHidden ? 'display:grid;grid-template-columns:1fr;height:100vh' : 'display:grid;grid-template-columns:250px 1fr;height:100vh',
       loginBtnLabel: s.signingIn?'Ingresando…':'Ingresar' };
