@@ -927,6 +927,15 @@ window.WORKERS_SEED = [{"cedula":"0926211590","nombre":"ABAD GUTIERREZ PAULINA",
                 </div>
               </sc-for>
             </div>
+          
+            <div style="display:flex;align-items:center;justify-content:space-between;margin:22px 0 12px"><div style="font-family:Archivo;font-weight:700;font-size:15px;color:#423D3B">Informes médicos</div><label style="display:inline-flex;align-items:center;gap:6px;background:#146C43;color:#fff;border-radius:9px;padding:9px 14px;font-weight:700;font-size:13px;cursor:pointer"><span class="ms" style="font-size:18px">upload_file</span> Subir informe<input type="file" accept="application/pdf,image/*" onChange="{{ subirInforme }}" style="display:none"></label></div>
+            <sc-if value="{{ subiendoInforme }}" hint-placeholder-val=""><div style="color:#146C43;font-size:13px;margin-bottom:10px">Subiendo informe…</div></sc-if>
+            <sc-if value="{{ informesVacio }}" hint-placeholder-val=""><div style="background:#fff;border:1px dashed #DAD4CC;border-radius:13px;padding:30px;text-align:center;color:#8C857E;font-size:13.5px">Sin informes médicos cargados. Sube exámenes, informes de especialista, certificados de discapacidad, controles de embarazo, etc. (PDF o imagen).</div></sc-if>
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <sc-for list="{{ informesList }}" as="f" hint-placeholder-count="0">
+                <div style="background:#fff;border:1px solid #E6E2DD;border-radius:12px;padding:13px 15px;display:flex;gap:12px;align-items:center"><span class="ms" style="font-size:20px;color:#146C43">description</span><div style="flex:1;min-width:0"><div style="font-size:13.5px;font-weight:600;word-break:break-word">{{ f.name }}</div><div style="font-size:12px;color:#8C857E;margin-top:1px">{{ f.fechaFmt }} · {{ f.sizeKb }} KB</div></div><button onClick="{{ f.open }}" title="Ver" style="background:#F1EEE9;border:none;border-radius:8px;padding:7px 12px;font-weight:700;font-size:12.5px;cursor:pointer;color:#2C2A28">Ver</button><button onClick="{{ f.del }}" title="Eliminar" style="background:none;border:none;color:#C0392B;cursor:pointer;padding:5px"><span class="ms" style="font-size:18px">delete</span></button></div>
+              </sc-for>
+            </div>
           </sc-if>
           <sc-if value="{{ pt.vacunas }}" hint-placeholder-val="">
             <div style="display:flex;justify-content:flex-end;margin-bottom:12px"><button onClick="{{ w.addVacuna }}" style="display:inline-flex;align-items:center;gap:6px;background:#423D3B;color:#fff;border:none;border-radius:9px;padding:9px 14px;font-weight:700;font-size:13px;cursor:pointer"><span class="ms" style="font-size:18px">add</span> Registrar vacuna</button></div>
@@ -2661,7 +2670,7 @@ class Component extends DCLogic {
       bootLoading:true, signingIn:false, syncing:false, syncFail:false, lastSync:'', lastSnap:'', cloudError:'', userEmail:'',
       view:'dashboard', search:'', obraFilter:'TODAS', estadoFilter:'A', navHidden:false,
       ficha:{cedula:'',ap1:'',ap2:'',nom1:'',nom2:'',sexo:'Hombre',fechaNac:'',edad:'',lateralidad:'Derecho',puesto:'',tipoEval:'INGRESO',antPer:'',antFam:'',transf:'SI',fuma:'NO',cuantoFuma:'',alcohol:'NO',frecAlcohol:'',actividad:'NO',tipoAct:'',frecAct:'',temp:'',pa:'',fc:'',fr:'',sato2:'',peso:'',talla:'',imc:'',aptitud:'APTO'},
-      selectedCedula:null, perfilTab:'datos',
+      selectedCedula:null, perfilTab:'datos', subiendoInforme:false,
       modalType:null, modalEditId:null, modalCedula:null, modalAdjunto:null, modalFotos:[], modalNotaAccId:null, savingAdj:false, migRunning:false, migEstado:'', grupoPrior:null, fotosView:null, chatOpen:false, chatMsgs:[], chatLoading:false,
       consObraFilter:'TODAS', fichaObraFilter:'TODAS', vacObraFilter:'TODAS', vacTipoFilter:'TODAS',
       cie10:[], cieQuery:'', ciePick:null,
@@ -2876,6 +2885,23 @@ class Component extends DCLogic {
   toast(m){ this.setState({toast:m}); clearTimeout(this._t); this._t=setTimeout(()=>this.setState({toast:''}),2400); }
   toggleNav=()=>{ this.setState(s=>({navHidden:!s.navHidden})); };
   uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,7); }
+  subirInforme=async(e)=>{
+    const file=e.target&&e.target.files&&e.target.files[0]; if(!file){ return; }
+    const c=this.state.selectedCedula; if(!c){ return; }
+    const sb=getSB(); if(!sb){ this.toast('Sin conexi\u00f3n.'); try{e.target.value='';}catch(_){}; return; }
+    this.setState({subiendoInforme:true});
+    try{
+      const safe=String(file.name||'informe').replace(/[^a-zA-Z0-9._-]/g,'_');
+      const path='informes/'+c+'_'+Date.now()+'_'+safe;
+      const up=await sb.storage.from(BUCKET).upload(path, file, {contentType:file.type||'application/octet-stream', upsert:true});
+      if(up.error) throw up.error;
+      const ref={id:this.uid(), name:file.name, type:file.type||'', size:file.size||0, path:path, fecha:this.todayISO()};
+      this.save(db=>{ if(!db.informes) db.informes={}; if(!db.informes[c]) db.informes[c]=[]; db.informes[c].unshift(ref); });
+      this.setState({subiendoInforme:false}); this.toast('Informe subido');
+    }catch(err){ this.setState({subiendoInforme:false}); this.toast('No se pudo subir: '+((err&&err.message)||err)); }
+    try{ e.target.value=''; }catch(_){}
+  };
+  borrarInforme=(id)=>()=>{ if(!confirm('\u00bfEliminar este informe del expediente?')) return; const c=this.state.selectedCedula; this.save(db=>{ if(db.informes&&db.informes[c]) db.informes[c]=db.informes[c].filter(x=>x.id!==id); }); this.toast('Informe eliminado'); };
 
   todayISO(){ return new Date().toISOString().slice(0,10); }
   fmt(iso){ if(!iso) return '—'; const p=String(iso).slice(0,10).split('-'); if(p.length!==3) return iso; return p[2]+'/'+p[1]+'/'+p[0]; }
@@ -4253,6 +4279,9 @@ class Component extends DCLogic {
       const TABS=[{k:'datos',label:'Datos'},{k:'ficha',label:'Ficha / Aptitud',count:fichas.length},{k:'consultas',label:'Consultas',count:consultas.length},{k:'descansos',label:'Descansos',count:descansos.length},{k:'especial',label:'Condición especial'},{k:'vacunas',label:'Vacunas',count:vacunas.length},{k:'accidentes',label:'Accidentes',count:accidentes.length}];
       R.perfilTabs=TABS.map(t=>{ const active=s.perfilTab===t.k; return {...t,onClick:this.setPerfilTab(t.k),style:'background:none;border:none;cursor:pointer;padding:10px 14px;font-size:13.5px;font-weight:'+(active?'700':'500')+';color:'+(active?'#2C2A28':'#8C857E')+';border-bottom:2px solid '+(active?'#F2B200':'transparent')+';margin-bottom:-1px'}; });
       R.pt={ datos:s.perfilTab==='datos', ficha:s.perfilTab==='ficha', consultas:s.perfilTab==='consultas', descansos:s.perfilTab==='descansos', especial:s.perfilTab==='especial', vacunas:s.perfilTab==='vacunas', accidentes:s.perfilTab==='accidentes' };
+      const _inf=((db.informes||{})[c]||[]).slice().sort((a,b)=>(b.fecha||'').localeCompare(a.fecha||''));
+      R.informesList=_inf.map(x=>({name:x.name||'archivo', fechaFmt:this.fmt(x.fecha), sizeKb:Math.round((x.size||0)/1024), open:this.openAdjunto(x), del:this.borrarInforme(x.id)}));
+      R.informesVacio=_inf.length===0; R.informesCount=_inf.length; R.subiendoInforme=!!s.subiendoInforme; R.subirInforme=this.subirInforme;
     }
 
     R.modalOpen=!!s.modalType; R.modalType=s.modalType;
