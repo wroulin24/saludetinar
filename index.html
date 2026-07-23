@@ -1602,6 +1602,17 @@ window.WORKERS_SEED = [{"cedula":"0926211590","nombre":"ABAD GUTIERREZ PAULINA",
             <div style="font-family:Archivo;font-weight:700;font-size:15px;margin-bottom:6px;color:#423D3B">Cargar trabajadores (Excel / CSV)</div>
             <div style="font-size:13px;color:#8C857E;margin-bottom:14px;line-height:1.5">Para cargar otras obras: en Excel use <b>Guardar como → CSV</b> y súbalo aquí. Se reconocen las columnas CEDULA, EMPLEADO, SUCURSAL, CARGO, SEXO, FECHA NACIMIENTO, etc. Los trabajadores existentes se actualizan por cédula y los nuevos se agregan.</div>
             <label style="display:inline-flex;align-items:center;gap:7px;background:#F2B200;color:#2C2A28;border:none;border-radius:9px;padding:11px 16px;font-weight:700;font-size:13.5px;cursor:pointer"><span class="ms" style="font-size:18px">table_view</span> Importar CSV de trabajadores<input type="file" accept=".csv,text/csv" onChange="{{ importWorkersCSV }}" style="display:none" /></label>
+            <label style="display:inline-flex;align-items:center;gap:7px;background:#2E7D32;color:#fff;border:none;border-radius:9px;padding:11px 16px;font-weight:700;font-size:13.5px;cursor:pointer;margin-left:8px"><span class="ms" style="font-size:18px">sync</span> Actualizar listado (Excel)<input type="file" accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" onChange="{{ revisarListadoExcel }}" style="display:none" /></label>
+            <div style="font-size:12.5px;color:#8C857E;margin-top:10px;line-height:1.5">Con <b>Actualizar listado</b> se crean los trabajadores que están en el Excel y no en la plataforma, se <b>reactivan</b> los que vuelven a aparecer (estaban inactivos o retirados), se marcan como <b>inactivos</b> los que ya no aparecen, y no se modifican los demás. Antes de aplicar verá una vista previa descargable.</div>
+            <sc-if value="{{ syncPending }}" hint-placeholder-val="">
+              <div style="margin-top:12px;background:#FFF9E9;border:1px solid #EDE3C4;border-radius:10px;padding:12px 14px">
+                <div style="font-size:13px;font-weight:600;color:#423D3B;line-height:1.5;margin-bottom:10px">{{ syncResumen }}</div>
+                <div style="display:flex;gap:8px;flex-wrap:wrap">
+                  <button onClick="{{ aplicarListadoExcel }}" style="display:inline-flex;align-items:center;gap:7px;background:#2E7D32;color:#fff;border:none;border-radius:9px;padding:10px 16px;font-weight:700;font-size:13.5px;cursor:pointer"><span class="ms" style="font-size:18px">check_circle</span> Aplicar cambios</button>
+                  <button onClick="{{ cancelarSync }}" style="display:inline-flex;align-items:center;gap:7px;background:#fff;border:1px solid #E0DBD4;color:#423D3B;border-radius:9px;padding:10px 16px;font-weight:700;font-size:13.5px;cursor:pointer">Cancelar</button>
+                </div>
+              </div>
+            </sc-if>
           </div>
 
           <div style="background:#fff;border:1px solid #E6E2DD;border-radius:13px;padding:20px 22px;margin-bottom:14px">
@@ -2671,7 +2682,7 @@ class Component extends DCLogic {
       view:'dashboard', search:'', obraFilter:'TODAS', estadoFilter:'A', navHidden:false,
       ficha:{cedula:'',ap1:'',ap2:'',nom1:'',nom2:'',sexo:'Hombre',fechaNac:'',edad:'',lateralidad:'Derecho',puesto:'',tipoEval:'INGRESO',antPer:'',antFam:'',transf:'SI',fuma:'NO',cuantoFuma:'',alcohol:'NO',frecAlcohol:'',actividad:'NO',tipoAct:'',frecAct:'',temp:'',pa:'',fc:'',fr:'',sato2:'',peso:'',talla:'',imc:'',aptitud:'APTO'},
       selectedCedula:null, perfilTab:'datos', subiendoInforme:false,
-      modalType:null, modalEditId:null, modalCedula:null, modalAdjunto:null, modalFotos:[], modalNotaAccId:null, savingAdj:false, migRunning:false, migEstado:'', grupoPrior:null, fotosView:null, chatOpen:false, chatMsgs:[], chatLoading:false,
+      modalType:null, modalEditId:null, modalCedula:null, modalAdjunto:null, modalFotos:[], modalNotaAccId:null, savingAdj:false, migRunning:false, migEstado:'', syncPending:null, syncResumen:'', grupoPrior:null, fotosView:null, chatOpen:false, chatMsgs:[], chatLoading:false,
       consObraFilter:'TODAS', fichaObraFilter:'TODAS', vacObraFilter:'TODAS', vacTipoFilter:'TODAS',
       cie10:[], cieQuery:'', ciePick:null,
       repObra:'TODAS', repMes:new Date().toISOString().slice(0,7), repHHT:'',
@@ -4131,6 +4142,107 @@ class Component extends DCLogic {
     };
     r.readAsText(file,'UTF-8'); e.target.value='';
   };
+  // ===== Actualizar listado de trabajadores desde Excel (crear / reactivar / inactivar) =====
+  _cellStr(v){
+    if(v===null||v===undefined) return '';
+    if(v instanceof Date){ var y=v.getUTCFullYear(); var m=('0'+(v.getUTCMonth()+1)).slice(-2); var d=('0'+v.getUTCDate()).slice(-2); return y+'-'+m+'-'+d; }
+    if(typeof v==='object'){ if(v.text!==undefined) return String(v.text); if(v.result!==undefined) return String(v.result); if(v.richText){ return v.richText.map(function(t){return t.text;}).join(''); } return String(v); }
+    return String(v);
+  }
+  _normCed(c){ return String(c===null||c===undefined?'':c).replace(/[^0-9]/g,'').replace(/^0+/,''); }
+  descargarVistaPreviaSync(toCreate,toDeact,toReactivate,newObras,unchanged,sinCedula,totalExcel){
+    var esc=function(s){ return String(s===undefined||s===null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); };
+    var estLabel=function(e){ return ({A:'Activo',I:'Inactivo',R:'Retirado'})[e]||(e||'Activo'); };
+    var rowsC=toCreate.map(function(w){ return '<tr><td>'+esc(w.cedula)+'</td><td>'+esc(w.nombre)+'</td><td>'+esc(w.obra)+'</td><td>'+esc(w.cargo)+'</td></tr>'; }).join('');
+    var rowsD=toDeact.map(function(w){ return '<tr><td>'+esc(w.cedula)+'</td><td>'+esc(w.nombre)+'</td><td>'+esc(w.obra)+'</td><td>'+esc(w.cargo)+'</td></tr>'; }).join('');
+    var rowsR=toReactivate.map(function(w){ return '<tr><td>'+esc(w.cedula)+'</td><td>'+esc(w.nombre)+'</td><td>'+esc(w.obra)+'</td><td>'+esc(estLabel(w.estado))+'</td></tr>'; }).join('');
+    var H=''
+      +'<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'
+      +'<title>Vista previa - actualización de listado</title>'
+      +'<style>body{font-family:Arial,Helvetica,sans-serif;color:#2C2A28;margin:24px;line-height:1.4}h1{font-size:20px}h2{font-size:16px;margin-top:26px}'
+      +'table{border-collapse:collapse;width:100%;font-size:13px;margin-top:8px}th,td{border:1px solid #ddd;padding:6px 8px;text-align:left}th{background:#f4f2ef}'
+      +'.box{background:#faf9f7;border:1px solid #e6e2dd;border-radius:10px;padding:14px 16px;margin:10px 0}.k{font-weight:700}'
+      +'.green{color:#2E7D32}.blue{color:#1565C0}.amber{color:#B8860B}.gray{color:#777}</style></head><body>'
+      +'<h1>Vista previa de la actualización del listado</h1>'
+      +'<div class="box"><div>Fecha: '+esc(this.todayISO())+'</div>'
+      +'<div>Trabajadores en el Excel: <span class="k">'+totalExcel+'</span></div>'
+      +'<div class="green">Se crearán (nuevos): <span class="k">'+toCreate.length+'</span></div>'
+      +'<div class="blue">Se reactivarán (vuelven al listado): <span class="k">'+toReactivate.length+'</span></div>'
+      +'<div class="amber">Se marcarán como INACTIVOS: <span class="k">'+toDeact.length+'</span></div>'
+      +'<div class="gray">Sin cambios (ya activos): <span class="k">'+unchanged+'</span></div>'
+      +'<div>Obras nuevas que se agregarán al catálogo: <span class="k">'+(newObras.length?esc(newObras.join(', ')):'ninguna')+'</span></div>'
+      +(sinCedula?('<div>Trabajadores sin cédula (no se modifican): <span class="k">'+sinCedula+'</span></div>'):'')
+      +'</div>'
+      +'<h2 class="green">Nuevos trabajadores que se crearán ('+toCreate.length+')</h2>'
+      +(toCreate.length?('<table><tr><th>Cédula</th><th>Nombre</th><th>Obra</th><th>Cargo</th></tr>'+rowsC+'</table>'):'<p>Ninguno.</p>')
+      +'<h2 class="blue">Trabajadores que se reactivarán ('+toReactivate.length+')</h2>'
+      +'<p>Estaban inactivos o retirados en la plataforma y vuelven a aparecer en el Excel.</p>'
+      +(toReactivate.length?('<table><tr><th>Cédula</th><th>Nombre</th><th>Obra</th><th>Estado anterior</th></tr>'+rowsR+'</table>'):'<p>Ninguno.</p>')
+      +'<h2 class="amber">Trabajadores que se marcarán como INACTIVOS ('+toDeact.length+')</h2>'
+      +'<p>Estaban activos en la plataforma pero ya no aparecen en el Excel.</p>'
+      +(toDeact.length?('<table><tr><th>Cédula</th><th>Nombre</th><th>Obra</th><th>Cargo</th></tr>'+rowsD+'</table>'):'<p>Ninguno.</p>')
+      +'</body></html>';
+    this.download('Vista_previa_actualizacion_listado_'+this.todayISO()+'.html', H, 'text/html;charset=utf-8');
+  }
+  revisarListadoExcel=(e)=>{
+    var self=this; var file=e.target.files[0]; if(!file) return;
+    if(!window.ExcelJS){ alert('No se pudo cargar el lector de Excel. Recargue la página (Ctrl+F5) e intente de nuevo.'); e.target.value=''; return; }
+    var reader=new FileReader();
+    reader.onload=function(){
+      try{
+        var wb=new window.ExcelJS.Workbook();
+        wb.xlsx.load(reader.result).then(function(){
+          var ws=wb.worksheets[0]; if(!ws){ alert('El archivo no tiene hojas.'); return; }
+          var rows=[]; ws.eachRow({includeEmpty:false}, function(row){ var arr=[]; var vals=row.values||[]; for(var i=1;i<vals.length;i++){ arr.push(self._cellStr(vals[i])); } rows.push(arr); });
+          if(!rows.length){ alert('El Excel está vacío.'); return; }
+          var hIdx=-1;
+          for(var r=0;r<rows.length;r++){ var up=rows[r].map(function(x){return String(x).trim().toUpperCase();}); if(up.indexOf('CEDULA')>=0||up.indexOf('CÉDULA')>=0){ hIdx=r; break; } }
+          if(hIdx<0){ alert('No se encontró la columna CEDULA en el Excel.'); return; }
+          var head=rows[hIdx].map(function(h){return String(h).trim().toLowerCase();});
+          var idx=function(names){ for(var i=0;i<names.length;i++){ var p=head.indexOf(names[i]); if(p>=0) return p; } return -1; };
+          var ci={ cedula:idx(['cedula','cédula','ci','identificacion','identificación']), nombre:idx(['empleado','nombre','nombres','trabajador']), obra:idx(['sucursal','obra','centro de trabajo','centro']), cargo:idx(['cargo','puesto']), sexo:idx(['sexo','genero','género']), fechaNac:idx(['fecha nacimiento','fecha de nacimiento','nacimiento']), edad:idx(['edad']), departamento:idx(['departamento','area','área']), celular:idx(['celular','telefono','teléfono','movil','móvil']), email:idx(['email','correo']), fechaIngreso:idx(['fecha ingreso','fecha de ingreso','ingreso','fecha ingreso contrato']), estado:idx(['estado']), estadoCivil:idx(['estado civil']), direccion:idx(['direccion','dirección']), jefe:idx(['jefe inmediato','jefe']) };
+          var clean=function(s){ return String(s===undefined?'':s).replace(/ 00:00:00$/,'').trim(); };
+          var g=function(row,i){ return i>=0?clean(row[i]):''; };
+          var seen={}; var excel=[];
+          for(var k=hIdx+1;k<rows.length;k++){ var row=rows[k]; var ced=g(row,ci.cedula); if(!ced) continue; var key=self._normCed(ced); if(seen[key]) continue; seen[key]=true; excel.push({ cedula:ced, nombre:g(row,ci.nombre), obra:g(row,ci.obra).toUpperCase(), cargo:g(row,ci.cargo), sexo:g(row,ci.sexo), fechaNac:g(row,ci.fechaNac), edad:g(row,ci.edad), departamento:g(row,ci.departamento), celular:g(row,ci.celular), email:g(row,ci.email), fechaIngreso:g(row,ci.fechaIngreso), estado:'A', estadoCivil:g(row,ci.estadoCivil), direccion:g(row,ci.direccion), jefe:g(row,ci.jefe) }); }
+          var excelKeys={}; excel.forEach(function(w){ excelKeys[self._normCed(w.cedula)]=true; });
+          var db=self.state.db||{}; var current=(db.workers||[]);
+          var curKeys={}; current.forEach(function(w){ if(w.cedula) curKeys[self._normCed(w.cedula)]=true; });
+          var toCreate=excel.filter(function(w){ return !curKeys[self._normCed(w.cedula)]; });
+          var toDeact=current.filter(function(w){ return w.cedula && (w.estado||'A')==='A' && !excelKeys[self._normCed(w.cedula)]; });
+          var toReactivate=current.filter(function(w){ var es=(w.estado||'A'); return w.cedula && (es==='I'||es==='R') && excelKeys[self._normCed(w.cedula)]; });
+          var unchanged=current.filter(function(w){ return w.cedula && (w.estado||'A')==='A' && excelKeys[self._normCed(w.cedula)]; }).length;
+          var sinCedula=current.filter(function(w){ return !w.cedula; }).length;
+          var deactKeys={}; toDeact.forEach(function(w){ deactKeys[self._normCed(w.cedula)]=true; });
+          var reactivateKeys={}; toReactivate.forEach(function(w){ reactivateKeys[self._normCed(w.cedula)]=true; });
+          var curObras=(db.config&&db.config.obras)?db.config.obras.slice():[];
+          var newObras=[]; toCreate.forEach(function(w){ if(w.obra && curObras.indexOf(w.obra)<0 && newObras.indexOf(w.obra)<0) newObras.push(w.obra); });
+          var resumen='Del Excel: '+excel.length+' trabajadores. Se crearán '+toCreate.length+' nuevos, se reactivarán '+toReactivate.length+', se marcarán como INACTIVOS '+toDeact.length+' y '+unchanged+' quedan igual.';
+          self.setState({ syncPending:{ toCreate:toCreate, deactKeys:deactKeys, reactivateKeys:reactivateKeys, newObras:newObras, counts:{ excel:excel.length, crear:toCreate.length, reactivar:toReactivate.length, inactivar:toDeact.length, sinCambios:unchanged, sinCedula:sinCedula } }, syncResumen:resumen });
+          self.descargarVistaPreviaSync(toCreate, toDeact, toReactivate, newObras, unchanged, sinCedula, excel.length);
+          self.toast('Vista previa descargada. Revísela y luego pulse Aplicar cambios.');
+        }).catch(function(err){ alert('No se pudo leer el Excel: '+((err&&err.message)||err)); });
+      }catch(err){ alert('Error al procesar el Excel: '+((err&&err.message)||err)); }
+    };
+    reader.readAsArrayBuffer(file); e.target.value='';
+  };
+  cancelarSync=()=>{ this.setState({syncPending:null, syncResumen:''}); this.toast('Actualización cancelada. No se realizó ningún cambio.'); };
+  aplicarListadoExcel=()=>{
+    var sp=this.state.syncPending;
+    if(!sp){ alert('Primero pulse Actualizar listado (Excel) y elija el archivo.'); return; }
+    var c=sp.counts; var self=this;
+    if(!confirm('Se van a aplicar estos cambios:\n\n• Crear '+c.crear+' trabajadores nuevos\n• Reactivar '+c.reactivar+' trabajadores\n• Marcar como INACTIVOS '+c.inactivar+' trabajadores\n• Dejar sin cambios '+c.sinCambios+' trabajadores\n\n¿Desea continuar?')) return;
+    this.save(function(db){
+      if(!db.workers) db.workers=[];
+      if(!db.config) db.config={};
+      if(!db.config.obras) db.config.obras=[];
+      sp.toCreate.forEach(function(w){ db.workers.unshift(Object.assign({},w)); });
+      db.workers.forEach(function(w){ if(!w.cedula) return; var key=self._normCed(w.cedula); if(sp.deactKeys[key] && (w.estado||'A')==='A') w.estado='I'; else if(sp.reactivateKeys[key]) w.estado='A'; });
+      sp.newObras.forEach(function(o){ if(o && db.config.obras.indexOf(o)<0) db.config.obras.push(o); });
+    });
+    this.setState({syncPending:null, syncResumen:''});
+    this.toast('Listo: '+c.crear+' creados, '+c.reactivar+' reactivados, '+c.inactivar+' inactivados.');
+  };
   saveConfig=(e)=>{ e.preventDefault(); const f=e.target; const nombre=f.elements.nombre.value.trim(), registro=f.elements.registro.value.trim(); const wa=(f.elements.whatsapp?f.elements.whatsapp.value:'').replace(/[^0-9]/g,''); this.save(db=>{db.config.medicoNombre=nombre;db.config.medicoRegistro=registro;db.config.whatsappMedico=wa;}); this.toast('Configuración guardada'); };
   addAcceso=(e)=>{ e.preventDefault(); const f=e.target; const email=String(f.elements.email.value||'').trim().toLowerCase(); const obra=String(f.elements.obra.value||'').trim(); if(!email||!obra){ alert('Ingrese el correo y seleccione la obra.'); return; } this.save(db=>{ if(!db.config.accesos)db.config.accesos=[]; const i=db.config.accesos.findIndex(a=>String(a.email||'').trim().toLowerCase()===email); const rec={email:email,obra:obra}; if(i>=0)db.config.accesos[i]=rec; else db.config.accesos.push(rec); }); try{f.reset();}catch(_){} this.toast('Acceso asignado a '+obra); };
   delAcceso=(email)=>()=>{ this.save(db=>{ db.config.accesos=(db.config.accesos||[]).filter(a=>String(a.email||'').trim().toLowerCase()!==String(email).trim().toLowerCase()); }); this.toast('Acceso eliminado'); };
@@ -4422,7 +4534,7 @@ class Component extends DCLogic {
       R.psicoList=fr.map(function(r){ var s3=score(r); var nv=ng(s3.g); return { fecha:this.fmt((r.created_at||'').slice(0,10)), obra:r.obra||'\u2014', area:r.area||'\u2014', genero:r.genero||'\u2014', global:s3.g, nivel:nv, color:col(nv), bg:bgf(nv), ver:this.openPsicoDetail(r) }; }, this);
       R.psicoDetailOpen=!!s.psicoDetail; R.psicoDetail=s.psicoDetail||{dims:[]}; R.closePsicoDetail=this.closePsicoDetail; R.abrirInformePsico=this.abrirInformePsico; R.psicoObraLabel=(pObra==='TODAS'?'Todas las obras':pObra);
     })(); }
-    if(R.isConfig){ R.cfgNombre=db.config.medicoNombre; R.cfgRegistro=db.config.medicoRegistro; R.cfgWhatsapp=db.config.whatsappMedico||''; R.saveConfig=this.saveConfig; R.exportBackup=this.exportBackup; R.importBackup=this.importBackup; R.importWorkersCSV=this.importWorkersCSV; R.addObra=this.addObra; R.obrasConfig=db.config.obras.map(o=>({nombre:o,count:db.workers.filter(w=>w.obra===o).length,del:this.delObra(o)})); R.borrarTodo=this.borrarTodo; R.totalRegistros=db.consultas.length+db.descansos.length+db.fichas.length+db.accidentes.length+db.vacunas.length; R.totalTrab=db.workers.length; R.addAcceso=this.addAcceso; R.migrarAdjuntos=this.migrarAdjuntos; R.migEstado=s.migEstado; var _accs=(db.config.accesos||[]); R.accesosList=_accs.map(a=>({email:a.email,obra:a.obra,del:this.delAcceso(a.email)})); R.noAccesos=_accs.length===0; }
+    if(R.isConfig){ R.cfgNombre=db.config.medicoNombre; R.cfgRegistro=db.config.medicoRegistro; R.cfgWhatsapp=db.config.whatsappMedico||''; R.saveConfig=this.saveConfig; R.exportBackup=this.exportBackup; R.importBackup=this.importBackup; R.importWorkersCSV=this.importWorkersCSV; R.revisarListadoExcel=this.revisarListadoExcel; R.aplicarListadoExcel=this.aplicarListadoExcel; R.cancelarSync=this.cancelarSync; R.syncPending=s.syncPending; R.syncResumen=s.syncResumen||''; R.addObra=this.addObra; R.obrasConfig=db.config.obras.map(o=>({nombre:o,count:db.workers.filter(w=>w.obra===o).length,del:this.delObra(o)})); R.borrarTodo=this.borrarTodo; R.totalRegistros=db.consultas.length+db.descansos.length+db.fichas.length+db.accidentes.length+db.vacunas.length; R.totalTrab=db.workers.length; R.addAcceso=this.addAcceso; R.migrarAdjuntos=this.migrarAdjuntos; R.migEstado=s.migEstado; var _accs=(db.config.accesos||[]); R.accesosList=_accs.map(a=>({email:a.email,obra:a.obra,del:this.delAcceso(a.email)})); R.noAccesos=_accs.length===0; }
 
     R.showInforme=s.showInforme; R.cerrarInforme=this.cerrarInforme; R.imprimirInforme=this.imprimirInforme;
     if(s.showInforme){ R.informe=this.informeData(); }
