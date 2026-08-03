@@ -2798,6 +2798,7 @@ class Component extends DCLogic {
     setTimeout(()=>this.importarBuzonIESS(),1500);
     setTimeout(()=>this.checkStaleRecords(),3500);
     setTimeout(()=>this.migrarDx(),4000);
+    setTimeout(()=>this.reactivarObras(),5000);
   }
   scheduleCheck(ms){ clearTimeout(this._ckT); this._ckT=setTimeout(()=>this.cloudCheck(),ms||1200); }
   stopSync(){ try{ if(this._chan){ getSB().removeChannel(this._chan); this._chan=null; } }catch(e){} if(this._poll){ clearInterval(this._poll); this._poll=null; } if(this._impPoll){ clearInterval(this._impPoll); this._impPoll=null; } if(this._ckT){ clearTimeout(this._ckT); this._ckT=null; } try{ if(this._vis){ document.removeEventListener('visibilitychange',this._vis); this._vis=null; } }catch(e){} }
@@ -4263,6 +4264,15 @@ class Component extends DCLogic {
     var need=db.consultas.some(function(c){ return c.dxCodigo==='J11'||c.dxCodigo==='K52.9'||(c.dxCodigo==='A09'&&c.dxTexto!=='Gastroenteritis aguda'); });
     if(!need) return;
     this.save(function(d){ (d.consultas||[]).forEach(function(c){ if(c.dxCodigo==='J11'){ c.dxCodigo='J00'; c.dxTexto='Rinofaringitis aguda (resfriado común)'; } else if(c.dxCodigo==='K52.9'||c.dxCodigo==='A09'){ c.dxCodigo='A09'; c.dxTexto='Gastroenteritis aguda'; } }); });
+  }
+  reactivarObras(){
+    if(this.isRestricted && this.isRestricted()) return;
+    var db=this.state.db; if(!db||!db.workers) return;
+    if(db.config && db.config.reactObrasMaqSolcaV1) return;
+    var match=function(o){ var up=String(o||'').trim().toUpperCase(); return up.indexOf('SOLCA')>=0 || up.indexOf('MAQUINARIA')>=0; };
+    var n=db.workers.filter(function(w){ return match(w.obra) && (w.estado||'A')!=='A'; }).length;
+    this.save(function(d){ (d.workers||[]).forEach(function(w){ if(match(w.obra) && (w.estado||'A')!=='A') w.estado='A'; }); if(!d.config) d.config={}; d.config.reactObrasMaqSolcaV1=true; });
+    if(n>0) this.toast('Se reactivaron '+n+' trabajadores de Maquinarias y Solca Machala.');
   }
   saveConfig=(e)=>{ e.preventDefault(); const f=e.target; const nombre=f.elements.nombre.value.trim(), registro=f.elements.registro.value.trim(); const wa=(f.elements.whatsapp?f.elements.whatsapp.value:'').replace(/[^0-9]/g,''); this.save(db=>{db.config.medicoNombre=nombre;db.config.medicoRegistro=registro;db.config.whatsappMedico=wa;}); this.toast('Configuración guardada'); };
   addAcceso=(e)=>{ e.preventDefault(); const f=e.target; const email=String(f.elements.email.value||'').trim().toLowerCase(); var obraSel=String(f.elements.obra.value||'').trim(); if(!email){ alert('Ingrese el correo del usuario.'); return; } if(!obraSel){ alert('Seleccione el tipo de acceso.'); return; } var obra=(obraSel==='__ALL__')?'':obraSel; this.save(db=>{ if(!db.config.accesos)db.config.accesos=[]; const i=db.config.accesos.findIndex(a=>String(a.email||'').trim().toLowerCase()===email); const rec={email:email,obra:obra}; if(i>=0)db.config.accesos[i]=rec; else db.config.accesos.push(rec); }); try{f.reset();}catch(_){} this.toast(obra?('Acceso asignado: solo '+obra):'Acceso completo asignado'); };
