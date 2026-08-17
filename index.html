@@ -2742,8 +2742,8 @@ class Component extends DCLogic {
           if(_remDb) this._snapshot(_remDb,'nube_'+(_remUA||''));
           if(_remDb && _cnt(_remDb) > _cnt(dbLocal)){ this._remoteUpdatedAt=_remUA; this.persistLocal(_remDb); try{ localStorage.setItem(STORE_KEY+'_ua', _remUA); }catch(e){} try{ localStorage.removeItem(STORE_KEY+'_pending'); }catch(e){} this._dirtySeq=0; this._syncedSeq=0; this.setState({db:_remDb, cloudError:''}); this.setState({syncing:false}); this.toast('Se cargó la versión más completa desde la nube; se protegió su información.'); return; }
           const remoteNewer=(meta && meta.updated_at && localUA && meta.updated_at>localUA);
-          if(remoteNewer){ try{ const rem=await sb.from(CLOUD_TABLE).select('data,updated_at').eq('id','main').maybeSingle(); if(rem.data&&rem.data.data) this._snapshot(rem.data.data,'nube_'+(rem.data.updated_at||'')); }catch(e){} this.toast('Se recuperaron cambios sin sincronizar (hab\u00eda una versi\u00f3n m\u00e1s reciente en la nube; se respald\u00f3).'); }
-          else { this.toast('Recuperando cambios no sincronizados de la sesi\u00f3n anterior\u2026'); }
+          if(remoteNewer && _remDb){ this._snapshot(dbLocal,'local_pendiente_'+(localUA||'')); this._remoteUpdatedAt=_remUA; this.persistLocal(_remDb); try{ localStorage.setItem(STORE_KEY+'_ua', _remUA); }catch(e){} try{ localStorage.removeItem(STORE_KEY+'_pending'); }catch(e){} this._dirtySeq=0; this._syncedSeq=0; this.setState({db:_remDb, cloudError:''}); this.setState({syncing:false}); this.toast('La nube tenía cambios más recientes; se cargó esa versión y se respaldó la copia local por seguridad.'); return; }
+          this.toast('Recuperando cambios no sincronizados de la sesión anterior…');
           this._remoteUpdatedAt=localUA||''; this._dirtySeq=(this._dirtySeq||0)+1; this._syncedSeq=0;
           this.setState({db:dbLocal, cloudError:''}); this.setState({syncing:false});
           this.cloudPush(dbLocal); return;
