@@ -1586,8 +1586,17 @@ window.WORKERS_SEED = [{"cedula":"0926211590","nombre":"ABAD GUTIERREZ PAULINA",
             <div style="font-family:Archivo;font-weight:700;font-size:15px;margin-bottom:6px;color:#423D3B">Respaldo de datos</div>
             <div style="font-size:13px;color:#8C857E;margin-bottom:14px;line-height:1.5">La información se guarda en la nube (Supabase) y se sincroniza entre todos los equipos autorizados en tiempo real. Aun así, es recomendable descargar un respaldo periódicamente como copia de seguridad adicional. Actualmente hay <b style="color:#2C2A28">{{ totalTrab }}</b> trabajadores y <b style="color:#2C2A28">{{ totalRegistros }}</b> registros médicos.</div>
             <div style="display:flex;gap:10px;flex-wrap:wrap">
-              <button onClick="{{ downloadSnaps }}" style="display:inline-flex;align-items:center;gap:7px;background:#6B4FA0;color:#fff;border:none;border-radius:9px;padding:11px 16px;font-weight:700;font-size:13.5px;cursor:pointer" title="Descarga los respaldos automáticos guardados en este equipo"><span class="ms" style="font-size:18px">history</span> Respaldos automáticos</button><button onClick="{{ exportBackup }}" style="display:inline-flex;align-items:center;gap:7px;background:#423D3B;color:#fff;border:none;border-radius:9px;padding:11px 16px;font-weight:700;font-size:13.5px;cursor:pointer"><span class="ms" style="font-size:18px">download</span> Descargar respaldo (.json)</button><button onClick="{{ buscarCertsAlmacen }}" style="display:inline-flex;align-items:center;gap:7px;background:#0E7C86;color:#fff;border:none;border-radius:9px;padding:11px 16px;font-weight:700;font-size:13.5px;cursor:pointer" title="Revisa el almacenamiento y detecta certificados sin enlace (solo lectura)"><span class="ms" style="font-size:18px">manage_search</span> Buscar certificados perdidos</button>
+              <button onClick="{{ downloadSnaps }}" style="display:inline-flex;align-items:center;gap:7px;background:#6B4FA0;color:#fff;border:none;border-radius:9px;padding:11px 16px;font-weight:700;font-size:13.5px;cursor:pointer" title="Descarga los respaldos automáticos guardados en este equipo"><span class="ms" style="font-size:18px">history</span> Respaldos automáticos</button><button onClick="{{ exportBackup }}" style="display:inline-flex;align-items:center;gap:7px;background:#423D3B;color:#fff;border:none;border-radius:9px;padding:11px 16px;font-weight:700;font-size:13.5px;cursor:pointer"><span class="ms" style="font-size:18px">download</span> Descargar respaldo (.json)</button><button onClick="{{ buscarCertsAlmacen }}" style="display:inline-flex;align-items:center;gap:7px;background:#0E7C86;color:#fff;border:none;border-radius:9px;padding:11px 16px;font-weight:700;font-size:13.5px;cursor:pointer" title="Revisa el almacenamiento y detecta certificados sin enlace (solo lectura)"><span class="ms" style="font-size:18px">manage_search</span> Buscar certificados perdidos</button><button onClick="{{ recuperarCertsRevisar }}" style="display:inline-flex;align-items:center;gap:7px;background:#146C60;color:#fff;border:none;border-radius:9px;padding:11px 16px;font-weight:700;font-size:13.5px;cursor:pointer" title="Vuelve a relacionar los certificados recientes con su ficha"><span class="ms" style="font-size:18px">restore_page</span> Recuperar certificados perdidos</button>
               <label style="display:inline-flex;align-items:center;gap:7px;background:#fff;border:1px solid #E0DBD4;border-radius:9px;padding:11px 16px;font-weight:700;font-size:13.5px;cursor:pointer;color:#423D3B"><span class="ms" style="font-size:18px">upload</span> Restaurar respaldo<input type="file" accept="application/json,.json" onChange="{{ importBackup }}" style="display:none" /></label>
+            <sc-if value="{{ certPending }}" hint-placeholder-val="">
+              <div style="margin-top:12px;background:#E7F6F4;border:1px solid #BFE6E0;border-radius:10px;padding:12px 14px">
+                <div style="font-size:13px;font-weight:600;color:#0E5A63;line-height:1.5;margin-bottom:10px">{{ certResumen }}</div>
+                <div style="display:flex;gap:8px;flex-wrap:wrap">
+                  <button onClick="{{ recuperarCertsAplicar }}" style="display:inline-flex;align-items:center;gap:7px;background:#146C60;color:#fff;border:none;border-radius:9px;padding:10px 16px;font-weight:700;font-size:13.5px;cursor:pointer"><span class="ms" style="font-size:18px">check_circle</span> Recuperar y relacionar</button>
+                  <button onClick="{{ cancelarCertsRec }}" style="display:inline-flex;align-items:center;gap:7px;background:#fff;border:1px solid #E0DBD4;color:#423D3B;border-radius:9px;padding:10px 16px;font-weight:700;font-size:13.5px;cursor:pointer">Cancelar</button>
+                </div>
+              </div>
+            </sc-if>
             </div>
           </div>
 
@@ -4315,6 +4324,56 @@ class Component extends DCLogic {
       alert('Archivos de fichas en el almacenamiento: '+all.length+'\nCon enlace en la base: '+(all.length-orphans.length)+'\nSIN enlace (posibles de recuperar): '+orphans.length+'\n\nSe descargó un reporte con el detalle. Por favor envíemelo por el chat para preparar la recuperación exacta.');
     }catch(e){ self.setState({certBusy:false}); alert('No se pudo revisar el almacenamiento: '+((e&&e.message)||e)); }
   };
+  recuperarCertsRevisar=async ()=>{
+    var self=this; var sb=getSB(); if(!sb){ alert('Sin conexión a la nube. Intente de nuevo en un momento.'); return; }
+    this.setState({certBusy:true}); this.toast('Buscando certificados recientes sin enlace…');
+    try{
+      var all=[]; var offset=0;
+      for(var g=0; g<60; g++){ var res=await sb.storage.from(BUCKET).list('ficha',{limit:1000,offset:offset,sortBy:{column:'name',order:'asc'}}); if(res.error) throw res.error; var b=res.data||[]; all=all.concat(b); if(b.length<1000) break; offset+=1000; }
+      all=all.filter(function(f){ return f && f.name && f.name.indexOf('_')>=0; });
+      var db=self.state.db||{};
+      var ref={}; (db.fichas||[]).forEach(function(r){ if(r.adjunto&&r.adjunto.path) ref[r.adjunto.path]=true; }); (db.descansos||[]).forEach(function(r){ if(r.adjunto&&r.adjunto.path) ref[r.adjunto.path]=true; }); (db.accidentes||[]).forEach(function(r){ if(r.adjunto&&r.adjunto.path) ref[r.adjunto.path]=true; });
+      var fmap={}; (db.fichas||[]).forEach(function(x){ fmap[x.id]=x; });
+      var Nn=function(s){ return String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase().replace(/[^A-Z0-9]/g,' '); };
+      var toks=function(s){ return Nn(s).split(' ').filter(function(x){return x.length>2;}); };
+      var workers=db.workers||[];
+      var LIMITE=Date.now()-12*24*60*60*1000;
+      var plan=[], sinMatch=[];
+      all.forEach(function(f){
+        var path='ficha/'+f.name; if(ref[path]) return;
+        var parts=f.name.split('_'); var recId=parts[0]; var ts=parseInt(parts[1],10); var orig=parts.slice(2).join('_');
+        if(!(ts>LIMITE)) return;
+        var ext=(orig.split('.').pop()||'').toLowerCase();
+        var type=(ext==='pdf')?'application/pdf':((ext==='png')?'image/png':((ext==='jpg'||ext==='jpeg')?'image/jpeg':'application/octet-stream'));
+        var ft=toks(orig.replace(/\.[a-z0-9]+$/i,'')); var best=null,bs=0;
+        workers.forEach(function(w){ var wt=toks(w.nombre); var inter=0; ft.forEach(function(x){ if(wt.indexOf(x)>=0) inter++; }); if(inter>bs){bs=inter;best=w;} });
+        var fecha=''; try{ fecha=new Date(ts).toISOString().slice(0,10); }catch(e){}
+        if(best && bs>=1){ plan.push({recId:recId, path:path, name:orig, type:type, cedula:best.cedula, nombre:best.nombre, fecha:fecha, existe:!!fmap[recId]}); }
+        else { sinMatch.push({name:orig, fecha:fecha, path:path}); }
+      });
+      var resumen='Se encontraron '+plan.length+' certificados recientes para relacionar con su ficha'+(sinMatch.length?(' ('+sinMatch.length+' archivo(s) no se pudieron identificar).'):'.');
+      self.setState({certBusy:false, certPending:{plan:plan, sinMatch:sinMatch, counts:{total:plan.length, sinMatch:sinMatch.length}}, certResumen:resumen});
+      self.download('Recuperacion_certificados_'+self.todayISO()+'.json', JSON.stringify({relacionar:plan, sin_identificar:sinMatch},null,2), 'application/json');
+      self.toast(resumen);
+    }catch(e){ self.setState({certBusy:false}); alert('No se pudo revisar el almacenamiento: '+((e&&e.message)||e)); }
+  };
+  cancelarCertsRec=()=>{ this.setState({certPending:null, certResumen:''}); this.toast('Recuperación cancelada. No se realizó ningún cambio.'); };
+  recuperarCertsAplicar=()=>{
+    var sp=this.state.certPending; if(!sp||!sp.plan||!sp.plan.length){ alert('Primero pulse Buscar certificados. No hay nada para recuperar.'); return; }
+    var c=sp.counts; var self=this;
+    if(!confirm('Se van a relacionar '+c.total+' certificados con sus fichas (se crea la ficha si hace falta).\n\n¿Desea continuar?')) return;
+    this.save(function(db){
+      if(!db.fichas) db.fichas=[];
+      sp.plan.forEach(function(p){
+        var adj={name:p.name, type:p.type, size:0, path:p.path};
+        var i=db.fichas.findIndex(function(x){ return x.id===p.recId; });
+        if(i>=0){ db.fichas[i].adjunto=adj; }
+        else { db.fichas.unshift({id:p.recId, cedula:p.cedula, tipo:'INGRESO', aptitud:'Apto', fecha:(p.fecha||self.todayISO()), vence:'', restricciones:'', riesgos:'', adjunto:adj}); }
+      });
+    });
+    this.setState({certPending:null, certResumen:''});
+    this.toast('Listo: '+c.total+' certificados recuperados y relacionados con su ficha.');
+  };
   saveConfig=(e)=>{ e.preventDefault(); const f=e.target; const nombre=f.elements.nombre.value.trim(), registro=f.elements.registro.value.trim(); const wa=(f.elements.whatsapp?f.elements.whatsapp.value:'').replace(/[^0-9]/g,''); this.save(db=>{db.config.medicoNombre=nombre;db.config.medicoRegistro=registro;db.config.whatsappMedico=wa;}); this.toast('Configuración guardada'); };
   addAcceso=(e)=>{ e.preventDefault(); const f=e.target; const email=String(f.elements.email.value||'').trim().toLowerCase(); var obraSel=String(f.elements.obra.value||'').trim(); if(!email){ alert('Ingrese el correo del usuario.'); return; } if(!obraSel){ alert('Seleccione el tipo de acceso.'); return; } var obra=(obraSel==='__ALL__')?'':obraSel; this.save(db=>{ if(!db.config.accesos)db.config.accesos=[]; const i=db.config.accesos.findIndex(a=>String(a.email||'').trim().toLowerCase()===email); const rec={email:email,obra:obra}; if(i>=0)db.config.accesos[i]=rec; else db.config.accesos.push(rec); }); try{f.reset();}catch(_){} this.toast(obra?('Acceso asignado: solo '+obra):'Acceso completo asignado'); };
   delAcceso=(email)=>()=>{ this.save(db=>{ db.config.accesos=(db.config.accesos||[]).filter(a=>String(a.email||'').trim().toLowerCase()!==String(email).trim().toLowerCase()); }); this.toast('Acceso eliminado'); };
@@ -4328,7 +4387,7 @@ class Component extends DCLogic {
     const base={ showLogin: !s.authed && !s.bootLoading, showApp: s.authed && !!db, appBusy: s.bootLoading || (s.authed && !db), busyMsg,
       loginErr:s.loginErr, login:this.login, logout:this.logout, toast:s.toast, signingIn:s.signingIn,
       cloudError:s.cloudError, hasCloudError:!!s.cloudError, syncing:s.syncing, userEmail:s.userEmail,
-      syncFail:!!s.syncFail, retrySync:this.retrySyncNow, downloadSnaps:this.downloadSnaps, buscarCertsAlmacen:this.buscarCertsAlmacen, lastSnap:s.lastSnap||'',
+      syncFail:!!s.syncFail, retrySync:this.retrySyncNow, downloadSnaps:this.downloadSnaps, buscarCertsAlmacen:this.buscarCertsAlmacen, recuperarCertsRevisar:this.recuperarCertsRevisar, recuperarCertsAplicar:this.recuperarCertsAplicar, cancelarCertsRec:this.cancelarCertsRec, certPending:s.certPending, certResumen:s.certResumen||'', lastSnap:s.lastSnap||'',
       syncLabel: s.syncFail?'Sin guardar · reintentando':(s.syncing?'Guardando…':'En línea · guardado'), syncDot: s.syncFail?'#C0392B':(s.syncing?'#E6A817':'#5FAE7A'),
       navHidden:s.navHidden, navShown:!s.navHidden, toggleNav:this.toggleNav,
       shellGrid: s.navHidden ? 'display:grid;grid-template-columns:1fr;height:100vh' : 'display:grid;grid-template-columns:250px 1fr;height:100vh',
