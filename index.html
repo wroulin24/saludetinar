@@ -1586,7 +1586,7 @@ window.WORKERS_SEED = [{"cedula":"0926211590","nombre":"ABAD GUTIERREZ PAULINA",
             <div style="font-family:Archivo;font-weight:700;font-size:15px;margin-bottom:6px;color:#423D3B">Respaldo de datos</div>
             <div style="font-size:13px;color:#8C857E;margin-bottom:14px;line-height:1.5">La información se guarda en la nube (Supabase) y se sincroniza entre todos los equipos autorizados en tiempo real. Aun así, es recomendable descargar un respaldo periódicamente como copia de seguridad adicional. Actualmente hay <b style="color:#2C2A28">{{ totalTrab }}</b> trabajadores y <b style="color:#2C2A28">{{ totalRegistros }}</b> registros médicos.</div>
             <div style="display:flex;gap:10px;flex-wrap:wrap">
-              <button onClick="{{ downloadSnaps }}" style="display:inline-flex;align-items:center;gap:7px;background:#6B4FA0;color:#fff;border:none;border-radius:9px;padding:11px 16px;font-weight:700;font-size:13.5px;cursor:pointer" title="Descarga los respaldos automáticos guardados en este equipo"><span class="ms" style="font-size:18px">history</span> Respaldos automáticos</button><button onClick="{{ exportBackup }}" style="display:inline-flex;align-items:center;gap:7px;background:#423D3B;color:#fff;border:none;border-radius:9px;padding:11px 16px;font-weight:700;font-size:13.5px;cursor:pointer"><span class="ms" style="font-size:18px">download</span> Descargar respaldo (.json)</button>
+              <button onClick="{{ downloadSnaps }}" style="display:inline-flex;align-items:center;gap:7px;background:#6B4FA0;color:#fff;border:none;border-radius:9px;padding:11px 16px;font-weight:700;font-size:13.5px;cursor:pointer" title="Descarga los respaldos automáticos guardados en este equipo"><span class="ms" style="font-size:18px">history</span> Respaldos automáticos</button><button onClick="{{ exportBackup }}" style="display:inline-flex;align-items:center;gap:7px;background:#423D3B;color:#fff;border:none;border-radius:9px;padding:11px 16px;font-weight:700;font-size:13.5px;cursor:pointer"><span class="ms" style="font-size:18px">download</span> Descargar respaldo (.json)</button><button onClick="{{ buscarCertsAlmacen }}" style="display:inline-flex;align-items:center;gap:7px;background:#0E7C86;color:#fff;border:none;border-radius:9px;padding:11px 16px;font-weight:700;font-size:13.5px;cursor:pointer" title="Revisa el almacenamiento y detecta certificados sin enlace (solo lectura)"><span class="ms" style="font-size:18px">manage_search</span> Buscar certificados perdidos</button>
               <label style="display:inline-flex;align-items:center;gap:7px;background:#fff;border:1px solid #E0DBD4;border-radius:9px;padding:11px 16px;font-weight:700;font-size:13.5px;cursor:pointer;color:#423D3B"><span class="ms" style="font-size:18px">upload</span> Restaurar respaldo<input type="file" accept="application/json,.json" onChange="{{ importBackup }}" style="display:none" /></label>
             </div>
           </div>
@@ -4280,6 +4280,41 @@ class Component extends DCLogic {
     this.save(function(d){ (d.workers||[]).forEach(function(w){ if(match(w.obra) && (w.estado||'A')!=='A') w.estado='A'; }); if(!d.config) d.config={}; d.config.reactObrasMaqSolcaV1=true; });
     if(n>0) this.toast('Se reactivaron '+n+' trabajadores de Maquinarias y Solca Machala.');
   }
+  buscarCertsAlmacen=async ()=>{
+    var self=this; var sb=getSB(); if(!sb){ alert('Sin conexión a la nube. Intente de nuevo en un momento.'); return; }
+    this.setState({certBusy:true}); this.toast('Revisando el almacenamiento…');
+    try{
+      var all=[]; var offset=0;
+      for(var g=0; g<60; g++){
+        var res=await sb.storage.from(BUCKET).list('ficha', {limit:1000, offset:offset, sortBy:{column:'name',order:'asc'}});
+        if(res.error) throw res.error;
+        var batch=res.data||[]; all=all.concat(batch);
+        if(batch.length<1000) break; offset+=1000;
+      }
+      all=all.filter(function(f){ return f && f.name && f.name.indexOf('_')>=0; });
+      var db=self.state.db||{};
+      var ref={};
+      (db.fichas||[]).forEach(function(r){ if(r.adjunto&&r.adjunto.path) ref[r.adjunto.path]=true; });
+      (db.descansos||[]).forEach(function(r){ if(r.adjunto&&r.adjunto.path) ref[r.adjunto.path]=true; });
+      (db.accidentes||[]).forEach(function(r){ if(r.adjunto&&r.adjunto.path) ref[r.adjunto.path]=true; });
+      var fichaIds={}; (db.fichas||[]).forEach(function(x){ fichaIds[x.id]=true; });
+      var Nn=function(s){ return String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase().replace(/[^A-Z0-9]/g,' '); };
+      var toks=function(s){ return Nn(s).split(' ').filter(function(x){return x.length>2;}); };
+      var workers=db.workers||[];
+      var orphans=[];
+      all.forEach(function(f){
+        var path='ficha/'+f.name; if(ref[path]) return;
+        var parts=f.name.split('_'); var recId=parts[0]; var orig=parts.slice(2).join('_');
+        var base=orig.replace(/\.(pdf|jpe?g|png|docx?|webp)$/i,'');
+        var ft=toks(base); var best=null,bs=0;
+        workers.forEach(function(w){ var wt=toks(w.nombre); var inter=0; ft.forEach(function(x){ if(wt.indexOf(x)>=0) inter++; }); if(inter>bs){bs=inter;best=w;} });
+        orphans.push({ archivo:orig, ruta:path, fichaId:recId, fichaExiste:!!fichaIds[recId], persona:(best?best.nombre:''), cedula:(best?best.cedula:''), coincidencia:bs });
+      });
+      self.download('Certificados_en_almacenamiento_'+self.todayISO()+'.json', JSON.stringify({total_archivos_ficha:all.length, con_enlace:(all.length-orphans.length), sin_enlace_recuperables:orphans.length, detalle:orphans},null,2), 'application/json');
+      self.setState({certBusy:false});
+      alert('Archivos de fichas en el almacenamiento: '+all.length+'\nCon enlace en la base: '+(all.length-orphans.length)+'\nSIN enlace (posibles de recuperar): '+orphans.length+'\n\nSe descargó un reporte con el detalle. Por favor envíemelo por el chat para preparar la recuperación exacta.');
+    }catch(e){ self.setState({certBusy:false}); alert('No se pudo revisar el almacenamiento: '+((e&&e.message)||e)); }
+  };
   saveConfig=(e)=>{ e.preventDefault(); const f=e.target; const nombre=f.elements.nombre.value.trim(), registro=f.elements.registro.value.trim(); const wa=(f.elements.whatsapp?f.elements.whatsapp.value:'').replace(/[^0-9]/g,''); this.save(db=>{db.config.medicoNombre=nombre;db.config.medicoRegistro=registro;db.config.whatsappMedico=wa;}); this.toast('Configuración guardada'); };
   addAcceso=(e)=>{ e.preventDefault(); const f=e.target; const email=String(f.elements.email.value||'').trim().toLowerCase(); var obraSel=String(f.elements.obra.value||'').trim(); if(!email){ alert('Ingrese el correo del usuario.'); return; } if(!obraSel){ alert('Seleccione el tipo de acceso.'); return; } var obra=(obraSel==='__ALL__')?'':obraSel; this.save(db=>{ if(!db.config.accesos)db.config.accesos=[]; const i=db.config.accesos.findIndex(a=>String(a.email||'').trim().toLowerCase()===email); const rec={email:email,obra:obra}; if(i>=0)db.config.accesos[i]=rec; else db.config.accesos.push(rec); }); try{f.reset();}catch(_){} this.toast(obra?('Acceso asignado: solo '+obra):'Acceso completo asignado'); };
   delAcceso=(email)=>()=>{ this.save(db=>{ db.config.accesos=(db.config.accesos||[]).filter(a=>String(a.email||'').trim().toLowerCase()!==String(email).trim().toLowerCase()); }); this.toast('Acceso eliminado'); };
@@ -4293,7 +4328,7 @@ class Component extends DCLogic {
     const base={ showLogin: !s.authed && !s.bootLoading, showApp: s.authed && !!db, appBusy: s.bootLoading || (s.authed && !db), busyMsg,
       loginErr:s.loginErr, login:this.login, logout:this.logout, toast:s.toast, signingIn:s.signingIn,
       cloudError:s.cloudError, hasCloudError:!!s.cloudError, syncing:s.syncing, userEmail:s.userEmail,
-      syncFail:!!s.syncFail, retrySync:this.retrySyncNow, downloadSnaps:this.downloadSnaps, lastSnap:s.lastSnap||'',
+      syncFail:!!s.syncFail, retrySync:this.retrySyncNow, downloadSnaps:this.downloadSnaps, buscarCertsAlmacen:this.buscarCertsAlmacen, lastSnap:s.lastSnap||'',
       syncLabel: s.syncFail?'Sin guardar · reintentando':(s.syncing?'Guardando…':'En línea · guardado'), syncDot: s.syncFail?'#C0392B':(s.syncing?'#E6A817':'#5FAE7A'),
       navHidden:s.navHidden, navShown:!s.navHidden, toggleNav:this.toggleNav,
       shellGrid: s.navHidden ? 'display:grid;grid-template-columns:1fr;height:100vh' : 'display:grid;grid-template-columns:250px 1fr;height:100vh',
