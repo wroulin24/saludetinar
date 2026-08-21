@@ -3524,11 +3524,15 @@ class Component extends DCLogic {
     this.setState({psicoLoading:true, psicoErr:''});
     try{
       var cols='id,created_at,obra,area,genero,respuestas,observaciones,provincia,ciudad,instruccion,antiguedad,edad,etnia';
-      var q;
-      if(!opts.full && lastMax){ q=sb.from('psicosocial_respuestas').select(cols).gte('created_at',lastMax).order('created_at',{ascending:false}).limit(5000); }
-      else { q=sb.from('psicosocial_respuestas').select(cols).order('created_at',{ascending:false}).limit(5000); }
-      var res=await q; if(res.error) throw res.error;
-      var fresh=res.data||[];
+      var PAGE=1000; var fresh=[]; var offset=0;
+      for(var pg=0; pg<500; pg++){
+        var _q=sb.from('psicosocial_respuestas').select(cols);
+        if(!opts.full && lastMax){ _q=_q.gte('created_at',lastMax); }
+        _q=_q.order('created_at',{ascending:false}).range(offset, offset+PAGE-1);
+        var res=await _q; if(res.error) throw res.error;
+        var batch=res.data||[]; fresh=fresh.concat(batch);
+        if(batch.length<PAGE) break; offset+=PAGE;
+      }
       var map={}; cached.forEach(function(r){ if(r&&r.id!=null) map[r.id]=r; }); fresh.forEach(function(r){ if(r&&r.id!=null) map[r.id]=r; });
       var all=Object.keys(map).map(function(k){ return map[k]; });
       all.sort(function(a,b){ return (b.created_at||'').localeCompare(a.created_at||''); });
