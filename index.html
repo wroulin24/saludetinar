@@ -3545,8 +3545,8 @@ class Component extends DCLogic {
   recargarTodoPsico=()=>{ try{ localStorage.removeItem('psico_cache_v1'); }catch(e){} this._psicoLastFetch=0; this.loadPsico({full:true, force:true}); };
   exportPsicoExcel=async()=>{
     if(!window.ExcelJS){ this.toast('No se pudo cargar el generador de Excel. Revise su conexi\u00f3n.'); return; }
-    var s=this.state; var obra=s.psicoObra||'TODAS'; var rows=Array.isArray(s.psico)?s.psico:[];
-    var fr=(obra==='TODAS')?rows.slice():rows.filter(function(r){ return r.obra===obra; });
+    var s=this.state; var obra=s.psicoObra||'TODAS'; var rows=Array.isArray(s.psico)?s.psico:[]; var _cx=this.canonObraPsico.bind(this);
+    var fr=(obra==='TODAS')?rows.slice():rows.filter(function(r){ return _cx(r.obra)===obra; });
     if(fr.length===0){ this.toast('No hay respuestas para exportar.'); return; }
     try{
       this.toast('Generando Excel\u2026');
@@ -3582,7 +3582,7 @@ class Component extends DCLogic {
     var s=this.state; var db=this.scopedDb()||{}; var cfg=db.config||{};
     var obra=s.psicoObra||'TODAS';
     var rows=Array.isArray(s.psico)?s.psico:[];
-    var fr=(obra==='TODAS')?rows.slice():rows.filter(function(r){ return r.obra===obra; });
+    var self=this; var fr=(obra==='TODAS')?rows.slice():rows.filter(function(r){ return self.canonObraPsico(r.obra)===obra; });
     var DIMS=PSICO.dimensiones, G=PSICO.global;
     var esc=function(x){ return String(x==null?'':x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); };
     var score=function(r){ var a=r.respuestas||{}; var o={d:{},g:0}; for(var i=0;i<DIMS.length;i++){ var d=DIMS[i]; var ss=0; for(var k=0;k<d.items.length;k++){ ss+=(Number(a[d.items[k]])||0); } o.d[d.key]=ss; o.g+=ss; } return o; };
@@ -3628,7 +3628,8 @@ class Component extends DCLogic {
     P('<table><tr><th style="width:33%">Centro de trabajo / Obra</th><td><b>'+esc(obraLabel)+'</b></td></tr><tr><th>Respuestas recibidas</th><td>'+n+'</td></tr><tr><th>Per\u00edodo de recepci\u00f3n</th><td>'+esc(fMin)+' \u2014 '+esc(fMax)+'</td></tr><tr><th>Responsable</th><td>'+esc(cfg.medicoNombre||'\u2014')+(cfg.medicoRegistro?(' \u00b7 Reg. '+esc(cfg.medicoRegistro)):'')+'</td></tr></table>');
     if(n===0){ P('<h2>Sin respuestas</h2><p>A\u00fan no se han recibido respuestas para esta obra. Comparta el enlace de la encuesta para generar el informe.</p></div></body></html>'); return H.join(''); }
     P('<h2>1. Resumen ejecutivo</h2>');
-    P('<div class="kpis"><div class="kpi"><div class="l">Respuestas</div><div class="v">'+n+'</div></div><div class="kpi"><div class="l">Riesgo global</div><div class="v" style="color:'+col(gnv)+'">'+gnv+'</div></div><div class="kpi"><div class="l">Riesgo Alto</div><div class="v" style="color:#B3271A">'+pctf(gd.Alto)+'%</div></div><div class="kpi"><div class="l">Riesgo Medio</div><div class="v" style="color:#9A6B00">'+pctf(gd.Medio)+'%</div></div><div class="kpi"><div class="l">Riesgo Bajo</div><div class="v" style="color:#1F7A4D">'+pctf(gd.Bajo)+'%</div></div></div>');
+    var _wact=(db.workers||[]).filter(function(w){ return (w.estado||'A')==='A'; }); var wObra=(obra==='TODAS')?_wact.length:_wact.filter(function(w){ return self.canonObraPsico(w.obra)===obra; }).length; var partPct=(wObra>0)?Math.round(n/wObra*100):null;
+    P('<div class="kpis"><div class="kpi"><div class="l">Respuestas</div><div class="v">'+n+'</div></div><div class="kpi"><div class="l">Riesgo global</div><div class="v" style="color:'+col(gnv)+'">'+gnv+'</div></div><div class="kpi"><div class="l">Riesgo Alto</div><div class="v" style="color:#B3271A">'+pctf(gd.Alto)+'%</div></div><div class="kpi"><div class="l">Riesgo Medio</div><div class="v" style="color:#9A6B00">'+pctf(gd.Medio)+'%</div></div><div class="kpi"><div class="l">Riesgo Bajo</div><div class="v" style="color:#1F7A4D">'+pctf(gd.Bajo)+'%</div></div>'+(partPct!=null?('<div class="kpi"><div class="l">Participaci\u00f3n</div><div class="v">'+partPct+'%</div><div class="small muted">'+n+' de '+wObra+' trab.</div></div>'):'')+'</div>');
     var altas=dimSorted.filter(function(d){ return d.nivel==='Alto'; });
     var medias=dimSorted.filter(function(d){ return d.nivel==='Medio'; });
     var resumenTxt='En la obra <b>'+esc(obraLabel)+'</b> se recibieron <b>'+n+'</b> respuesta(s) entre el '+esc(fMin)+' y el '+esc(fMax)+'. El nivel de riesgo psicosocial global es <b style="color:'+col(gnv)+'">'+gnv+'</b> (puntaje promedio '+gavg+' sobre un rango de '+G.alto[0]+' a '+G.bajo[1]+'). ';
@@ -3637,12 +3638,29 @@ class Component extends DCLogic {
     if(medias.length) resumenTxt+='Adem\u00e1s, <b>'+medias.length+'</b> dimensi\u00f3n(es) se encuentran en nivel <b style="color:#9A6B00">Medio</b>. ';
     resumenTxt+='Recuerde que en este instrumento <b>un menor puntaje indica un mayor riesgo</b>.';
     P('<p>'+resumenTxt+'</p>');
-    P('<h2>2. Metodolog\u00eda</h2><p class="small">Se aplic\u00f3 el <b>Cuestionario de Evaluaci\u00f3n de Riesgo Psicosocial del Ministerio del Trabajo del Ecuador</b> (58 \u00edtems agrupados en 8 dimensiones), con una escala de 1 a 4 (Completamente de acuerdo = 4, Parcialmente de acuerdo = 3, Poco de acuerdo = 2, En desacuerdo = 1). La encuesta es an\u00f3nima y confidencial. Los puntajes se clasifican en terciles: <b>Bajo</b>, <b>Medio</b> y <b>Alto</b>; a menor puntaje, mayor exposici\u00f3n al factor de riesgo.</p>');
+    P('<h2>2. Cómo se calcula el riesgo</h2>');
+    P('<p class="small">Se aplicó el <b>Cuestionario de Evaluación de Riesgo Psicosocial del Ministerio del Trabajo del Ecuador</b>: 58 preguntas agrupadas en 8 dimensiones. La encuesta es anónima y confidencial.</p>');
+    P('<p class="small"><b>Paso 1 · Cada respuesta vale un número:</b> Completamente de acuerdo = 4 · Parcialmente de acuerdo = 3 · Poco de acuerdo = 2 · En desacuerdo = 1.</p>');
+    P('<p class="small"><b>Paso 2 · Puntaje:</b> el puntaje de una dimensión es la <b>suma</b> de los puntos de sus preguntas. El puntaje <b>global</b> es la suma de las 58 preguntas (va de 58 a 232).</p>');
+    P('<p class="small"><b>Paso 3 · Nivel de riesgo:</b> ese puntaje se compara con los rangos oficiales (tabla de abajo) y se clasifica en <b>Bajo</b>, <b>Medio</b> o <b>Alto</b>. <b>Dato clave: a menor puntaje, mayor riesgo</b> — un puntaje bajo significa que la persona estuvo mayormente "en desacuerdo" con condiciones laborales favorables.</p>');
+    P('<div class="plan small"><b>¿Y los porcentajes Bajo / Medio / Alto?</b> No se suman puntajes entre sí. Cada porcentaje indica <b>qué proporción de las personas</b> quedó en ese nivel; por eso, en cada dimensión (y en el global) los tres porcentajes <b>suman 100%</b>. Ejemplo: "Bajo 70% / Medio 27% / Alto 3%" significa que de cada 100 participantes, 70 tienen riesgo bajo, 27 medio y 3 alto en esa dimensión.</div>');
+    P('<h3>Rangos de puntaje por nivel</h3>');
+    P('<table><tr><th>Dimensión (n.º de preguntas)</th><th>Puntaje posible</th><th>'+tag('Alto')+'</th><th>'+tag('Medio')+'</th><th>'+tag('Bajo')+'</th></tr>');
+    DIMS.forEach(function(d){ P('<tr><td>'+esc(d.nombre)+' ('+d.items.length+')</td><td>'+d.items.length+' a '+(d.items.length*4)+'</td><td>'+d.alto[0]+' a '+d.alto[1]+'</td><td>'+d.medio[0]+' a '+d.medio[1]+'</td><td>'+d.bajo[0]+' a '+d.bajo[1]+'</td></tr>'); });
+    P('<tr style="font-weight:700;background:#f5f3ee"><td>GLOBAL (58 preguntas)</td><td>58 a 232</td><td>'+G.alto[0]+' a '+G.alto[1]+'</td><td>'+G.medio[0]+' a '+G.medio[1]+'</td><td>'+G.bajo[0]+' a '+G.bajo[1]+'</td></tr>');
+    P('</table>');
     P('<h2>3. Resultados por dimensi\u00f3n</h2>');
     P('<div class="legend"><span><span class="dot" style="background:#1F7A4D"></span>Bajo</span><span><span class="dot" style="background:#9A6B00"></span>Medio</span><span><span class="dot" style="background:#B3271A"></span>Alto</span></div>');
     P('<table><tr><th>Dimensi\u00f3n</th><th>Promedio</th><th>Prom./\u00edtem</th><th>Nivel</th><th style="width:150px">Distribuci\u00f3n (Bajo/Medio/Alto)</th></tr>');
     dimSorted.forEach(function(d){ P('<tr><td>'+esc(d.nombre)+'</td><td>'+d.avgTxt+' / '+d.max+'</td><td>'+d.perTxt+' / 4</td><td>'+tag(d.nivel)+'</td><td>'+stack(d.pBajo,d.pMedio,d.pAlto)+'<div class="small muted">'+d.pBajo+'% / '+d.pMedio+'% / '+d.pAlto+'%</div></td></tr>'); });
     P('</table><p class="small muted">Dimensiones ordenadas de mayor a menor riesgo (por promedio por \u00edtem).</p>');
+    var _itemAvg=[]; for(var _qi=1; _qi<=58; _qi++){ var _su=0; for(var _ri=0; _ri<fr.length; _ri++){ _su+=(Number((fr[_ri].respuestas||{})[_qi])||0); } _itemAvg.push({q:_qi, avg:(n?_su/n:0)}); }
+    _itemAvg.sort(function(a,b){ return a.avg-b.avg; });
+    var _ilvl=function(av){ return av>=3.25?'Bajo':(av>=2?'Medio':'Alto'); };
+    P('<h3>Ítems específicos de mayor riesgo</h3><p class="small muted">Las 5 preguntas con el promedio más bajo (a menor promedio, mayor riesgo). Ayudan a definir acciones muy concretas.</p>');
+    P('<table><tr><th style="width:72px">Promedio</th><th style="width:70px">Nivel</th><th>Pregunta</th></tr>');
+    _itemAvg.slice(0,5).forEach(function(it){ P('<tr><td><b>'+it.avg.toFixed(2)+'</b> / 4</td><td>'+tag(_ilvl(it.avg))+'</td><td class="small">'+esc(PSICO.preguntas[it.q]||('Pregunta '+it.q))+'</td></tr>'); });
+    P('</table>');
     P('<h2>4. Principales riesgos identificados</h2>');
     var priores=dimSorted.filter(function(d){ return d.nivel==='Alto'||d.nivel==='Medio'; });
     if(priores.length===0){ P('<p>No se identificaron dimensiones en nivel Medio o Alto. Todas las dimensiones se ubican en nivel <b style="color:#1F7A4D">Bajo</b>, lo que refleja condiciones psicosociales favorables. Se recomienda mantener las buenas pr\u00e1cticas y realizar un monitoreo peri\u00f3dico.</p>'); }
@@ -3654,6 +3672,9 @@ class Component extends DCLogic {
     P('<h3>Por \u00e1rea de trabajo</h3><table><tr><th>\u00c1rea</th><th>n</th><th>Bajo</th><th>Medio</th><th>Alto</th><th style="width:150px">Distribuci\u00f3n</th></tr>');
     [['Administrativa',aAdm],['Operativa',aOpe]].forEach(function(t){ var x=t[1]; if(x.n>0) P('<tr><td>'+t[0]+'</td><td>'+x.n+'</td><td>'+x.pBajo+'%</td><td>'+x.pMedio+'%</td><td>'+x.pAlto+'%</td><td>'+stack(x.pBajo,x.pMedio,x.pAlto)+'</td></tr>'); });
     P('</table>');
+    var _dem=function(titulo, field, opts){ var m={}; fr.forEach(function(r){ var v=r[field]; if(v!=null&&v!==''){ m[v]=(m[v]||0)+1; } }); var keys=(opts||[]).filter(function(k){ return m[k]>0; }); Object.keys(m).forEach(function(k){ if(keys.indexOf(k)<0) keys.push(k); }); if(!keys.length) return ''; var row=''; keys.forEach(function(k){ row+='<tr><td>'+esc(k)+'</td><td>'+m[k]+'</td><td>'+pctf(m[k])+'%</td></tr>'; }); return '<div style="flex:1;min-width:220px"><h4 style="margin:10px 0 4px;font-size:12.5px">'+esc(titulo)+'</h4><table style="margin-top:0"><tr><th>'+esc(titulo)+'</th><th>n</th><th>%</th></tr>'+row+'</table></div>'; };
+    P('<h3>Perfil de los participantes</h3>');
+    P('<div style="display:flex;gap:14px;flex-wrap:wrap">'+_dem('Edad','edad',PSICO.datos.edad)+_dem('Antigüedad','antiguedad',PSICO.datos.antiguedad)+_dem('Instrucción','instruccion',PSICO.datos.instruccion)+_dem('Etnia','etnia',PSICO.datos.etnia)+'</div>');
     P('<h2>6. Respuestas recibidas (fechas)</h2><p class="small muted">Registro an\u00f3nimo de las respuestas recibidas para esta obra.</p>');
     P('<table><tr><th style="width:40px">#</th><th>Fecha de recepci\u00f3n</th><th>\u00c1rea</th><th>G\u00e9nero</th><th>Riesgo global</th></tr>');
     var frsorted=fr.slice().sort(function(a,b){ return (a.created_at||'').localeCompare(b.created_at||''); });
@@ -4378,6 +4399,14 @@ class Component extends DCLogic {
     this.setState({certPending:null, certResumen:''});
     this.toast('Listo: '+c.total+' certificados recuperados y relacionados con su ficha.');
   };
+  _normObraTxt(o){ return String(o||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase().replace(/\s+/g,' ').trim(); }
+  canonObraPsico(o){
+    var k=this._normObraTxt(o);
+    var M={'GRAND BAY':'Grand Bay','GRAND BAY 2':'Grand Bay','GRAND BAY 3':'Grand Bay','TORRE MANTA':'Grand Bay',
+    'BELLATERRA':'Terranostra','GALERIAS TERRANOSTRA':'Terranostra','GRANOLLERS ETINAR':'Terranostra',
+    'SOLCA MACHALA':'Solca Machala','HOSPITAL SOLCA MACHALA':'Solca Machala','OSPITAL SOLCA MACHALA':'Solca Machala'};
+    return M[k]||o;
+  }
   saveConfig=(e)=>{ e.preventDefault(); const f=e.target; const nombre=f.elements.nombre.value.trim(), registro=f.elements.registro.value.trim(); const wa=(f.elements.whatsapp?f.elements.whatsapp.value:'').replace(/[^0-9]/g,''); this.save(db=>{db.config.medicoNombre=nombre;db.config.medicoRegistro=registro;db.config.whatsappMedico=wa;}); this.toast('Configuración guardada'); };
   addAcceso=(e)=>{ e.preventDefault(); const f=e.target; const email=String(f.elements.email.value||'').trim().toLowerCase(); var obraSel=String(f.elements.obra.value||'').trim(); if(!email){ alert('Ingrese el correo del usuario.'); return; } if(!obraSel){ alert('Seleccione el tipo de acceso.'); return; } var obra=(obraSel==='__ALL__')?'':obraSel; this.save(db=>{ if(!db.config.accesos)db.config.accesos=[]; const i=db.config.accesos.findIndex(a=>String(a.email||'').trim().toLowerCase()===email); const rec={email:email,obra:obra}; if(i>=0)db.config.accesos[i]=rec; else db.config.accesos.push(rec); }); try{f.reset();}catch(_){} this.toast(obra?('Acceso asignado: solo '+obra):'Acceso completo asignado'); };
   delAcceso=(email)=>()=>{ this.save(db=>{ db.config.accesos=(db.config.accesos||[]).filter(a=>String(a.email||'').trim().toLowerCase()!==String(email).trim().toLowerCase()); }); this.toast('Acceso eliminado'); };
@@ -4640,11 +4669,11 @@ class Component extends DCLogic {
       var pbase=location.href.split('#')[0].split('?')[0].replace(/[^/]*$/,'');
       R.psicoLink=pbase+'encuesta-psicosocial.html'; R.copyPsicoLink=this.copyPsicoLink; R.psicoLinkCopied=!!s.psicoLinkCopied;
       R.psicoLoading=!!s.psicoLoading; R.psicoErr=s.psicoErr||''; R.reloadPsico=this.reloadPsico; R.recargarTodoPsico=this.recargarTodoPsico; R.exportPsicoExcel=this.exportPsicoExcel;
-      var oset={}; (db.config.obras||[]).forEach(function(o){ oset[o]=1; }); rows.forEach(function(r){ if(r.obra) oset[r.obra]=1; });
+      var cO=this.canonObraPsico.bind(this); var oset={}; (db.config.obras||[]).forEach(function(o){ oset[cO(o)]=1; }); rows.forEach(function(r){ if(r.obra) oset[cO(r.obra)]=1; });
       R.psicoObras=Object.keys(oset).sort(); R.psicoObra=pObra; R.setPsicoObra=this.setPsicoObra;
       R.psicoTotal=rows.length;
       R.psicoEmpty=(s.psico!==undefined&&s.psico!==null&&!s.psicoLoading&&rows.length===0&&!s.psicoErr);
-      var fr=(pObra==='TODAS')?rows:rows.filter(function(r){ return r.obra===pObra; });
+      var fr=(pObra==='TODAS')?rows:rows.filter(function(r){ return cO(r.obra)===pObra; });
       R.psicoCount=fr.length;
       R.psicoNoData=(!s.psicoLoading&&!s.psicoErr&&rows.length>0&&fr.length===0);
       var DIMS=PSICO.dimensiones, G=PSICO.global;
@@ -4664,7 +4693,7 @@ class Component extends DCLogic {
       R.psicoGeneroEmpty=R.psicoGenero.length===0;
       R.psicoArea=[ grp(fr,function(r){ return r.area==='Administrativa'; },'Administrativa'), grp(fr,function(r){ return r.area==='Operativa'; },'Operativa') ].filter(function(x){ return x.n>0; });
       R.psicoAreaEmpty=R.psicoArea.length===0;
-      R.psicoPorObra=R.psicoObras.map(function(o){ return grp(rows,function(r){ return r.obra===o; },o); }).filter(function(x){ return x.n>0; });
+      R.psicoPorObra=R.psicoObras.map(function(o){ return grp(rows,function(r){ return cO(r.obra)===o; },o); }).filter(function(x){ return x.n>0; });
       R.psicoShowPorObra=(pObra==='TODAS'&&R.psicoPorObra.length>1);
       R.psicoList=fr.map(function(r){ var s3=score(r); var nv=ng(s3.g); return { fecha:this.fmt((r.created_at||'').slice(0,10)), obra:r.obra||'\u2014', area:r.area||'\u2014', genero:r.genero||'\u2014', global:s3.g, nivel:nv, color:col(nv), bg:bgf(nv), ver:this.openPsicoDetail(r) }; }, this);
       R.psicoDetailOpen=!!s.psicoDetail; R.psicoDetail=s.psicoDetail||{dims:[]}; R.closePsicoDetail=this.closePsicoDetail; R.abrirInformePsico=this.abrirInformePsico; R.psicoObraLabel=(pObra==='TODAS'?'Todas las obras':pObra);
