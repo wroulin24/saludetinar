@@ -2812,6 +2812,7 @@ class Component extends DCLogic {
     setTimeout(()=>this.checkStaleRecords(),3500);
     setTimeout(()=>this.migrarDx(),4000);
     setTimeout(()=>this.reactivarObras(),5000);
+    setTimeout(()=>this.migrarObraInnova(),5500);
   }
   scheduleCheck(ms){ clearTimeout(this._ckT); this._ckT=setTimeout(()=>this.cloudCheck(),ms||1200); }
   stopSync(){ try{ if(this._chan){ getSB().removeChannel(this._chan); this._chan=null; } }catch(e){} if(this._poll){ clearInterval(this._poll); this._poll=null; } if(this._impPoll){ clearInterval(this._impPoll); this._impPoll=null; } if(this._ckT){ clearTimeout(this._ckT); this._ckT=null; } try{ if(this._vis){ document.removeEventListener('visibilitychange',this._vis); this._vis=null; } }catch(e){} }
@@ -3555,12 +3556,12 @@ class Component extends DCLogic {
       var ng=function(v){ return v>=G.bajo[0]?'Bajo':(v>=G.medio[0]?'Medio':'Alto'); };
       var wb=new window.ExcelJS.Workbook(); var ws=wb.addWorksheet('Respuestas');
       var head=['Fecha','Obra','\u00c1rea','G\u00e9nero','Edad','Antig\u00fcedad','Instrucci\u00f3n','Etnia','Provincia','Ciudad'];
-      DIMS.forEach(function(d){ head.push(d.nombre+' (punt)'); head.push(d.nombre+' (nivel)'); });
+      DIMS.forEach(function(d){ head.push(d.nombre+' (punt)'); head.push(d.nombre+' (nivel)'); }); this.psicoSubdims().forEach(function(su){ head.push(su.nombre+' (punt)'); head.push(su.nombre+' (nivel)'); });
       head.push('Global (punt)'); head.push('Global (nivel)'); head.push('Observaciones');
       var qi; for(qi=1; qi<=58; qi++){ head.push('P'+qi); }
       ws.addRow(head); ws.getRow(1).font={bold:true};
       var self=this;
-      fr.forEach(function(r){ var a=r.respuestas||{}; var g=0; var row=[ self.fmt((r.created_at||'').slice(0,10)), r.obra||'', r.area||'', r.genero||'', r.edad||'', r.antiguedad||'', r.instruccion||'', r.etnia||'', r.provincia||'', r.ciudad||'' ]; DIMS.forEach(function(d){ var su=0; for(var k=0;k<d.items.length;k++){ su+=(Number(a[d.items[k]])||0); } g+=su; row.push(su); row.push(nd(su,d)); }); row.push(g); row.push(ng(g)); row.push(r.observaciones||''); var j; for(j=1;j<=58;j++){ var v=Number(a[j]); row.push(isNaN(v)?'':v); } ws.addRow(row); });
+      fr.forEach(function(r){ var a=r.respuestas||{}; var g=0; var row=[ self.fmt((r.created_at||'').slice(0,10)), r.obra||'', r.area||'', r.genero||'', r.edad||'', r.antiguedad||'', r.instruccion||'', r.etnia||'', r.provincia||'', r.ciudad||'' ]; DIMS.forEach(function(d){ var su=0; for(var k=0;k<d.items.length;k++){ su+=(Number(a[d.items[k]])||0); } g+=su; row.push(su); row.push(nd(su,d)); }); self.psicoSubdims().forEach(function(sb){ var sm=0; for(var z=0;z<sb.items.length;z++){ sm+=(Number(a[sb.items[z]])||0); } var sav=sb.items.length?sm/sb.items.length:0; row.push(sm); row.push(sav>=3?'Bajo':(sav>=2?'Medio':'Alto')); }); row.push(g); row.push(ng(g)); row.push(r.observaciones||''); var j; for(j=1;j<=58;j++){ var v=Number(a[j]); row.push(isNaN(v)?'':v); } ws.addRow(row); });
       try{ ws.columns.forEach(function(c,i){ c.width = i<10?15:(i<26?12:6); }); ws.views=[{state:'frozen', ySplit:1, xSplit:1}]; }catch(e){}
       var out=await wb.xlsx.writeBuffer();
       var label=(obra==='TODAS'?'Todas':obra).replace(/[^a-zA-Z0-9]+/g,'_');
@@ -3570,7 +3571,7 @@ class Component extends DCLogic {
   };
   setPsicoObra=(e)=>{ this.setState({psicoObra:e&&e.target?e.target.value:e}); };
   copyPsicoLink=()=>{ try{ var _pb=location.href.split('#')[0].split('?')[0].replace(/[^/]*$/,''); var link=_pb+'encuesta-psicosocial.html'; if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(link); } else { var t=document.createElement('textarea'); t.value=link; document.body.appendChild(t); t.select(); try{document.execCommand('copy');}catch(e){} document.body.removeChild(t); } this.setState({psicoLinkCopied:true}); var self=this; setTimeout(function(){ self.setState({psicoLinkCopied:false}); },2500); }catch(e){} };
-  openPsicoDetail=(row)=>()=>{ try{ var ans=row.respuestas||{}; var dims=PSICO.dimensiones; var out=[]; var gsum=0; for(var i=0;i<dims.length;i++){ var d=dims[i]; var sum=0; for(var k=0;k<d.items.length;k++){ sum+=(Number(ans[d.items[k]])||0); } gsum+=sum; var nv=(sum>=d.bajo[0]?'Bajo':(sum>=d.medio[0]?'Medio':'Alto')); out.push({nombre:d.nombre, sum:sum, max:d.items.length*4, nivel:nv, color:(nv==='Bajo'?'#2E7D52':(nv==='Medio'?'#B8791A':'#C0392B')), bg:(nv==='Bajo'?'#E4F3EA':(nv==='Medio'?'#FBEFD9':'#FBE7E4'))}); } var g=PSICO.global; var gn=(gsum>=g.bajo[0]?'Bajo':(gsum>=g.medio[0]?'Medio':'Alto')); this.setState({psicoDetail:{ fecha:this.fmt((row.created_at||'').slice(0,10)), obra:row.obra||'\u2014', area:row.area||'\u2014', genero:row.genero||'\u2014', edad:row.edad||'\u2014', antiguedad:row.antiguedad||'\u2014', instruccion:row.instruccion||'\u2014', etnia:row.etnia||'\u2014', dims:out, global:gsum, globalNivel:gn, globalColor:(gn==='Bajo'?'#2E7D52':(gn==='Medio'?'#B8791A':'#C0392B')), globalBg:(gn==='Bajo'?'#E4F3EA':(gn==='Medio'?'#FBEFD9':'#FBE7E4')), obs:row.observaciones||'' }}); }catch(e){} };
+  openPsicoDetail=(row)=>()=>{ try{ var ans=row.respuestas||{}; var dims=PSICO.dimensiones; var out=[]; var gsum=0; for(var i=0;i<dims.length;i++){ var d=dims[i]; var sum=0; for(var k=0;k<d.items.length;k++){ sum+=(Number(ans[d.items[k]])||0); } gsum+=sum; var nv=(sum>=d.bajo[0]?'Bajo':(sum>=d.medio[0]?'Medio':'Alto')); out.push({nombre:d.nombre, sum:sum, max:d.items.length*4, nivel:nv, color:(nv==='Bajo'?'#2E7D52':(nv==='Medio'?'#E0A008':'#E5503C')), bg:(nv==='Bajo'?'#E4F3EA':(nv==='Medio'?'#FCEECB':'#FBE1DC'))}); } var g=PSICO.global; var gn=(gsum>=g.bajo[0]?'Bajo':(gsum>=g.medio[0]?'Medio':'Alto')); this.setState({psicoDetail:{ fecha:this.fmt((row.created_at||'').slice(0,10)), obra:row.obra||'\u2014', area:row.area||'\u2014', genero:row.genero||'\u2014', edad:row.edad||'\u2014', antiguedad:row.antiguedad||'\u2014', instruccion:row.instruccion||'\u2014', etnia:row.etnia||'\u2014', dims:out, global:gsum, globalNivel:gn, globalColor:(gn==='Bajo'?'#2E7D52':(gn==='Medio'?'#E0A008':'#E5503C')), globalBg:(gn==='Bajo'?'#E4F3EA':(gn==='Medio'?'#FCEECB':'#FBE1DC')), obs:row.observaciones||'' }}); }catch(e){} };
   closePsicoDetail=()=>{ this.setState({psicoDetail:null}); };
   abrirInformePsico=()=>{
     var html=this.informePsicoHTML();
@@ -3588,8 +3589,8 @@ class Component extends DCLogic {
     var score=function(r){ var a=r.respuestas||{}; var o={d:{},g:0}; for(var i=0;i<DIMS.length;i++){ var d=DIMS[i]; var ss=0; for(var k=0;k<d.items.length;k++){ ss+=(Number(a[d.items[k]])||0); } o.d[d.key]=ss; o.g+=ss; } return o; };
     var nd=function(v,d){ return v>=d.bajo[0]?'Bajo':(v>=d.medio[0]?'Medio':'Alto'); };
     var ng=function(v){ return v>=G.bajo[0]?'Bajo':(v>=G.medio[0]?'Medio':'Alto'); };
-    var col=function(nv){ return nv==='Bajo'?'#1F7A4D':(nv==='Medio'?'#9A6B00':(nv==='Alto'?'#B3271A':'#777')); };
-    var bgf=function(nv){ return nv==='Bajo'?'#E4F3EA':(nv==='Medio'?'#FBEFD9':(nv==='Alto'?'#FBE7E4':'#eee')); };
+    var col=function(nv){ return nv==='Bajo'?'#1F7A4D':(nv==='Medio'?'#E0A008':(nv==='Alto'?'#E5503C':'#777')); };
+    var bgf=function(nv){ return nv==='Bajo'?'#E4F3EA':(nv==='Medio'?'#FCEECB':(nv==='Alto'?'#FBE1DC':'#eee')); };
     var n=fr.length; var sc=fr.map(score);
     var pctf=function(x){ return n?Math.round(x/n*100):0; };
     var gd={Bajo:0,Medio:0,Alto:0},gs=0; sc.forEach(function(x){ gd[ng(x.g)]++; gs+=x.g; });
@@ -3618,7 +3619,7 @@ class Component extends DCLogic {
     var obraLabel=(obra==='TODAS')?'Todas las obras':obra;
     var hoy=this.fmt(this.todayISO());
     var tag=function(nv){ return '<span class="tag" style="background:'+bgf(nv)+';color:'+col(nv)+'">'+nv+'</span>'; };
-    var stack=function(pB,pM,pA){ return '<div class="stack"><span style="width:'+pB+'%;background:#1F7A4D"></span><span style="width:'+pM+'%;background:#9A6B00"></span><span style="width:'+pA+'%;background:#B3271A"></span></div>'; };
+    var stack=function(pB,pM,pA){ return '<div class="stack"><span style="width:'+pB+'%;background:#1F7A4D"></span><span style="width:'+pM+'%;background:#E0A008"></span><span style="width:'+pA+'%;background:#E5503C"></span></div>'; };
     var H=[]; var P=function(x){ H.push(x); };
     P('<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Informe Ejecutivo Psicosocial - '+esc(obraLabel)+'</title>');
     P('<style>*{box-sizing:border-box}body{font-family:-apple-system,Segoe UI,Roboto,Arial,sans-serif;color:#2b2b2b;margin:0;background:#eef0f2;font-size:13px;line-height:1.5}.page{max-width:820px;margin:16px auto;background:#fff;padding:40px 50px;box-shadow:0 2px 14px rgba(0,0,0,.08)}h1{font-size:21px;margin:0 0 3px}h2{font-size:15px;margin:24px 0 9px;padding-bottom:6px;border-bottom:2px solid #F0BE07}h3{font-size:13.5px;margin:15px 0 5px}p{margin:7px 0}table{width:100%;border-collapse:collapse;margin:8px 0;font-size:12px}th,td{border:1px solid #dcdcdc;padding:7px 9px;text-align:left;vertical-align:top}th{background:#f5f3ee;font-weight:700}.tag{display:inline-block;padding:2px 9px;border-radius:20px;font-weight:700;font-size:11px}.muted{color:#7a7a7a}.small{font-size:11.5px}.kpis{display:flex;gap:10px;flex-wrap:wrap;margin:10px 0}.kpi{flex:1;min-width:120px;border:1px solid #e6e2da;border-radius:9px;padding:10px 12px}.kpi .l{font-size:11px;color:#777}.kpi .v{font-size:20px;font-weight:800;margin-top:3px}.stack{display:flex;height:11px;border-radius:6px;overflow:hidden;background:#ececec;min-width:120px}.stack>span{display:block;height:100%}.legend span{margin-right:14px;font-size:11px;color:#555}.dot{display:inline-block;width:9px;height:9px;border-radius:2px;vertical-align:-1px;margin-right:4px}.plan{background:#faf8f3;border:1px solid #ece7dc;border-radius:9px;padding:11px 14px;margin:9px 0}.plan ul{margin:6px 0 0;padding-left:18px}.plan li{margin:4px 0}.head{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:3px solid #2C2A28;padding-bottom:13px;margin-bottom:6px}.logo{width:40px;height:40px;border-radius:9px;background:#2C2A28;display:flex;align-items:center;justify-content:center;color:#F0BE07;font-weight:800;font-size:19px}.bar2{position:sticky;top:0;background:#2C2A28;padding:10px;text-align:center;z-index:5}button{background:#F0BE07;color:#2C2A28;border:none;border-radius:8px;padding:9px 18px;font-weight:800;cursor:pointer;font-size:13px}.foot{margin-top:26px;padding-top:12px;border-top:1px solid #ddd;color:#888;font-size:11px}@media print{.noprint{display:none!important}body{background:#fff}.page{box-shadow:none;margin:0;max-width:none;padding:14px}h2{page-break-after:avoid}table,li,.plan,.kpi{page-break-inside:avoid}}@page{margin:13mm}</style></head><body>');
@@ -3629,13 +3630,13 @@ class Component extends DCLogic {
     if(n===0){ P('<h2>Sin respuestas</h2><p>A\u00fan no se han recibido respuestas para esta obra. Comparta el enlace de la encuesta para generar el informe.</p></div></body></html>'); return H.join(''); }
     P('<h2>1. Resumen ejecutivo</h2>');
     var _wact=(db.workers||[]).filter(function(w){ return (w.estado||'A')==='A'; }); var wObra=(obra==='TODAS')?_wact.length:_wact.filter(function(w){ return self.canonObraPsico(w.obra)===obra; }).length; var partPct=(wObra>0)?Math.round(n/wObra*100):null;
-    P('<div class="kpis"><div class="kpi"><div class="l">Respuestas</div><div class="v">'+n+'</div></div><div class="kpi"><div class="l">Riesgo global</div><div class="v" style="color:'+col(gnv)+'">'+gnv+'</div></div><div class="kpi"><div class="l">Riesgo Alto</div><div class="v" style="color:#B3271A">'+pctf(gd.Alto)+'%</div></div><div class="kpi"><div class="l">Riesgo Medio</div><div class="v" style="color:#9A6B00">'+pctf(gd.Medio)+'%</div></div><div class="kpi"><div class="l">Riesgo Bajo</div><div class="v" style="color:#1F7A4D">'+pctf(gd.Bajo)+'%</div></div>'+(partPct!=null?('<div class="kpi"><div class="l">Participaci\u00f3n</div><div class="v">'+partPct+'%</div><div class="small muted">'+n+' de '+wObra+' trab.</div></div>'):'')+'</div>');
+    P('<div class="kpis"><div class="kpi"><div class="l">Respuestas</div><div class="v">'+n+'</div></div><div class="kpi"><div class="l">Riesgo global</div><div class="v" style="color:'+col(gnv)+'">'+gnv+'</div></div><div class="kpi"><div class="l">Riesgo Alto</div><div class="v" style="color:#E5503C">'+pctf(gd.Alto)+'%</div></div><div class="kpi"><div class="l">Riesgo Medio</div><div class="v" style="color:#E0A008">'+pctf(gd.Medio)+'%</div></div><div class="kpi"><div class="l">Riesgo Bajo</div><div class="v" style="color:#1F7A4D">'+pctf(gd.Bajo)+'%</div></div>'+(partPct!=null?('<div class="kpi"><div class="l">Participaci\u00f3n</div><div class="v">'+partPct+'%</div><div class="small muted">'+n+' de '+wObra+' trab.</div></div>'):'')+'</div>');
     var altas=dimSorted.filter(function(d){ return d.nivel==='Alto'; });
     var medias=dimSorted.filter(function(d){ return d.nivel==='Medio'; });
     var resumenTxt='En la obra <b>'+esc(obraLabel)+'</b> se recibieron <b>'+n+'</b> respuesta(s) entre el '+esc(fMin)+' y el '+esc(fMax)+'. El nivel de riesgo psicosocial global es <b style="color:'+col(gnv)+'">'+gnv+'</b> (puntaje promedio '+gavg+' sobre un rango de '+G.alto[0]+' a '+G.bajo[1]+'). ';
-    if(altas.length) resumenTxt+='Se identificaron <b>'+altas.length+'</b> dimensi\u00f3n(es) en nivel de riesgo <b style="color:#B3271A">Alto</b>, que requieren intervenci\u00f3n prioritaria. ';
+    if(altas.length) resumenTxt+='Se identificaron <b>'+altas.length+'</b> dimensi\u00f3n(es) en nivel de riesgo <b style="color:#E5503C">Alto</b>, que requieren intervenci\u00f3n prioritaria. ';
     else resumenTxt+='Ninguna dimensi\u00f3n se ubica en nivel Alto. ';
-    if(medias.length) resumenTxt+='Adem\u00e1s, <b>'+medias.length+'</b> dimensi\u00f3n(es) se encuentran en nivel <b style="color:#9A6B00">Medio</b>. ';
+    if(medias.length) resumenTxt+='Adem\u00e1s, <b>'+medias.length+'</b> dimensi\u00f3n(es) se encuentran en nivel <b style="color:#E0A008">Medio</b>. ';
     resumenTxt+='Recuerde que en este instrumento <b>un menor puntaje indica un mayor riesgo</b>.';
     P('<p>'+resumenTxt+'</p>');
     P('<h2>2. Cómo se calcula el riesgo</h2>');
@@ -3650,7 +3651,7 @@ class Component extends DCLogic {
     P('<tr style="font-weight:700;background:#f5f3ee"><td>GLOBAL (58 preguntas)</td><td>58 a 232</td><td>'+G.alto[0]+' a '+G.alto[1]+'</td><td>'+G.medio[0]+' a '+G.medio[1]+'</td><td>'+G.bajo[0]+' a '+G.bajo[1]+'</td></tr>');
     P('</table>');
     P('<h2>3. Resultados por dimensi\u00f3n</h2>');
-    P('<div class="legend"><span><span class="dot" style="background:#1F7A4D"></span>Bajo</span><span><span class="dot" style="background:#9A6B00"></span>Medio</span><span><span class="dot" style="background:#B3271A"></span>Alto</span></div>');
+    P('<div class="legend"><span><span class="dot" style="background:#1F7A4D"></span>Bajo</span><span><span class="dot" style="background:#E0A008"></span>Medio</span><span><span class="dot" style="background:#E5503C"></span>Alto</span></div>');
     P('<table><tr><th>Dimensi\u00f3n</th><th>Promedio</th><th>Prom./\u00edtem</th><th>Nivel</th><th style="width:150px">Distribuci\u00f3n (Bajo/Medio/Alto)</th></tr>');
     dimSorted.forEach(function(d){ P('<tr><td>'+esc(d.nombre)+'</td><td>'+d.avgTxt+' / '+d.max+'</td><td>'+d.perTxt+' / 4</td><td>'+tag(d.nivel)+'</td><td>'+stack(d.pBajo,d.pMedio,d.pAlto)+'<div class="small muted">'+d.pBajo+'% / '+d.pMedio+'% / '+d.pAlto+'%</div></td></tr>'); });
     P('</table><p class="small muted">Dimensiones ordenadas de mayor a menor riesgo (por promedio por \u00edtem).</p>');
@@ -3661,6 +3662,14 @@ class Component extends DCLogic {
     P('<table><tr><th style="width:72px">Promedio</th><th style="width:70px">Nivel</th><th>Pregunta</th></tr>');
     _itemAvg.slice(0,5).forEach(function(it){ P('<tr><td><b>'+it.avg.toFixed(2)+'</b> / 4</td><td>'+tag(_ilvl(it.avg))+'</td><td class="small">'+esc(PSICO.preguntas[it.q]||('Pregunta '+it.q))+'</td></tr>'); });
     P('</table>');
+    var _sub=self.psicoSubdims();
+    var _subLvl=function(av){ return av>=3?'Bajo':(av>=2?'Medio':'Alto'); };
+    var _subStats=_sub.map(function(su){ var dist={Bajo:0,Medio:0,Alto:0}, tot=0; fr.forEach(function(r){ var a=r.respuestas||{}; var sm=0; for(var k=0;k<su.items.length;k++){ sm+=(Number(a[su.items[k]])||0); } var av=su.items.length?sm/su.items.length:0; dist[_subLvl(av)]++; tot+=av; }); var avgItem=n?tot/n:0; return { nombre:su.nombre, avgItem:avgItem, nivel:(n?_subLvl(avgItem):'\u2014'), pBajo:pctf(dist.Bajo), pMedio:pctf(dist.Medio), pAlto:pctf(dist.Alto) }; });
+    _subStats.sort(function(a,b){ return a.avgItem-b.avgItem; });
+    P('<h3>Desglose de "Otros puntos importantes"</h3><p class="small muted">Los 24 ítems de esta dimensión se agrupan por tema. El nivel de cada subgrupo se calcula por el <b>promedio por ítem</b>: 3 o más = Bajo · de 2 a 3 = Medio · menos de 2 = Alto. Ordenados de mayor a menor riesgo.</p>');
+    P('<table><tr><th>Factor</th><th>Prom./ítem</th><th>Nivel</th><th style="width:150px">Distribución (Bajo/Medio/Alto)</th></tr>');
+    _subStats.forEach(function(su){ P('<tr><td>'+esc(su.nombre)+'</td><td>'+su.avgItem.toFixed(2)+' / 4</td><td>'+tag(su.nivel)+'</td><td>'+stack(su.pBajo,su.pMedio,su.pAlto)+'<div class="small muted">'+su.pBajo+'% / '+su.pMedio+'% / '+su.pAlto+'%</div></td></tr>'); });
+    P('</table>');
     P('<h2>4. Principales riesgos identificados</h2>');
     var priores=dimSorted.filter(function(d){ return d.nivel==='Alto'||d.nivel==='Medio'; });
     if(priores.length===0){ P('<p>No se identificaron dimensiones en nivel Medio o Alto. Todas las dimensiones se ubican en nivel <b style="color:#1F7A4D">Bajo</b>, lo que refleja condiciones psicosociales favorables. Se recomienda mantener las buenas pr\u00e1cticas y realizar un monitoreo peri\u00f3dico.</p>'); }
@@ -3669,6 +3678,10 @@ class Component extends DCLogic {
     P('<h3>Por g\u00e9nero</h3><table><tr><th>Grupo</th><th>n</th><th>Bajo</th><th>Medio</th><th>Alto</th><th style="width:150px">Distribuci\u00f3n</th></tr>');
     [['Masculino',gMasc],['Femenino',gFem]].forEach(function(t){ var x=t[1]; if(x.n>0) P('<tr><td>'+t[0]+'</td><td>'+x.n+'</td><td>'+x.pBajo+'%</td><td>'+x.pMedio+'%</td><td>'+x.pAlto+'%</td><td>'+stack(x.pBajo,x.pMedio,x.pAlto)+'</td></tr>'); });
     P('</table>');
+    var _gtop=function(fn,label){ var g=fr.filter(fn); var m=g.length; if(!m) return ''; var arr=DIMS.map(function(d){ var t=0; g.forEach(function(r){ var a=r.respuestas||{}; var s=0; for(var k=0;k<d.items.length;k++) s+=(Number(a[d.items[k]])||0); t+=(d.items.length?s/d.items.length:0); }); var per=t/m; return {nombre:d.nombre, per:per, nivel:(per>=3?'Bajo':(per>=2?'Medio':'Alto'))}; }); arr.sort(function(a,b){ return a.per-b.per; }); var top=arr.slice(0,3).map(function(x){ return esc(x.nombre)+' '+tag(x.nivel); }).join(' &nbsp; '); return '<p class="small"><b>'+label+' — dimensiones de mayor riesgo:</b> '+top+'</p>'; };
+    P('<p class="small muted" style="margin-top:6px">¿En qué dimensiones es más alto el riesgo de cada grupo? (de mayor a menor riesgo):</p>');
+    P(_gtop(function(r){ return r.genero==='Masculino'; },'Masculino'));
+    P(_gtop(function(r){ return r.genero==='Femenino'; },'Femenino'));
     P('<h3>Por \u00e1rea de trabajo</h3><table><tr><th>\u00c1rea</th><th>n</th><th>Bajo</th><th>Medio</th><th>Alto</th><th style="width:150px">Distribuci\u00f3n</th></tr>');
     [['Administrativa',aAdm],['Operativa',aOpe]].forEach(function(t){ var x=t[1]; if(x.n>0) P('<tr><td>'+t[0]+'</td><td>'+x.n+'</td><td>'+x.pBajo+'%</td><td>'+x.pMedio+'%</td><td>'+x.pAlto+'%</td><td>'+stack(x.pBajo,x.pMedio,x.pAlto)+'</td></tr>'); });
     P('</table>');
@@ -3691,12 +3704,22 @@ class Component extends DCLogic {
     P('<table><tr><th style="width:90px">Nivel</th><th>Significado</th></tr><tr><td>'+tag('Bajo')+'</td><td class="small">'+INTERP.Bajo+'</td></tr><tr><td>'+tag('Medio')+'</td><td class="small">'+INTERP.Medio+'</td></tr><tr><td>'+tag('Alto')+'</td><td class="small">'+INTERP.Alto+'</td></tr></table>');
     P('<h2>9. Conclusiones</h2>');
     var concl='';
-    if(gnv==='Alto') concl='El riesgo psicosocial global de la obra es <b style="color:#B3271A">Alto</b>, por lo que se recomienda implementar de forma prioritaria y continua el plan de acci\u00f3n propuesto. ';
-    else if(gnv==='Medio') concl='El riesgo psicosocial global de la obra es <b style="color:#9A6B00">Medio</b>; es necesario aplicar medidas preventivas de forma sostenida para evitar que el riesgo aumente. ';
+    if(gnv==='Alto') concl='El riesgo psicosocial global de la obra es <b style="color:#E5503C">Alto</b>, por lo que se recomienda implementar de forma prioritaria y continua el plan de acci\u00f3n propuesto. ';
+    else if(gnv==='Medio') concl='El riesgo psicosocial global de la obra es <b style="color:#E0A008">Medio</b>; es necesario aplicar medidas preventivas de forma sostenida para evitar que el riesgo aumente. ';
     else concl='El riesgo psicosocial global de la obra es <b style="color:#1F7A4D">Bajo</b>, lo que refleja condiciones favorables; se recomienda mantener las buenas pr\u00e1cticas y el monitoreo peri\u00f3dico. ';
     if(priores.length){ var topn=priores.slice(0,3).map(function(d){ return esc(d.nombre); }).join(', '); concl+='Las dimensiones que requieren mayor atenci\u00f3n son: <b>'+topn+'</b>. '; }
     concl+='Se sugiere socializar estos resultados con los colaboradores, ejecutar las medidas propuestas y realizar una nueva evaluaci\u00f3n para verificar la eficacia de las acciones.';
     P('<p>'+concl+'</p>');
+    P('<h2>10. Definiciones de las dimensiones</h2>');
+    P('<p class="small muted">Conceptos de cada dimensión y de los factores de "Otros puntos importantes", para facilitar la interpretación del informe.</p>');
+    var _defd=self.psicoDefDim();
+    P('<table><tr><th style="width:200px">Dimensión</th><th>Definición</th></tr>');
+    DIMS.forEach(function(d){ P('<tr><td><b>'+esc(d.nombre)+'</b></td><td class="small">'+esc(_defd[d.key]||'')+'</td></tr>'); });
+    P('</table>');
+    P('<h3>Factores incluidos en "Otros puntos importantes"</h3>');
+    P('<table><tr><th style="width:200px">Factor</th><th>Definición</th></tr>');
+    self.psicoSubdims().forEach(function(su){ P('<tr><td><b>'+esc(su.nombre)+'</b></td><td class="small">'+esc(su.def)+'</td></tr>'); });
+    P('</table>');
     P('<div class="foot">Documento generado autom\u00e1ticamente por el Sistema de Gesti\u00f3n Ocupacional ETINAR a partir de las respuestas an\u00f3nimas de la encuesta. Cuestionario base: Ministerio del Trabajo del Ecuador. Este informe es un insumo t\u00e9cnico de apoyo; las decisiones y plazos corresponden al equipo responsable del programa.</div>');
     P('</div></body></html>');
     return H.join('');
@@ -4305,6 +4328,14 @@ class Component extends DCLogic {
     if(!need) return;
     this.save(function(d){ (d.consultas||[]).forEach(function(c){ if(c.dxCodigo==='J11'){ c.dxCodigo='J00'; c.dxTexto='Rinofaringitis aguda (resfriado común)'; } else if(c.dxCodigo==='K52.9'||c.dxCodigo==='A09'){ c.dxCodigo='A09'; c.dxTexto='Gastroenteritis aguda'; } }); });
   }
+  migrarObraInnova(){
+    if(this.isRestricted && this.isRestricted()) return;
+    var db=this.state.db; if(!db||!db.config) return;
+    var yaEsta=(db.config.obras||[]).some(function(o){ return String(o||'').trim().toUpperCase()==='INNOVA SCHOOLS'; });
+    if(yaEsta || db.config.obraInnovaV1) return;
+    this.save(function(d){ if(!d.config) d.config={}; if(!d.config.obras) d.config.obras=[]; if(!d.config.obras.some(function(o){ return String(o||'').trim().toUpperCase()==='INNOVA SCHOOLS'; })) d.config.obras.push('Innova Schools'); d.config.obraInnovaV1=true; });
+    this.toast('Se agregó la obra "Innova Schools".');
+  }
   reactivarObras(){
     if(this.isRestricted && this.isRestricted()) return;
     var db=this.state.db; if(!db||!db.workers) return;
@@ -4407,6 +4438,26 @@ class Component extends DCLogic {
     'SOLCA MACHALA':'Solca Machala','HOSPITAL SOLCA MACHALA':'Solca Machala','OSPITAL SOLCA MACHALA':'Solca Machala'};
     return M[k]||o;
   }
+  psicoDefDim(){ return {
+    carga:'Conjunto de requerimientos mentales y físicos a los cuales se ve sometida una persona en su trabajo: exceso o insuficiencia de trabajo, y el tiempo y la velocidad para realizar una tarea, que puede ser constante o variable.',
+    competencias:'Oportunidades de desarrollar competencias (destrezas, habilidades, conocimientos y actitudes de las personas) conforme a las demandas actuales del trabajo, y de aplicarlas en el ámbito laboral.',
+    liderazgo:'Características personales y habilidades para dirigir, coordinar, retroalimentar, motivar y modificar conductas del equipo; influenciar a las personas en el logro de objetivos, compartir una visión, colaborar, proveer información, dialogar y reconocer logros, entre otras.',
+    margen:'Medida en la que una persona participa en la toma de decisiones en relación con su rol en el trabajo (métodos y ritmo de trabajo, horarios, entorno y otros factores laborales).',
+    organizacion:'Contempla las formas de comunicación, la tecnología, la modalidad de distribución y designación del trabajo, así como las demandas cualitativas y cuantitativas del trabajo.',
+    recuperacion:'Tiempo destinado al descanso y a la recuperación de energía luego del esfuerzo físico y/o mental del trabajo; también el tiempo para la recreación, la distracción, la vida familiar y otras actividades sociales extralaborales.',
+    soporte:'Acciones y recursos formales e informales que aplican los mandos superiores y las/os compañeras/os de trabajo para facilitar la solución de problemas laborales y extralaborales.',
+    otros:'Agrupa varios factores específicos que se detallan por separado más abajo: acoso discriminatorio, acoso laboral, acoso sexual, adicción al trabajo, condiciones del trabajo, doble presencia, estabilidad laboral y emocional, y salud auto percibida.'
+  }; }
+  psicoSubdims(){ return [
+    {key:'doblepres',nombre:'Doble presencia (laboral–familiar)',items:[46,49,51],def:'Demandas conflictivas entre el trabajo y la vida personal / familiar.'},
+    {key:'estabilidad',nombre:'Estabilidad laboral y emocional',items:[39,42,52,54],def:'Precarización laboral, incertidumbre sobre el futuro laboral, falta de motivación o descontento en el trabajo.'},
+    {key:'salud',nombre:'Salud auto percibida',items:[44,58],def:'Percepción respecto a la salud física y mental de la persona en relación con el trabajo que realiza.'},
+    {key:'condiciones',nombre:'Condiciones del trabajo',items:[37,40,47],def:'Factores de riesgo (de seguridad, ergonómicos, higiénicos y psicosociales) que pueden afectar negativamente la salud de las/os trabajadoras/es en su actividad laboral.'},
+    {key:'adiccion',nombre:'Adicción al trabajo',items:[36,45,55,57],def:'Dificultad para desconectarse del trabajo y necesidad de asumir cada vez más tareas; ocurre cuando el valor del trabajo se antepone a la relación consigo mismo y con las demás personas. A diferencia de otras adicciones, socialmente se suele alabar y recompensar el trabajar en exceso.'},
+    {key:'acososexual',nombre:'Acoso sexual',items:[43,48],def:'Insinuaciones sexuales no deseadas que afectan la integridad física, psicológica y moral de la/el trabajadora/or.'},
+    {key:'acosolaboral',nombre:'Acoso laboral',items:[41,50],def:'Forma de acoso psicológico: hostigamiento intencional, repetitivo y focalizado, mediante acciones crueles o maliciosas, para humillar o desestabilizar a una persona o a un grupo de trabajadoras/es.'},
+    {key:'acosodiscrim',nombre:'Acoso discriminatorio',items:[35,38,53,56],def:'Trato desigual, exclusión o preferencia hacia una persona por su identidad de género, orientación sexual, edad, discapacidad, estado de salud, etnia, idioma, religión, nacionalidad, ideología, opinión política, estado civil, gestación, lactancia u otra condición, que anule o limite el ejercicio de sus derechos, tanto en la selección como durante la relación laboral.'}
+  ]; }
   saveConfig=(e)=>{ e.preventDefault(); const f=e.target; const nombre=f.elements.nombre.value.trim(), registro=f.elements.registro.value.trim(); const wa=(f.elements.whatsapp?f.elements.whatsapp.value:'').replace(/[^0-9]/g,''); this.save(db=>{db.config.medicoNombre=nombre;db.config.medicoRegistro=registro;db.config.whatsappMedico=wa;}); this.toast('Configuración guardada'); };
   addAcceso=(e)=>{ e.preventDefault(); const f=e.target; const email=String(f.elements.email.value||'').trim().toLowerCase(); var obraSel=String(f.elements.obra.value||'').trim(); if(!email){ alert('Ingrese el correo del usuario.'); return; } if(!obraSel){ alert('Seleccione el tipo de acceso.'); return; } var obra=(obraSel==='__ALL__')?'':obraSel; this.save(db=>{ if(!db.config.accesos)db.config.accesos=[]; const i=db.config.accesos.findIndex(a=>String(a.email||'').trim().toLowerCase()===email); const rec={email:email,obra:obra}; if(i>=0)db.config.accesos[i]=rec; else db.config.accesos.push(rec); }); try{f.reset();}catch(_){} this.toast(obra?('Acceso asignado: solo '+obra):'Acceso completo asignado'); };
   delAcceso=(email)=>()=>{ this.save(db=>{ db.config.accesos=(db.config.accesos||[]).filter(a=>String(a.email||'').trim().toLowerCase()!==String(email).trim().toLowerCase()); }); this.toast('Acceso eliminado'); };
@@ -4680,14 +4731,14 @@ class Component extends DCLogic {
       var score=function(r){ var a=r.respuestas||{}; var o={d:{},g:0}; for(var i=0;i<DIMS.length;i++){ var d=DIMS[i]; var ss=0; for(var k=0;k<d.items.length;k++){ ss+=(Number(a[d.items[k]])||0); } o.d[d.key]=ss; o.g+=ss; } return o; };
       var nd=function(v,d){ return v>=d.bajo[0]?'Bajo':(v>=d.medio[0]?'Medio':'Alto'); };
       var ng=function(v){ return v>=G.bajo[0]?'Bajo':(v>=G.medio[0]?'Medio':'Alto'); };
-      var col=function(nv){ return nv==='Bajo'?'#2E7D52':(nv==='Medio'?'#B8791A':'#C0392B'); };
-      var bgf=function(nv){ return nv==='Bajo'?'#E4F3EA':(nv==='Medio'?'#FBEFD9':'#FBE7E4'); };
+      var col=function(nv){ return nv==='Bajo'?'#2E7D52':(nv==='Medio'?'#E0A008':'#E5503C'); };
+      var bgf=function(nv){ return nv==='Bajo'?'#E4F3EA':(nv==='Medio'?'#FCEECB':'#FBE1DC'); };
       var sc=fr.map(score); var n=sc.length; var pct=function(x){ return n?Math.round(x/n*100):0; };
       var gd={Bajo:0,Medio:0,Alto:0},gs=0; sc.forEach(function(x){ gd[ng(x.g)]++; gs+=x.g; });
       var gavg=n?Math.round(gs/n):0; var gnv=n?ng(gavg):'\u2014';
       R.psicoHasData=n>0;
       R.psicoGlobal={ n:n, avg:gavg, nivel:gnv, color:col(gnv), bg:bgf(gnv), bajo:gd.Bajo, medio:gd.Medio, alto:gd.Alto, pBajo:pct(gd.Bajo), pMedio:pct(gd.Medio), pAlto:pct(gd.Alto) };
-      R.psicoDims=DIMS.map(function(d){ var vs=sc.map(function(x){ return x.d[d.key]; }); var dist={Bajo:0,Medio:0,Alto:0},tot=0; vs.forEach(function(v){ dist[nd(v,d)]++; tot+=v; }); var avg=n?tot/n:0; var per=avg/d.items.length; var nv=nd(avg,d); return { nombre:d.nombre, avg:avg.toFixed(1), avgPct:Math.round(per/4*100), nivel:nv, color:col(nv), bg:bgf(nv), bajo:dist.Bajo, medio:dist.Medio, alto:dist.Alto, pBajo:pct(dist.Bajo), pMedio:pct(dist.Medio), pAlto:pct(dist.Alto) }; });
+      R.psicoDims=DIMS.map(function(d){ var vs=sc.map(function(x){ return x.d[d.key]; }); var dist={Bajo:0,Medio:0,Alto:0},tot=0; vs.forEach(function(v){ dist[nd(v,d)]++; tot+=v; }); var avg=n?tot/n:0; var per=avg/d.items.length; var nv=nd(avg,d); return { nombre:d.nombre, per:per, avg:avg.toFixed(1), avgPct:Math.round(per/4*100), nivel:nv, color:col(nv), bg:bgf(nv), bajo:dist.Bajo, medio:dist.Medio, alto:dist.Alto, pBajo:pct(dist.Bajo), pMedio:pct(dist.Medio), pAlto:pct(dist.Alto) }; }).sort(function(a,b){ return a.per-b.per; });
       var grp=function(src,fn,label){ var g=src.filter(fn); var s2=g.map(score); var d2={Bajo:0,Medio:0,Alto:0}; s2.forEach(function(x){ d2[ng(x.g)]++; }); var m=s2.length; return { label:label, n:m, pBajo:m?Math.round(d2.Bajo/m*100):0, pMedio:m?Math.round(d2.Medio/m*100):0, pAlto:m?Math.round(d2.Alto/m*100):0 }; };
       R.psicoGenero=[ grp(fr,function(r){ return r.genero==='Masculino'; },'Masculino'), grp(fr,function(r){ return r.genero==='Femenino'; },'Femenino') ].filter(function(x){ return x.n>0; });
       R.psicoGeneroEmpty=R.psicoGenero.length===0;
