@@ -3654,7 +3654,8 @@ class Component extends DCLogic {
     P('<div class="legend"><span><span class="dot" style="background:#1F7A4D"></span>Bajo</span><span><span class="dot" style="background:#E0A008"></span>Medio</span><span><span class="dot" style="background:#E5503C"></span>Alto</span></div>');
     P('<table><tr><th>Dimensi\u00f3n</th><th>Promedio</th><th>Prom./\u00edtem</th><th>Nivel</th><th style="width:150px">Distribuci\u00f3n (Bajo/Medio/Alto)</th></tr>');
     dimSorted.forEach(function(d){ P('<tr><td>'+esc(d.nombre)+'</td><td>'+d.avgTxt+' / '+d.max+'</td><td>'+d.perTxt+' / 4</td><td>'+tag(d.nivel)+'</td><td>'+stack(d.pBajo,d.pMedio,d.pAlto)+'<div class="small muted">'+d.pBajo+'% / '+d.pMedio+'% / '+d.pAlto+'%</div></td></tr>'); });
-    P('</table><p class="small muted">Dimensiones ordenadas de mayor a menor riesgo (por promedio por \u00edtem).</p>');
+    P('</table>');
+    P('<p class="small muted"><b>¿Cómo leer esta tabla?</b> El <b>Promedio</b> es el puntaje promedio de la dimensión (la suma de las respuestas de sus preguntas, cada una de 1 a 4) entre todas las personas, mostrado sobre su máximo posible (n.º de preguntas × 4). El <b>Prom./ítem</b> es ese promedio dividido para el número de preguntas: es la respuesta promedio por pregunta en la escala de 1 a 4, y sirve para comparar dimensiones que tienen distinto número de preguntas. <b>A menor valor, mayor riesgo.</b> La tabla está ordenada de mayor a menor riesgo.</p>');
     var _itemAvg=[]; for(var _qi=1; _qi<=58; _qi++){ var _su=0; for(var _ri=0; _ri<fr.length; _ri++){ _su+=(Number((fr[_ri].respuestas||{})[_qi])||0); } _itemAvg.push({q:_qi, avg:(n?_su/n:0)}); }
     _itemAvg.sort(function(a,b){ return a.avg-b.avg; });
     var _ilvl=function(av){ return av>=3.25?'Bajo':(av>=2?'Medio':'Alto'); };
@@ -3670,24 +3671,39 @@ class Component extends DCLogic {
     P('<table><tr><th>Factor</th><th>Prom./ítem</th><th>Nivel</th><th style="width:150px">Distribución (Bajo/Medio/Alto)</th></tr>');
     _subStats.forEach(function(su){ P('<tr><td>'+esc(su.nombre)+'</td><td>'+su.avgItem.toFixed(2)+' / 4</td><td>'+tag(su.nivel)+'</td><td>'+stack(su.pBajo,su.pMedio,su.pAlto)+'<div class="small muted">'+su.pBajo+'% / '+su.pMedio+'% / '+su.pAlto+'%</div></td></tr>'); });
     P('</table>');
+    if(obra==='TODAS'){
+      var _obm={}; fr.forEach(function(r){ var o=self.canonObraPsico(r.obra)||'(sin obra)'; if(!_obm[o])_obm[o]=[]; _obm[o].push(r); });
+      var _oks=Object.keys(_obm).sort();
+      if(_oks.length>=2){
+        var _sub2=self.psicoSubdims();
+        var _abbr={doblepres:'Doble pres.',estabilidad:'Estabilidad',salud:'Salud percib.',condiciones:'Condiciones',adiccion:'Adicción',acososexual:'Acoso sexual',acosolaboral:'Acoso laboral',acosodiscrim:'Acoso discrim.'};
+        var _h2='<tr><th>Obra</th><th>n</th>'; _sub2.forEach(function(su){ _h2+='<th>'+esc(_abbr[su.key]||su.nombre)+'</th>'; }); _h2+='</tr>';
+        var _b2='';
+        _oks.forEach(function(o){ var g=_obm[o]; var m=g.length; var cs=''; _sub2.forEach(function(su){ var dd={Bajo:0,Medio:0,Alto:0}; g.forEach(function(r){ var a=r.respuestas||{}; var sm=0; for(var k=0;k<su.items.length;k++) sm+=(Number(a[su.items[k]])||0); var av=su.items.length?sm/su.items.length:0; dd[av>=3?'Bajo':(av>=2?'Medio':'Alto')]++; }); var pA=Math.round(dd.Alto/m*100); var lv=(dd.Alto>=dd.Medio&&dd.Alto>=dd.Bajo)?'Alto':((dd.Medio>=dd.Bajo)?'Medio':'Bajo'); cs+='<td style="background:'+bgf(lv)+';color:'+col(lv)+';font-weight:700;text-align:center">'+pA+'%</td>'; }); _b2+='<tr><td>'+esc(o)+'</td><td>'+m+'</td>'+cs+'</tr>'; });
+        P('<h3>Detalle de "Otros puntos importantes" por obra — % con riesgo Alto en cada factor</h3><p class="small muted">Cada celda muestra el porcentaje de personas con riesgo <b>Alto</b> en ese factor, para cada obra (el color indica el nivel predominante del factor en la obra). Para ver el desglose completo de una obra, selecciónela en el filtro de arriba y vuelva a generar el informe.</p><table style="font-size:11px">'+_h2+_b2+'</table>');
+      }
+    }
     P('<h2>4. Principales riesgos identificados</h2>');
     var priores=dimSorted.filter(function(d){ return d.nivel==='Alto'||d.nivel==='Medio'; });
     if(priores.length===0){ P('<p>No se identificaron dimensiones en nivel Medio o Alto. Todas las dimensiones se ubican en nivel <b style="color:#1F7A4D">Bajo</b>, lo que refleja condiciones psicosociales favorables. Se recomienda mantener las buenas pr\u00e1cticas y realizar un monitoreo peri\u00f3dico.</p>'); }
     else { priores.forEach(function(d,idx){ P('<h3>'+(idx+1)+'. '+esc(d.nombre)+' \u2014 '+tag(d.nivel)+' (promedio '+d.perTxt+'/4)</h3><p class="small">'+DESC[d.key]+' El '+d.pAlto+'% de los participantes percibe riesgo Alto y el '+d.pMedio+'% riesgo Medio en esta dimensi\u00f3n. '+INTERP[d.nivel]+'</p>'); }); }
-    P('<h2>5. An\u00e1lisis por g\u00e9nero y por \u00e1rea de trabajo</h2>');
-    P('<h3>Por g\u00e9nero</h3><table><tr><th>Grupo</th><th>n</th><th>Bajo</th><th>Medio</th><th>Alto</th><th style="width:150px">Distribuci\u00f3n</th></tr>');
-    [['Masculino',gMasc],['Femenino',gFem]].forEach(function(t){ var x=t[1]; if(x.n>0) P('<tr><td>'+t[0]+'</td><td>'+x.n+'</td><td>'+x.pBajo+'%</td><td>'+x.pMedio+'%</td><td>'+x.pAlto+'%</td><td>'+stack(x.pBajo,x.pMedio,x.pAlto)+'</td></tr>'); });
-    P('</table>');
-    var _gtop=function(fn,label){ var g=fr.filter(fn); var m=g.length; if(!m) return ''; var arr=DIMS.map(function(d){ var t=0; g.forEach(function(r){ var a=r.respuestas||{}; var s=0; for(var k=0;k<d.items.length;k++) s+=(Number(a[d.items[k]])||0); t+=(d.items.length?s/d.items.length:0); }); var per=t/m; return {nombre:d.nombre, per:per, nivel:(per>=3?'Bajo':(per>=2?'Medio':'Alto'))}; }); arr.sort(function(a,b){ return a.per-b.per; }); var top=arr.slice(0,3).map(function(x){ return esc(x.nombre)+' '+tag(x.nivel); }).join(' &nbsp; '); return '<p class="small"><b>'+label+' — dimensiones de mayor riesgo:</b> '+top+'</p>'; };
-    P('<p class="small muted" style="margin-top:6px">¿En qué dimensiones es más alto el riesgo de cada grupo? (de mayor a menor riesgo):</p>');
-    P(_gtop(function(r){ return r.genero==='Masculino'; },'Masculino'));
-    P(_gtop(function(r){ return r.genero==='Femenino'; },'Femenino'));
-    P('<h3>Por \u00e1rea de trabajo</h3><table><tr><th>\u00c1rea</th><th>n</th><th>Bajo</th><th>Medio</th><th>Alto</th><th style="width:150px">Distribuci\u00f3n</th></tr>');
-    [['Administrativa',aAdm],['Operativa',aOpe]].forEach(function(t){ var x=t[1]; if(x.n>0) P('<tr><td>'+t[0]+'</td><td>'+x.n+'</td><td>'+x.pBajo+'%</td><td>'+x.pMedio+'%</td><td>'+x.pAlto+'%</td><td>'+stack(x.pBajo,x.pMedio,x.pAlto)+'</td></tr>'); });
-    P('</table>');
-    var _dem=function(titulo, field, opts){ var m={}; fr.forEach(function(r){ var v=r[field]; if(v!=null&&v!==''){ m[v]=(m[v]||0)+1; } }); var keys=(opts||[]).filter(function(k){ return m[k]>0; }); Object.keys(m).forEach(function(k){ if(keys.indexOf(k)<0) keys.push(k); }); if(!keys.length) return ''; var row=''; keys.forEach(function(k){ row+='<tr><td>'+esc(k)+'</td><td>'+m[k]+'</td><td>'+pctf(m[k])+'%</td></tr>'; }); return '<div style="flex:1;min-width:220px"><h4 style="margin:10px 0 4px;font-size:12.5px">'+esc(titulo)+'</h4><table style="margin-top:0"><tr><th>'+esc(titulo)+'</th><th>n</th><th>%</th></tr>'+row+'</table></div>'; };
-    P('<h3>Perfil de los participantes</h3>');
-    P('<div style="display:flex;gap:14px;flex-wrap:wrap">'+_dem('Edad','edad',PSICO.datos.edad)+_dem('Antigüedad','antiguedad',PSICO.datos.antiguedad)+_dem('Instrucción','instruccion',PSICO.datos.instruccion)+_dem('Etnia','etnia',PSICO.datos.etnia)+'</div>');
+    P('<h2>5. Análisis del riesgo por categorías</h2>');
+    P('<p class="small muted">Para cada grupo se indica cuántas personas respondieron (n) y qué proporción tiene riesgo <b>global</b> Bajo, Medio o Alto (los tres porcentajes suman 100%). Debajo de cada tabla se resalta el grupo con mayor riesgo, señalando su porcentaje <b style="color:#E5503C">Alto</b> y <b style="color:#E0A008">Medio</b> cuando existen.</p>');
+    var _cat=function(titulo, field, opts){
+      var vals={}; fr.forEach(function(r){ var v=r[field]; if(v==null||v==='') return; if(!vals[v]) vals[v]=[]; vals[v].push(r); });
+      var keys=Object.keys(vals); if(!keys.length) return;
+      if(opts&&opts.length){ keys.sort(function(a,b){ var ia=opts.indexOf(a),ib=opts.indexOf(b); if(ia<0)ia=99; if(ib<0)ib=99; return (ia-ib)||(a<b?-1:1); }); } else { keys.sort(); }
+      var body=''; var worst=null;
+      keys.forEach(function(v){ var g=vals[v]; var m=g.length; var dd={Bajo:0,Medio:0,Alto:0}; g.forEach(function(r){ dd[ng(score(r).g)]++; }); var pB=Math.round(dd.Bajo/m*100),pM=Math.round(dd.Medio/m*100),pA=Math.round(dd.Alto/m*100); body+='<tr><td>'+esc(v)+'</td><td>'+m+'</td><td>'+pB+'%</td><td>'+pM+'%</td><td>'+pA+'%</td><td>'+stack(pB,pM,pA)+'</td></tr>'; var sev=pA*1000+pM; if(!worst||sev>worst.sev) worst={v:v,pA:pA,pM:pM,sev:sev}; });
+      var hl=''; if(worst){ var pr=[]; if(worst.pA>0) pr.push('<b style="color:#E5503C">Alto '+worst.pA+'%</b>'); if(worst.pM>0) pr.push('<b style="color:#E0A008">Medio '+worst.pM+'%</b>'); hl='<p class="small"><b>Mayor riesgo en '+esc(titulo.toLowerCase())+':</b> '+esc(worst.v)+(pr.length?(' — '+pr.join(', ')):' — sin riesgo Medio ni Alto')+'.</p>'; }
+      P('<h3>'+esc(titulo)+'</h3><table><tr><th>'+esc(titulo)+'</th><th>n</th><th>Bajo</th><th>Medio</th><th>Alto</th><th style="width:150px">Distribución (Bajo/Medio/Alto)</th></tr>'+body+'</table>'+hl);
+    };
+    _cat('Género','genero',null);
+    _cat('Área de trabajo','area',null);
+    _cat('Edad','edad',PSICO.datos.edad);
+    _cat('Antigüedad','antiguedad',PSICO.datos.antiguedad);
+    _cat('Nivel de instrucción','instruccion',PSICO.datos.instruccion);
+    _cat('Etnia','etnia',PSICO.datos.etnia);
     P('<h2>6. Respuestas recibidas (fechas)</h2><p class="small muted">Registro an\u00f3nimo de las respuestas recibidas para esta obra.</p>');
     P('<table><tr><th style="width:40px">#</th><th>Fecha de recepci\u00f3n</th><th>\u00c1rea</th><th>G\u00e9nero</th><th>Riesgo global</th></tr>');
     var frsorted=fr.slice().sort(function(a,b){ return (a.created_at||'').localeCompare(b.created_at||''); });
