@@ -729,6 +729,11 @@ window.WORKERS_SEED = [{"cedula":"0926211590","nombre":"ABAD GUTIERREZ PAULINA",
             </div>
             <button onClick="{{ addWorker }}" style="display:inline-flex;align-items:center;gap:6px;background:#F2B200;color:#2C2A28;border:none;border-radius:9px;padding:11px 16px;font-weight:700;font-size:13.5px;cursor:pointer"><span class="ms" style="font-size:19px">person_add</span> Nuevo trabajador</button>
           </div>
+          <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">
+            <button onClick="{{ setTrabViewLista }}" style="{{ tabListaStyle }}"><span class="ms" style="font-size:17px">list</span> Lista de trabajadores</button>
+            <button onClick="{{ setTrabViewIngresos }}" style="{{ tabIngresosStyle }}"><span class="ms" style="font-size:17px">event_available</span> Ingresos por mes</button>
+          </div>
+          <sc-if value="{{ trabModoLista }}" hint-placeholder-val="{{ true }}">
           <div style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap">
             <div style="position:relative;flex:1;min-width:260px">
               <span class="ms" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#a59e96;font-size:20px">search</span>
@@ -766,6 +771,29 @@ window.WORKERS_SEED = [{"cedula":"0926211590","nombre":"ABAD GUTIERREZ PAULINA",
               </sc-if>
             </div>
           </div>
+          </sc-if>
+          <sc-if value="{{ trabModoIngresos }}" hint-placeholder-val="">
+            <div style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;align-items:center">
+              <label style="font-size:13px;font-weight:600;color:#6b655f;display:flex;align-items:center;gap:8px">Mes<input type="month" value="{{ ingresoMes }}" onChange="{{ setIngresoMes }}" style="padding:11px 12px;border:1px solid #E0DBD4;border-radius:10px;font-size:14px;background:#fff" /></label>
+              <sc-if value="{{ showObras }}" hint-placeholder-val=""><sc-raw-select value="{{ obraFilter }}" onChange="{{ setObraFilter }}" style="padding:12px 14px;border:1px solid #E0DBD4;border-radius:10px;font-size:14px;background:#fff;min-width:200px"><option value="TODAS">Todas las obras</option><sc-for list="{{ obras }}" as="o" hint-placeholder-count="6"><option value="{{ o }}">{{ o }}</option></sc-for></sc-raw-select></sc-if>
+              <button onClick="{{ exportIngresos }}" style="display:inline-flex;align-items:center;gap:6px;background:#1F7A4D;color:#fff;border:none;border-radius:9px;padding:11px 16px;font-weight:700;font-size:13px;cursor:pointer"><span class="ms" style="font-size:18px">download</span> Exportar a Excel</button>
+              <div style="margin-left:auto;font-weight:700;color:#423D3B">{{ ingresosTotalLabel }}</div>
+            </div>
+            <sc-for list="{{ ingresosPorObra }}" as="g" hint-placeholder-count="3">
+              <div style="background:#fff;border:1px solid #E6E2DD;border-radius:13px;overflow:hidden;margin-bottom:14px">
+                <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 18px;background:#FAF9F7;border-bottom:1px solid #EDE9E4"><span style="font-weight:700;font-size:14.5px;color:#423D3B">{{ g.obra }}</span><span style="font-weight:700;color:#1F7A4D">{{ g.n }} ingreso(s)</span></div>
+                <div style="display:grid;grid-template-columns:130px 1fr 140px;gap:10px;padding:10px 18px;background:#fff;border-bottom:1px solid #F2EFEA;font-size:11.5px;font-weight:700;color:#8C857E;text-transform:uppercase;letter-spacing:.03em"><div>Cédula</div><div>Nombre</div><div>Fecha de ingreso</div></div>
+                <sc-for list="{{ g.personas }}" as="pp" hint-placeholder-count="4">
+                  <div style="display:grid;grid-template-columns:130px 1fr 140px;gap:10px;padding:10px 18px;border-bottom:1px solid #F6F3EE;font-size:13.5px;align-items:center">
+                    <div style="font-variant-numeric:tabular-nums;color:#5b554f">{{ pp.cedula }}</div><div style="font-weight:600">{{ pp.nombre }}</div><div style="color:#5b554f;font-variant-numeric:tabular-nums">{{ pp.fecha }}</div>
+                  </div>
+                </sc-for>
+              </div>
+            </sc-for>
+            <sc-if value="{{ ingresosEmpty }}" hint-placeholder-val="">
+              <div style="padding:44px;text-align:center;color:#8C857E;font-size:14px;background:#fff;border:1px solid #E6E2DD;border-radius:13px">No hubo ingresos de personal en {{ ingresoMesLabel }}{{ ingresoObraLabel }}.</div>
+            </sc-if>
+          </sc-if>
         </div>
       </sc-if>
 
@@ -2701,7 +2729,7 @@ class Component extends DCLogic {
     this.state={
       authed:false, loginErr:'', db,
       bootLoading:true, signingIn:false, syncing:false, syncFail:false, lastSync:'', lastSnap:'', cloudError:'', userEmail:'',
-      view:'dashboard', search:'', obraFilter:'TODAS', estadoFilter:'A', navHidden:false,
+      view:'dashboard', search:'', obraFilter:'TODAS', estadoFilter:'A', navHidden:false, trabView:'lista', ingresoMes:'',
       ficha:{cedula:'',ap1:'',ap2:'',nom1:'',nom2:'',sexo:'Hombre',fechaNac:'',edad:'',lateralidad:'Derecho',puesto:'',tipoEval:'INGRESO',antPer:'',antFam:'',transf:'SI',fuma:'NO',cuantoFuma:'',alcohol:'NO',frecAlcohol:'',actividad:'NO',tipoAct:'',frecAct:'',temp:'',pa:'',fc:'',fr:'',sato2:'',peso:'',talla:'',imc:'',aptitud:'APTO'},
       selectedCedula:null, perfilTab:'datos', subiendoInforme:false,
       modalType:null, modalEditId:null, modalCedula:null, modalAdjunto:null, modalFotos:[], modalNotaAccId:null, savingAdj:false, migRunning:false, migEstado:'', syncPending:null, syncResumen:'', grupoPrior:null, fotosView:null, chatOpen:false, chatMsgs:[], chatLoading:false,
@@ -4508,6 +4536,26 @@ class Component extends DCLogic {
     {key:'acosolaboral',nombre:'Acoso laboral',items:[41,50],def:'Forma de acoso psicológico: hostigamiento intencional, repetitivo y focalizado, mediante acciones crueles o maliciosas, para humillar o desestabilizar a una persona o a un grupo de trabajadoras/es.'},
     {key:'acosodiscrim',nombre:'Acoso discriminatorio',items:[35,38,53,56],def:'Trato desigual, exclusión o preferencia hacia una persona por su identidad de género, orientación sexual, edad, discapacidad, estado de salud, etnia, idioma, religión, nacionalidad, ideología, opinión política, estado civil, gestación, lactancia u otra condición, que anule o limite el ejercicio de sus derechos, tanto en la selección como durante la relación laboral.'}
   ]; }
+  setIngresoMes=(e)=>this.setState({ingresoMes:e.target.value});
+  setTrabView=(v)=>()=>this.setState({trabView:v});
+  _mesIngreso(f){ var s=String(f||'').trim(); var m=s.match(/^(\d{4})-(\d{2})/); if(m) return m[1]+'-'+m[2]; m=s.match(/^(\d{2})[\/\-](\d{2})[\/\-](\d{4})/); if(m) return m[3]+'-'+m[2]; return ''; }
+  _mesLabel(ym){ if(!/^\d{4}-\d{2}$/.test(String(ym||''))) return ym||''; var M=['','enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre']; return M[parseInt(ym.slice(5,7),10)]+' de '+ym.slice(0,4); }
+  exportIngresos=async ()=>{
+    var self=this; var s=this.state; var db=this.scopedDb(); var im=s.ingresoMes||this.todayISO().slice(0,7);
+    var rows=(db.workers||[]).filter(function(w){ return self._mesIngreso(w.fechaIngreso)===im && (s.obraFilter==='TODAS'||w.obra===s.obraFilter); });
+    if(!rows.length){ this.toast('No hay ingresos para exportar en ese mes.'); return; }
+    rows.sort(function(a,b){ var oa=(a.obra||''),ob=(b.obra||''); if(oa!==ob) return oa<ob?-1:1; return (String(a.fechaIngreso||'')<String(b.fechaIngreso||''))?-1:1; });
+    if(!window.ExcelJS){ this.toast('No se pudo preparar el Excel. Recargue la p\u00e1gina.'); return; }
+    var wb=new window.ExcelJS.Workbook(); var ws=wb.addWorksheet('Ingresos');
+    ws.addRow(['Obra','C\u00e9dula','Nombre','Fecha de ingreso','Cargo','Estado']);
+    ws.getRow(1).font={bold:true};
+    var estL={A:'Activo',I:'Inactivo',R:'Retirado'};
+    rows.forEach(function(w){ ws.addRow([w.obra||'', w.cedula||'', w.nombre||'', self.fmt(w.fechaIngreso), w.cargo||'', estL[w.estado||'A']||(w.estado||'')]); });
+    ws.columns=[{width:30},{width:14},{width:34},{width:16},{width:24},{width:12}];
+    var buf=await wb.xlsx.writeBuffer();
+    this.download('Ingresos_'+im+(s.obraFilter!=='TODAS'?('_'+String(s.obraFilter).replace(/[^a-zA-Z0-9]/g,'_')):'')+'.xlsx', buf, 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    this.toast('Excel de ingresos descargado.');
+  };
   saveConfig=(e)=>{ e.preventDefault(); const f=e.target; const nombre=f.elements.nombre.value.trim(), registro=f.elements.registro.value.trim(); const wa=(f.elements.whatsapp?f.elements.whatsapp.value:'').replace(/[^0-9]/g,''); this.save(db=>{db.config.medicoNombre=nombre;db.config.medicoRegistro=registro;db.config.whatsappMedico=wa;}); this.toast('Configuración guardada'); };
   addAcceso=(e)=>{ e.preventDefault(); const f=e.target; const email=String(f.elements.email.value||'').trim().toLowerCase(); var obraSel=String(f.elements.obra.value||'').trim(); if(!email){ alert('Ingrese el correo del usuario.'); return; } if(!obraSel){ alert('Seleccione el tipo de acceso.'); return; } var obra=(obraSel==='__ALL__')?'':obraSel; this.save(db=>{ if(!db.config.accesos)db.config.accesos=[]; const i=db.config.accesos.findIndex(a=>String(a.email||'').trim().toLowerCase()===email); const rec={email:email,obra:obra}; if(i>=0)db.config.accesos[i]=rec; else db.config.accesos.push(rec); }); try{f.reset();}catch(_){} this.toast(obra?('Acceso asignado: solo '+obra):'Acceso completo asignado'); };
   delAcceso=(email)=>()=>{ this.save(db=>{ db.config.accesos=(db.config.accesos||[]).filter(a=>String(a.email||'').trim().toLowerCase()!==String(email).trim().toLowerCase()); }); this.toast('Acceso eliminado'); };
@@ -4620,6 +4668,16 @@ class Component extends DCLogic {
       R.estadoFilter=s.estadoFilter; R.setEstadoFilter=this.setEstadoFilter; R.addWorker=this.openModal('trabajador',null);
       const ef={A:'activos',I:'inactivos',R:'retirados',TODOS:'en total'}[s.estadoFilter]||'';
       R.trabCountLabel=list.length+' trabajadores '+ef+(s.obraFilter!=='TODAS'?(' · '+s.obraFilter):'');
+      var _self=this; var _im=s.ingresoMes||this.todayISO().slice(0,7);
+      R.ingresoMes=_im; R.trabView=s.trabView||'lista'; R.trabModoLista=(R.trabView!=='ingresos'); R.trabModoIngresos=(R.trabView==='ingresos');
+      R.setTrabViewLista=this.setTrabView('lista'); R.setTrabViewIngresos=this.setTrabView('ingresos'); R.setIngresoMes=this.setIngresoMes; R.exportIngresos=this.exportIngresos;
+      var _tabOn='display:inline-flex;align-items:center;gap:6px;background:#2C2A28;color:#fff;border:none;border-radius:9px;padding:10px 16px;font-weight:700;font-size:13px;cursor:pointer';
+      var _tabOff='display:inline-flex;align-items:center;gap:6px;background:#fff;color:#6b655f;border:1px solid #E0DBD4;border-radius:9px;padding:10px 16px;font-weight:700;font-size:13px;cursor:pointer';
+      R.tabListaStyle=R.trabModoLista?_tabOn:_tabOff; R.tabIngresosStyle=R.trabModoIngresos?_tabOn:_tabOff;
+      var _ing=(db.workers||[]).filter(function(w){ return _self._mesIngreso(w.fechaIngreso)===_im && (s.obraFilter==='TODAS'||w.obra===s.obraFilter); });
+      var _byO={}; _ing.forEach(function(w){ var o=w.obra||'(sin obra)'; if(!_byO[o])_byO[o]=[]; _byO[o].push({cedula:w.cedula||'', nombre:w.nombre||'', fecha:_self.fmt(w.fechaIngreso)}); });
+      R.ingresosPorObra=Object.keys(_byO).sort().map(function(o){ return { obra:o, n:_byO[o].length, personas:_byO[o].slice().sort(function(a,b){ return (a.fecha<b.fecha?-1:1); }) }; });
+      R.ingresosEmpty=(_ing.length===0); R.ingresosTotalLabel=_ing.length+' ingreso(s) en '+this._mesLabel(_im); R.ingresoMesLabel=this._mesLabel(_im); R.ingresoObraLabel=(s.obraFilter!=='TODAS'?(' en '+s.obraFilter):'');
     }
 
     if(isPerfil){
