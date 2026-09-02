@@ -2555,7 +2555,7 @@ window.WORKERS_SEED = [{"cedula":"0926211590","nombre":"ABAD GUTIERREZ PAULINA",
         </div>
         <div style="display:flex;justify-content:flex-end;gap:10px;padding:16px 22px;border-top:1px solid #EDE9E4;position:sticky;bottom:0;background:#fff;border-radius:0 0 15px 15px">
           <button type="button" onClick="{{ closeModal }}" style="padding:11px 18px;background:#F4F2EE;border:none;border-radius:9px;font-weight:600;font-size:14px;cursor:pointer;color:#5b554f">Cancelar</button>
-          <button type="submit" style="padding:11px 22px;background:#F2B200;color:#2C2A28;border:none;border-radius:9px;font-weight:700;font-size:14px;cursor:pointer">Guardar</button>
+          <button type="submit" disabled="{{ savingAdj }}" style="padding:11px 22px;background:#F2B200;color:#2C2A28;border:none;border-radius:9px;font-weight:700;font-size:14px;cursor:pointer">{{ saveBtnLabel }}</button>
         </div>
       </form>
     </div>
@@ -3017,18 +3017,40 @@ class Component extends DCLogic {
       alert('Este registro no tiene un archivo adjunto disponible.');
     }catch(err){ alert('No se pudo abrir el adjunto. '+((err&&err.message)||'')); }
   };
+  _uploadAdjuntoObj=async (a, tipo, recId)=>{
+    if(!a) return null;
+    if(!a.file) return a;
+    var sb=getSB(); if(!sb) throw new Error('sin conexión');
+    var safe=String(a.name||'archivo').replace(/[^a-zA-Z0-9._-]/g,'_');
+    var path=tipo+'/'+recId+'_'+Date.now()+'_'+safe;
+    var uploadP=sb.storage.from(BUCKET).upload(path, a.file, { contentType:a.type||'application/octet-stream', upsert:true });
+    var toP=new Promise(function(_,rej){ setTimeout(function(){ rej(new Error('tiempo de espera agotado')); }, 30000); });
+    var res=await Promise.race([uploadP, toP]);
+    if(res && res.error) throw res.error;
+    return { name:a.name, type:a.type, size:a.size, path:path };
+  };
   resolveAdjunto=async (tipo, recId)=>{
     const a=this.state.modalAdjunto;
     if(!a) return null;
     if(!a.file) return a;
-    const sb=getSB(); if(!sb) throw new Error('sin conexión');
     const safe=String(a.name||'archivo').replace(/[^a-zA-Z0-9._-]/g,'_');
     const path=tipo+'/'+recId+'_'+Date.now()+'_'+safe;
-    this.setState({savingAdj:true});
-    const { error } = await sb.storage.from(BUCKET).upload(path, a.file, { contentType:a.type||'application/octet-stream', upsert:true });
-    this.setState({savingAdj:false});
-    if(error) throw error;
-    return { name:a.name, type:a.type, size:a.size, path:path };
+    var uploaded=false, upErr=null; var sb=getSB();
+    if(sb){
+      this.setState({savingAdj:true});
+      try{
+        var uploadP=sb.storage.from(BUCKET).upload(path, a.file, { contentType:a.type||'application/octet-stream', upsert:true });
+        var toP=new Promise(function(_,rej){ setTimeout(function(){ rej(new Error('tiempo de espera agotado')); }, 30000); });
+        var res=await Promise.race([uploadP, toP]);
+        if(res && res.error){ upErr=res.error; } else { uploaded=true; }
+      }catch(e){ upErr=e; }
+      this.setState({savingAdj:false});
+    } else { upErr=new Error('sin conexión'); }
+    if(uploaded) return { name:a.name, type:a.type, size:a.size, path:path };
+    var det=(upErr&&upErr.message)?(' ('+upErr.message+')'):'';
+    if(!confirm('No se pudo subir el archivo al almacenamiento en la nube'+det+'.\n\n¿Desea guardarlo DENTRO de la base de datos como alternativa, para no perderlo? Funciona igual y más adelante se puede mover al almacenamiento.')){ throw new Error('Subida cancelada por el usuario.'); }
+    var dataUrl=await new Promise(function(resolve,reject){ var fr=new FileReader(); fr.onload=function(){ resolve(fr.result); }; fr.onerror=function(){ reject(new Error('no se pudo leer el archivo')); }; try{ fr.readAsDataURL(a.file); }catch(e){ reject(e); } });
+    return { name:a.name, type:a.type, size:a.size, data:dataUrl };
   };
   onFotosChange=(e)=>{
     const files=Array.prototype.slice.call(e.target.files||[]);
@@ -3157,10 +3179,20 @@ class Component extends DCLogic {
       if(!id && (Number(rec.dias)||0)>=4){ this.notificarDescansoWhatsApp(rec); }
     } else if(t==='ficha'){
       var fced=cedula||this.state.selectedCedula; if(!fced){ alert('No se pudo identificar al trabajador. Abra la ficha desde el perfil del trabajador e intente de nuevo.'); return; }
-      const rid=id||this.uid();
-      let adjunto; try{ adjunto=await this.resolveAdjunto('ficha', rid); }catch(err){ this.setState({savingAdj:false}); alert('No se pudo subir el certificado: '+((err&&err.message)||err)+' Verifique su conexión e intente de nuevo.'); return; }
-      const rec={id:rid,cedula:fced,tipo:g('tipo'),aptitud:g('aptitud'),fecha:g('fecha')||this.todayISO(),vence:g('vence'),restricciones:g('restricciones'),riesgos:g('riesgos'),adjunto};
-      this.save(db=>{const i=db.fichas.findIndex(x=>x.id===rec.id); if(i>=0)db.fichas[i]=rec; else db.fichas.unshift(rec);});
+      var rid=id||this.uid();
+      var baseRec={id:rid,cedula:fced,tipo:g('tipo'),aptitud:g('aptitud'),fecha:g('fecha')||this.todayISO(),vence:g('vence'),restricciones:g('restricciones'),riesgos:g('riesgos')};
+      var adjCap=this.state.modalAdjunto; var hadFile=!!(adjCap&&adjCap.file); var self=this;
+      this.closeModal();
+      this.toast(hadFile?'Guardando ficha y subiendo certificado\u2026':'Guardando ficha\u2026');
+      var saveRec=function(adjunto){ self.save(function(db){ if(!db.fichas)db.fichas=[]; var rec=Object.assign({},baseRec,{adjunto:(adjunto||null)}); var i=db.fichas.findIndex(function(x){return x.id===rid;}); if(i>=0)db.fichas[i]=rec; else db.fichas.unshift(rec); }); };
+      if(!hadFile){ saveRec(adjCap||null); self.toast('Ficha guardada'); return; }
+      this._uploadAdjuntoObj(adjCap,'ficha',rid).then(function(adj){ saveRec(adj); self.toast('Ficha y certificado guardados'); }).catch(function(err){
+        var fr=new FileReader();
+        fr.onload=function(){ saveRec({name:adjCap.name,type:adjCap.type,size:adjCap.size,data:fr.result}); self.toast('Ficha guardada. El certificado se guard\u00f3 dentro de la base de datos (hubo un problema con el almacenamiento).'); };
+        fr.onerror=function(){ saveRec(null); self.toast('Se guard\u00f3 la ficha, pero el certificado no se pudo guardar. Intente cargarlo de nuevo.'); };
+        try{ fr.readAsDataURL(adjCap.file); }catch(e){ saveRec(null); self.toast('Se guard\u00f3 la ficha, pero el certificado no se pudo guardar.'); }
+      });
+      return;
     } else if(t==='accidente'){
       const ced=cedula||g('cedula');
       const prev = id ? (this.state.db.accidentes.find(x=>x.id===id)||{}) : {};
@@ -4633,7 +4665,7 @@ class Component extends DCLogic {
     R.isMC=s.modalType==='consulta'; R.isMD=s.modalType==='descanso'; R.isMF=s.modalType==='ficha'; R.isME=s.modalType==='especial';
     R.isMA=s.modalType==='accidente'; R.isMV=s.modalType==='vacuna'; R.isMK=s.modalType==='capacitacion'; R.isMB=s.modalType==='botiquin'; R.isMW=s.modalType==='trabajador'; R.mwEditing=!!(s.modalCedula && (this.state.db.workers||[]).some(w=>String(w.cedula)===String(s.modalCedula))); R.isMN=s.modalType==='nota'; R.isMNA=s.modalType==='notaAcc'; R.isMAL=s.modalType==='alerta';
     R.maGlobal = R.isMA && !s.modalCedula;
-    R.closeModal=this.closeModal; R.closeModalBg=this.closeModalBg; R.stop=this.stop; R.submitModal=this.submitModal;
+    R.closeModal=this.closeModal; R.closeModalBg=this.closeModalBg; R.stop=this.stop; R.submitModal=this.submitModal; R.savingAdj=!!s.savingAdj; R.saveBtnLabel=s.savingAdj?'Guardando\u2026':'Guardar';
     R.fotosSel=(s.modalFotos||[]).map((f,idx)=>({name:f.name||'foto',remove:this.removeFoto(idx)})); R.fotosSelCount=(s.modalFotos||[]).length;
     const titles={consulta:'Registrar consulta médica',descanso:'Registrar descanso médico',ficha:'Ficha médica / aptitud',especial:'Condición especial',accidente:'Registrar accidente de trabajo',vacuna:'Registrar vacuna',capacitacion:'Registrar capacitación',botiquin:'Ítem de botiquín',nota:'Nota evolutiva / seguimiento',notaAcc:'Nota de seguimiento del caso',alerta:'Alerta / pendiente'};
     R.modalTitle = s.modalType==='trabajador' ? (s.modalCedula?'Editar trabajador':'Nuevo trabajador') : ((s.modalEditId?'Editar — ':'')+(titles[s.modalType]||''));
