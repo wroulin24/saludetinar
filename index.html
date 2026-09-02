@@ -3139,6 +3139,7 @@ class Component extends DCLogic {
 
   submitModal=async (e)=>{
     e.preventDefault();
+    try{
     const f=e.target, t=this.state.modalType, cedula=this.state.modalCedula, id=this.state.modalEditId;
     const g=n=>{ let el=(f.elements.namedItem?f.elements.namedItem(n):f.elements[n]); if(!el||typeof el==='function') el=f.querySelector('[name="'+n+'"]'); if(!el) return ''; return el.type==='checkbox'?el.checked:String(el.value==null?'':el.value).trim(); };
     const num=n=>{ const v=g(n); return v===''?'':Number(v); };
@@ -3155,10 +3156,10 @@ class Component extends DCLogic {
       this.save(db=>{const i=db.descansos.findIndex(x=>x.id===rec.id); if(i>=0)db.descansos[i]=rec; else db.descansos.unshift(rec);});
       if(!id && (Number(rec.dias)||0)>=4){ this.notificarDescansoWhatsApp(rec); }
     } else if(t==='ficha'){
-      if(!cedula) return;
+      var fced=cedula||this.state.selectedCedula; if(!fced){ alert('No se pudo identificar al trabajador. Abra la ficha desde el perfil del trabajador e intente de nuevo.'); return; }
       const rid=id||this.uid();
-      let adjunto; try{ adjunto=await this.resolveAdjunto('ficha', rid); }catch(err){ this.setState({savingAdj:false}); alert('No se pudo subir el archivo adjunto. Verifique su conexión e intente de nuevo.'); return; }
-      const rec={id:rid,cedula,tipo:g('tipo'),aptitud:g('aptitud'),fecha:g('fecha')||this.todayISO(),vence:g('vence'),restricciones:g('restricciones'),riesgos:g('riesgos'),adjunto};
+      let adjunto; try{ adjunto=await this.resolveAdjunto('ficha', rid); }catch(err){ this.setState({savingAdj:false}); alert('No se pudo subir el certificado: '+((err&&err.message)||err)+' Verifique su conexión e intente de nuevo.'); return; }
+      const rec={id:rid,cedula:fced,tipo:g('tipo'),aptitud:g('aptitud'),fecha:g('fecha')||this.todayISO(),vence:g('vence'),restricciones:g('restricciones'),riesgos:g('riesgos'),adjunto};
       this.save(db=>{const i=db.fichas.findIndex(x=>x.id===rec.id); if(i>=0)db.fichas[i]=rec; else db.fichas.unshift(rec);});
     } else if(t==='accidente'){
       const ced=cedula||g('cedula');
@@ -3205,6 +3206,7 @@ class Component extends DCLogic {
       this.save(db=>{db.especiales[cedula]=rec;});
     }
     this.closeModal(); this.toast('Registro guardado');
+    }catch(_err){ this.setState({savingAdj:false}); alert('No se pudo guardar el registro: '+((_err&&_err.message)||_err)); }
   };
   delRecord=(type,id)=>()=>{
     if(!confirm('¿Eliminar este registro? Esta acción no se puede deshacer.')) return;
