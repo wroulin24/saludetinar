@@ -4306,12 +4306,13 @@ class Component extends DCLogic {
   }
   _normCed(c){ return String(c===null||c===undefined?'':c).replace(/[^0-9]/g,'').replace(/^0+/,''); }
   _obraProtegida(o){ var up=String(o||'').trim().toUpperCase(); return up.indexOf('SOLCA')>=0 || up.indexOf('MAQUINARIA')>=0; }
-  descargarVistaPreviaSync(toCreate,toDeact,toReactivate,newObras,unchanged,sinCedula,totalExcel){
+  descargarVistaPreviaSync(toCreate,toDeact,toReactivate,updateObra,newObras,unchanged,sinCedula,totalExcel){
     var esc=function(s){ return String(s===undefined||s===null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); };
     var estLabel=function(e){ return ({A:'Activo',I:'Inactivo',R:'Retirado'})[e]||(e||'Activo'); };
     var rowsC=toCreate.map(function(w){ return '<tr><td>'+esc(w.cedula)+'</td><td>'+esc(w.nombre)+'</td><td>'+esc(w.obra)+'</td><td>'+esc(w.cargo)+'</td></tr>'; }).join('');
     var rowsD=toDeact.map(function(w){ return '<tr><td>'+esc(w.cedula)+'</td><td>'+esc(w.nombre)+'</td><td>'+esc(w.obra)+'</td><td>'+esc(w.cargo)+'</td></tr>'; }).join('');
     var rowsR=toReactivate.map(function(w){ return '<tr><td>'+esc(w.cedula)+'</td><td>'+esc(w.nombre)+'</td><td>'+esc(w.obra)+'</td><td>'+esc(estLabel(w.estado))+'</td></tr>'; }).join('');
+    var rowsU=(updateObra||[]).map(function(w){ return '<tr><td>'+esc(w.cedula)+'</td><td>'+esc(w.nombre)+'</td><td>'+esc(w.de)+'</td><td>'+esc(w.a)+'</td></tr>'; }).join('');
     var H=''
       +'<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'
       +'<title>Vista previa - actualización de listado</title>'
@@ -4325,6 +4326,7 @@ class Component extends DCLogic {
       +'<div class="green">Se crearán (nuevos): <span class="k">'+toCreate.length+'</span></div>'
       +'<div class="blue">Se reactivarán (vuelven al listado): <span class="k">'+toReactivate.length+'</span></div>'
       +'<div class="amber">Se marcarán como INACTIVOS: <span class="k">'+toDeact.length+'</span></div>'
+      +'<div style="color:#8A5A00">Cambiarán de obra: <span class="k">'+((updateObra||[]).length)+'</span></div>'
       +'<div class="gray">Sin cambios (ya activos): <span class="k">'+unchanged+'</span></div>'
       +'<div>Obras nuevas que se agregarán al catálogo: <span class="k">'+(newObras.length?esc(newObras.join(', ')):'ninguna')+'</span></div>'
       +'<div style="color:#1565C0">Obras protegidas (no se inactivan aquí): <span class="k">Maquinarias y Solca Machala</span></div>'
@@ -4335,6 +4337,9 @@ class Component extends DCLogic {
       +'<h2 class="blue">Trabajadores que se reactivarán ('+toReactivate.length+')</h2>'
       +'<p>Estaban inactivos o retirados en la plataforma y vuelven a aparecer en el Excel.</p>'
       +(toReactivate.length?('<table><tr><th>Cédula</th><th>Nombre</th><th>Obra</th><th>Estado anterior</th></tr>'+rowsR+'</table>'):'<p>Ninguno.</p>')
+      +'<h2 style="color:#8A5A00">Trabajadores que cambiarán de obra ('+((updateObra||[]).length)+')</h2>'
+      +'<p>En el Excel aparecen en una obra distinta a la que tienen en la plataforma; se actualizará su obra a la del Excel.</p>'
+      +((updateObra||[]).length?('<table><tr><th>Cédula</th><th>Nombre</th><th>Obra actual</th><th>Nueva obra (Excel)</th></tr>'+rowsU+'</table>'):'<p>Ninguno.</p>')
       +'<h2 class="amber">Trabajadores que se marcarán como INACTIVOS ('+toDeact.length+')</h2>'
       +'<p>Estaban activos en la plataforma pero ya no aparecen en el Excel.</p>'
       +(toDeact.length?('<table><tr><th>Cédula</th><th>Nombre</th><th>Obra</th><th>Cargo</th></tr>'+rowsD+'</table>'):'<p>Ninguno.</p>')
@@ -4374,9 +4379,12 @@ class Component extends DCLogic {
           var reactivateKeys={}; toReactivate.forEach(function(w){ reactivateKeys[self._normCed(w.cedula)]=true; });
           var curObras=(db.config&&db.config.obras)?db.config.obras.slice():[];
           var newObras=[]; toCreate.forEach(function(w){ if(w.obra && curObras.indexOf(w.obra)<0 && newObras.indexOf(w.obra)<0) newObras.push(w.obra); });
-          var resumen='Del Excel: '+excel.length+' trabajadores. Se crearán '+toCreate.length+' nuevos, se reactivarán '+toReactivate.length+', se marcarán como INACTIVOS '+toDeact.length+' y '+unchanged+' quedan igual.';
-          self.setState({ syncPending:{ toCreate:toCreate, deactKeys:deactKeys, reactivateKeys:reactivateKeys, newObras:newObras, counts:{ excel:excel.length, crear:toCreate.length, reactivar:toReactivate.length, inactivar:toDeact.length, sinCambios:unchanged, sinCedula:sinCedula } }, syncResumen:resumen });
-          self.descargarVistaPreviaSync(toCreate, toDeact, toReactivate, newObras, unchanged, sinCedula, excel.length);
+          var excelObraByKey={}; excel.forEach(function(w){ excelObraByKey[self._normCed(w.cedula)]=w.obra; });
+          var updateObra=[]; var updateObraMap={};
+          current.forEach(function(w){ if(!w.cedula) return; var key=self._normCed(w.cedula); var eo=excelObraByKey[key]; if(eo && self._normObraTxt(w.obra)!==self._normObraTxt(eo)){ updateObra.push({cedula:w.cedula, nombre:w.nombre, de:(w.obra||''), a:eo}); updateObraMap[key]=eo; if(curObras.indexOf(eo)<0 && newObras.indexOf(eo)<0) newObras.push(eo); } });
+          var resumen='Del Excel: '+excel.length+' trabajadores. Se crearán '+toCreate.length+' nuevos, se reactivarán '+toReactivate.length+', se marcarán como INACTIVOS '+toDeact.length+', '+updateObra.length+' cambiarán de obra y '+unchanged+' quedan igual.';
+          self.setState({ syncPending:{ toCreate:toCreate, deactKeys:deactKeys, reactivateKeys:reactivateKeys, updateObraMap:updateObraMap, newObras:newObras, counts:{ excel:excel.length, crear:toCreate.length, reactivar:toReactivate.length, inactivar:toDeact.length, moverObra:updateObra.length, sinCambios:unchanged, sinCedula:sinCedula } }, syncResumen:resumen });
+          self.descargarVistaPreviaSync(toCreate, toDeact, toReactivate, updateObra, newObras, unchanged, sinCedula, excel.length);
           self.toast('Vista previa descargada. Revísela y luego pulse Aplicar cambios.');
         }).catch(function(err){ alert('No se pudo leer el Excel: '+((err&&err.message)||err)); });
       }catch(err){ alert('Error al procesar el Excel: '+((err&&err.message)||err)); }
@@ -4388,17 +4396,17 @@ class Component extends DCLogic {
     var sp=this.state.syncPending;
     if(!sp){ alert('Primero pulse Actualizar listado (Excel) y elija el archivo.'); return; }
     var c=sp.counts; var self=this;
-    if(!confirm('Se van a aplicar estos cambios:\n\n• Crear '+c.crear+' trabajadores nuevos\n• Reactivar '+c.reactivar+' trabajadores\n• Marcar como INACTIVOS '+c.inactivar+' trabajadores\n• Dejar sin cambios '+c.sinCambios+' trabajadores\n\n¿Desea continuar?')) return;
+    if(!confirm('Se van a aplicar estos cambios:\n\n• Crear '+c.crear+' trabajadores nuevos\n• Reactivar '+c.reactivar+' trabajadores\n• Marcar como INACTIVOS '+c.inactivar+' trabajadores\n• Cambiar de obra '+(c.moverObra||0)+' trabajadores\n• Dejar sin cambios '+c.sinCambios+' trabajadores\n\n¿Desea continuar?')) return;
     this.save(function(db){
       if(!db.workers) db.workers=[];
       if(!db.config) db.config={};
       if(!db.config.obras) db.config.obras=[];
       sp.toCreate.forEach(function(w){ db.workers.unshift(Object.assign({},w)); });
-      db.workers.forEach(function(w){ if(!w.cedula) return; var key=self._normCed(w.cedula); if(sp.deactKeys[key] && (w.estado||'A')==='A') w.estado='I'; else if(sp.reactivateKeys[key]) w.estado='A'; });
+      db.workers.forEach(function(w){ if(!w.cedula) return; var key=self._normCed(w.cedula); if(sp.deactKeys[key] && (w.estado||'A')==='A') w.estado='I'; else if(sp.reactivateKeys[key]) w.estado='A'; if(sp.updateObraMap && sp.updateObraMap[key]) w.obra=sp.updateObraMap[key]; });
       sp.newObras.forEach(function(o){ if(o && db.config.obras.indexOf(o)<0) db.config.obras.push(o); });
     });
     this.setState({syncPending:null, syncResumen:''});
-    this.toast('Listo: '+c.crear+' creados, '+c.reactivar+' reactivados, '+c.inactivar+' inactivados.');
+    this.toast('Listo: '+c.crear+' creados, '+c.reactivar+' reactivados, '+c.inactivar+' inactivados, '+(c.moverObra||0)+' cambiaron de obra.');
   };
   migrarDx(){
     var db=this.state.db; if(!db||!db.consultas) return;
